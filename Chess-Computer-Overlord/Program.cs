@@ -1,58 +1,122 @@
 ﻿
-public class Game
+namespace ChessRobot
 {
-    string[] board = 
 
-    { "TNBQKBCT",
-      "PPPPPPPP",
-      "########",
-      "###00###",
-      "###00###",
-      "########",
-      "PPPPPPPP",
-      "TNBQKBCT",
-    };
-
-    const char knight = 'N';
-    const char Tower = 'T';
-    const char Bishop = 'B';
-    const char King = 'K';
-    const char Queen = 'Q';
-    const char Pawn = 'P';
-    const char CenterTile = '0';
-
-    int[,] knightMoves =
+    class Program
     {
-        //(x, y)
-        { 3, 1 },
-        { 3, -1 },
+        static void Main()
+        {
+            Game chess = new Game();
+            chess.makeMove();
+        }
 
-        { -3, 1 },
-        { -3, -1 },
+        public class Game
+        {
+            public int[] board =
+            {
+              2,3,4,5,6,4,3,2,
+              1,1,1,1,1,1,1,1,
+              0,0,0,0,0,0,0,0,
+              0,0,0,0,0,0,0,0,
+              0,0,0,0,0,0,0,0,
+              0,0,0,0,0,0,0,0,
+              1,1,1,1,1,1,1,1,
+              2,3,4,5,6,4,3,2,
+            };
 
-        { 1, 3 },
-        { -1, 3 },
+            const int knight = 3;
+            const int Tower = 2;
+            const int Bishop = 4;
+            const int King = 6;
+            const int Queen = 5;
+            const int Pawn = 1;
+            const int EmptyTile = 0;
 
-        { 1, -3 },
-        {-1, -3 },
-    };
+            public void makeMove()
+            {
+                string move = Console.ReadLine();
 
-    int[,] pawnMoves =
-    {
-        //(x, y)
-        { 1, 0 },
-        { 1, 1 },
-        { -1, 1 },
-    };
+                if (move == "e4")
+                {
+                    board[36] = 1;
+                    board[52] = 0;
+                }
 
-    int[,] bishopMoves =
-    {
-        { 1, 1 },
-        { -1, 1 },
-        { -1, -1 },
-        { 1, -1 },
-    };
+                printBoard();
+            }
 
-    //To be continue...
+            private void printBoard()
+            {
+                Console.Clear();
 
+                for (int i = 0; i < 64; i++)
+                {
+                    if (i % 8 == 0)
+                    {
+                        Console.WriteLine();
+                    }
+
+                    Console.Write(board[i]);
+                }
+            }
+
+            int[,] knightMoves =
+            {
+                { 3, 1 },
+                { 3, -1 },
+
+                { -3, 1 },
+                { -3, -1 },
+
+                { 1, 3 },
+                { -1, 3 },
+
+                { 1, -3 },
+                {-1, -3 },
+            };
+
+            int[,] pawnMoves =
+            {
+                { 1, 0 },
+                { 1, 1 },
+                { -1, 1 },
+            };
+
+            int[,] bishopMoves =
+            {
+                { 1, 1 },
+                { -1, 1 },
+                { -1, -1 },
+                { 1, -1 },
+            };
+
+            int[,] QueenMoves =
+            {
+                { 1, 1 },
+                { -1, 1 },
+                { -1, -1 },
+                { 1, -1 },
+                { 1, 0 },
+                { 0, 1 },
+                { -1, 0 },
+                { 0, -1 },
+            };
+
+            int[,] kingMoves =
+            {
+                { 1, 0 },
+                { 0, 1 },
+                { -1, 0 },
+                { 0, -1 },
+            };
+
+            int[,] towerMoves =
+            {
+                { 1, 0 },
+                { 0, 1 },
+                { -1, 0 },
+                { 0, -1 },
+            };
+        }
+    }
 }
