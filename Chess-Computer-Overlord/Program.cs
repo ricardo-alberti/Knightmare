@@ -12,51 +12,123 @@ namespace ChessRobot
 
         public class Game
         {
-            public int[] board =
-            {
-              2,3,4,5,6,4,3,2,
-              1,1,1,1,1,1,1,1,
-              0,0,0,0,0,0,0,0,
-              0,0,0,0,0,0,0,0,
-              0,0,0,0,0,0,0,0,
-              0,0,0,0,0,0,0,0,
-              1,1,1,1,1,1,1,1,
-              2,3,4,5,6,4,3,2,
-            };
+            const string Nb = "\u2658";
+            const string Tb = "\u2656";
+            const string Bb = "\u2657";
+            const string Kb = "\u2654";
+            const string Qb = "\u2655";
+            const string Pb = "\u2659";
 
-            const int knight = 3;
-            const int Tower = 2;
-            const int Bishop = 4;
-            const int King = 6;
-            const int Queen = 5;
-            const int Pawn = 1;
-            const int EmptyTile = 0;
+            const string Nw = "\u265E";
+            const string Tw = "\u265C";
+            const string Bw = "\u265D";
+            const string Kw = "\u265A";
+            const string Qw = "\u265B";
+            const string Pw = "\u265F";
+
+            const string E = "#";
+
+            public string[,] board =
+
+            {
+                {Tw, Nw, Bw, Qw, Kw, Bw, Nw, Tw},
+                {Pw, Pw, Pw, Pw, Pw, Pw, Pw, Pw},
+                { E,  E,  E,  E,  E,  E,  E,  E},
+                { E,  E,  E,  E,  E,  E,  E,  E},
+                { E,  E,  E,  E,  E,  E,  E,  E},
+                { E,  E,  E,  E,  E,  E,  E,  E},
+                {Pb, Pb, Pb, Pb, Pb, Pb, Pb, Pb},
+                {Tb, Nb, Bb, Qb, Kb, Bb, Nb, Tb},
+            };
 
             public void makeMove()
             {
-                string move = Console.ReadLine();
 
-                if (move == "e4")
-                {
-                    board[36] = 1;
-                    board[52] = 0;
-                }
-
+                //computerThink();
                 printBoard();
+
+                Console.Write("Piece start point: ");
+                string? pieceFrom = Console.ReadLine();
+                Console.Write("Piece end point: ");
+                string? pieceTo = Console.ReadLine();
+
+                int initialX = getPoint(pieceFrom[0]);
+                int initialY = getPoint(pieceFrom[1]);
+                int endX = getPoint(pieceTo[0]);
+                int endY = getPoint(pieceTo[1]);
+
+                string tmp = board[initialY, initialX];
+                board[initialY, initialX] = board[endY, endX];
+                board[endY, endX] = tmp;
+
+                makeMove();
             }
 
-            private void printBoard()
+            public void computerThink()
+            {
+                int initialX = 0;
+                int initialY = 0;
+                int endX = 0;
+                int endY = 0;
+
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        if (board[i, j] == Pw)
+                        {
+                            for (int k = 0; k < pawnMoves.Length; k++)
+                            {
+                                if (true)
+                                {
+                                    initialX = 1;
+                                    initialY = 1;
+                                    endX = 3;
+                                    endY = 3;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                string tmp = board[initialY, initialX];
+                board[initialY, initialX] = board[endY, endX];
+                board[endY, endX] = tmp;
+            }
+
+            public int getPoint(char XY)
+            {
+                char[] collumns = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
+                char[] rows = { '1', '2', '3', '4', '5', '6', '7', '8' };
+
+                for (int i = 0; i < 8; ++i)
+                {
+                    if (collumns[i] == XY)
+                    {
+                        return i;
+                    }
+
+                    if (rows[i] == XY)
+                    {
+                        return i;
+                    }
+                }
+
+                return -1;
+            }
+
+            public void printBoard()
             {
                 Console.Clear();
 
-                for (int i = 0; i < 64; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    if (i % 8 == 0)
+                    for (int j = 0; j < 8; ++j)
                     {
-                        Console.WriteLine();
+                        Console.Write(board[i, j]);
                     }
 
-                    Console.Write(board[i]);
+                    Console.WriteLine();
                 }
             }
 
