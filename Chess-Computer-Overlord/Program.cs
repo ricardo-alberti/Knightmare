@@ -7,29 +7,35 @@ namespace ChessRobot
         static void Main()
         {
             Game chess = new Game();
-            chess.makeMove();
+            chess.startMatch();
         }
 
         public class Game
         {
-            const string Nb = "\u2658";
-            const string Tb = "\u2656";
-            const string Bb = "\u2657";
-            const string Kb = "\u2654";
-            const string Qb = "\u2655";
-            const string Pb = "\u2659";
+            //computer settings  
 
-            const string Nw = "\u265E";
-            const string Tw = "\u265C";
-            const string Bw = "\u265D";
-            const string Kw = "\u265A";
-            const string Qw = "\u265B";
-            const string Pw = "\u265F";
+            public int[,] path = new int[12, 12];
+            public int[] start;
+            public bool[,] seen;
+            public int score = 0;
 
-            const string E = "#";
+            const string Nb = " \u2658";
+            const string Tb = " \u2656";
+            const string Bb = " \u2657";
+            const string Kb = " \u2654";
+            const string Qb = " \u2655";
+            const string Pb = " \u2659";
+
+            const string Nw = " \u265E";
+            const string Tw = " \u265C";
+            const string Bw = " \u265D";
+            const string Kw = " \u265A";
+            const string Qw = " \u265B";
+            const string Pw = " \u265F";
+
+            const string E = " #";
 
             public string[,] board =
-
             {
                 {Tw, Nw, Bw, Qw, Kw, Bw, Nw, Tw},
                 {Pw, Pw, Pw, Pw, Pw, Pw, Pw, Pw},
@@ -41,10 +47,15 @@ namespace ChessRobot
                 {Tb, Nb, Bb, Qb, Kb, Bb, Nb, Tb},
             };
 
+            public void startMatch()
+            {
+                makeMove();
+            }
+
             public void makeMove()
             {
 
-                //computerThink();
+                //computerMegaBrainThink();
                 printBoard();
 
                 Console.Write("Piece start point: ");
@@ -58,42 +69,60 @@ namespace ChessRobot
                 int endY = getPoint(pieceTo[1]);
 
                 string tmp = board[initialY, initialX];
-                board[initialY, initialX] = board[endY, endX];
+
+                if (board[endY, endX] == E)
+                {
+                    board[initialY, initialX] = board[endY, endX];
+                }
+                else
+                {
+                    board[initialY, initialY] = E;
+                }
+
                 board[endY, endX] = tmp;
 
                 makeMove();
             }
 
-            public void computerThink()
+            public bool computerMegaBrainThink(int[,] path, int[] curr, bool[] seen, int score)
             {
-                int initialX = 0;
-                int initialY = 0;
-                int endX = 0;
-                int endY = 0;
-
-                for (int i = 0; i < 8; i++)
+                //base case
+                if (curr[0] < 8 || curr[1] < 8 || curr[0] < 0 || curr[1] < 0)
                 {
-                    for (int j = 0; j < 8; j++)
-                    {
-                        if (board[i, j] == Pw)
-                        {
-                            for (int k = 0; k < pawnMoves.Length; k++)
-                            {
-                                if (true)
-                                {
-                                    initialX = 1;
-                                    initialY = 1;
-                                    endX = 3;
-                                    endY = 3;
-                                }
-                            }
-                        }
-                    }
+                    return false;
                 }
 
-                string tmp = board[initialY, initialX];
-                board[initialY, initialX] = board[endY, endX];
-                board[endY, endX] = tmp;
+                if (seen[0] == true)
+                {
+                    return false;
+                }
+
+                if (score == 10)
+                {
+                    return true;
+                }
+
+                for (int i = 0; i < pawnMoves.Length; ++i)
+                {
+                    int x = pawnMoves[i, 0];
+                    int y = pawnMoves[i, 1];
+
+                    if (computerMegaBrainThink(path, [0 + x, 1 + y], seen, score))
+                    {
+                        return true;
+                    }
+                }
+                //recursive
+                //pre
+                
+                //seen.push
+
+                //order
+                computerMegaBrainThink(path, curr, seen, score);
+                //post
+                
+                //seen.pop
+                return false;
             }
 
             public int getPoint(char XY)
@@ -121,19 +150,26 @@ namespace ChessRobot
             {
                 Console.Clear();
 
+                Console.WriteLine("     ₍ᐢ•(ܫ)•ᐢ₎ ");
+                Console.WriteLine(" _________________");
+
                 for (int i = 0; i < 8; i++)
                 {
+                    Console.Write("|");
+
                     for (int j = 0; j < 8; ++j)
                     {
                         Console.Write(board[i, j]);
                     }
 
-                    Console.WriteLine();
+                    Console.WriteLine(" |");
                 }
+                Console.WriteLine(" -----------------");
             }
 
             int[,] knightMoves =
             {
+                //this is how the knight moves
                 { 3, 1 },
                 { 3, -1 },
 
