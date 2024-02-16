@@ -6,36 +6,28 @@ namespace ChessRobot
     {
         static void Main()
         {
-            Game chess = new Game();
-            chess.startMatch();
+            Game.start();
         }
 
         public class Game
         {
-            //computer settings  
+            private const string Nb = " \u2658";
+            private const string Tb = " \u2656";
+            private const string Bb = " \u2657";
+            private const string Kb = " \u2654";
+            private const string Qb = " \u2655";
+            private const string Pb = " \u2659";
 
-            public int[,] path = new int[12, 12];
-            public int[] start;
-            public bool[,] seen;
-            public int score = 0;
+            private const string Nw = " \u265E";
+            private const string Tw = " \u265C";
+            private const string Bw = " \u265D";
+            private const string Kw = " \u265A";
+            private const string Qw = " \u265B";
+            private const string Pw = " \u265F";
 
-            const string Nb = " \u2658";
-            const string Tb = " \u2656";
-            const string Bb = " \u2657";
-            const string Kb = " \u2654";
-            const string Qb = " \u2655";
-            const string Pb = " \u2659";
+            private const string E = " \u2022";
 
-            const string Nw = " \u265E";
-            const string Tw = " \u265C";
-            const string Bw = " \u265D";
-            const string Kw = " \u265A";
-            const string Qw = " \u265B";
-            const string Pw = " \u265F";
-
-            const string E = " #";
-
-            public string[,] board =
+            private string[,] board =
             {
                 {Tw, Nw, Bw, Qw, Kw, Bw, Nw, Tw},
                 {Pw, Pw, Pw, Pw, Pw, Pw, Pw, Pw},
@@ -47,26 +39,235 @@ namespace ChessRobot
                 {Tb, Nb, Bb, Qb, Kb, Bb, Nb, Tb},
             };
 
-            public void startMatch()
+            public class Point
             {
-                makeMove();
+                public int x;
+                public int y;
             }
 
-            public void makeMove()
+            int[,] pieceMoveSet = { };
+
+            public bool computerMegaBrainThink(bool[,] seen, Stack<Point> path, int movesAhead, Point pieceToMove, List<Point> myPieces, List<Point> enemyPieces)
             {
+                //basecase
+                if (pieceToMove.x > 7 || pieceToMove.y > 7 || pieceToMove.x < 0 || pieceToMove.y < 0)
+                {
+                    return false;
+                }
 
-                //computerMegaBrainThink();
-                printBoard();
+                if (seen[pieceToMove.y, pieceToMove.x] == true)
+                {
+                    return false;
+                }
 
-                Console.Write("Piece start point: ");
+                if (path.Count > 1)
+                {
+                    Point[] arrayPath = path.ToArray();
+                    Array.Reverse(arrayPath);
+
+                    for (int i = 0; i < myPieces.Count; ++i)
+                    {
+                        if (arrayPath[1].x == myPieces[i].x && arrayPath[1].y == myPieces[i].y)
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                if (movesAhead == 1)
+                {
+                    Point urr = new Point() { x = pieceToMove.x, y = pieceToMove.y };
+                    path.Push(urr);
+
+                    return true;
+                }
+
+                //preorder
+                seen[pieceToMove.y, pieceToMove.x] = true;
+                Point curr = new Point() { x = pieceToMove.x, y = pieceToMove.y };
+
+                path.Push(curr);
+
+                switch (board[pieceToMove.y, pieceToMove.x])
+                {
+                    case Pb:
+                        pieceMoveSet = blackPawnMoves;
+                        break;
+                    case Nb:
+                        pieceMoveSet = knightMoves;
+                        break;
+                    case Kb:
+                        pieceMoveSet = kingMoves;
+                        break;
+                    case Qb:
+                        pieceMoveSet = QueenMoves;
+                        break;
+                    case Bb:
+                        pieceMoveSet = bishopMoves;
+                        break;
+                    case Tb:
+                        pieceMoveSet = towerMoves;
+                        break;
+                    case Pw:
+                        pieceMoveSet = whitePawnMoves;
+                        break;
+                    case Nw:
+                        pieceMoveSet = knightMoves;
+                        break;
+                    case Kw:
+                        pieceMoveSet = kingMoves;
+                        break;
+                    case Qw:
+                        pieceMoveSet = QueenMoves;
+                        break;
+                    case Bw:
+                        pieceMoveSet = bishopMoves;
+                        break;
+                    case Tw:
+                        pieceMoveSet = towerMoves;
+                        break;
+                }
+                //order
+
+                for (int i = 0; i < pieceMoveSet.GetLength(0); ++i)
+                {
+                    int y = pieceMoveSet[i, 0], x = pieceMoveSet[i, 1];
+
+                    Point pieceToMoveUpdated = new Point() { x = pieceToMove.x + x, y = pieceToMove.y + y };
+                    int movesAheadUpdated = movesAhead + 1;
+
+                    for (int j = 0; j < myPieces.Count; ++j)
+                    {
+                        if (pieceToMoveUpdated.x == myPieces[j].x && pieceToMoveUpdated.y == myPieces[j].y)
+                        {
+                            return false;
+                        }
+                    }
+
+                    if (computerMegaBrainThink(seen, path, movesAheadUpdated, pieceToMoveUpdated, myPieces, enemyPieces))
+                    {
+                        return true;
+                    }
+                }
+
+                //postOrder
+                path.Pop();
+                return false;
+            }
+
+            Random rnd = new Random();
+
+            public void computerTurn(List<Point> myPieces, List<Point> enemyPieces)
+            {
+                bool[,] seen = new bool[8, 8];
+
+                Console.WriteLine($"number of pieces: {myPieces.Count}");
+                for (int i = 0; i < myPieces.Count; ++i)
+                {
+                    Console.WriteLine($"x:{myPieces[i].x}, y:{myPieces[i].y}");
+                }
+
+                Console.WriteLine();
+
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        seen[i, j] = false;
+                    }
+                }
+
+                int movesAhead = 0;
+                Stack<Point> path = new Stack<Point>();
+
+
+                getPath();
+
+                void getPath()
+                {
+                    if (myPieces.Count == 0)
+                    {
+                    }
+
+                    for (int i = 0; i < myPieces.Count; ++i)
+                    {
+                        path.Clear();
+                        int num = rnd.Next(i, myPieces.Count);
+
+                        if (computerMegaBrainThink(seen, path, movesAhead, myPieces[num], myPieces, enemyPieces))
+                        {
+                            Point[] arrayPath = path.ToArray();
+                            Array.Reverse(arrayPath);
+                            Point start = arrayPath[0];
+                            Point end = arrayPath[1];
+
+                            for (int j = 0; j < enemyPieces.Count; ++j)
+                            {
+                                if (end.x == enemyPieces[j].x && end.y == enemyPieces[j].y)
+                                {
+                                    enemyPieces.RemoveAt(j);
+                                }
+                            }
+
+                            myPieces[num] = new Point() { x = end.x, y = end.y };
+
+                            for (int k = 0; k < path.Count - 1; ++k)
+                            {
+                                Console.WriteLine($"{k} x:{arrayPath[k].x} y:{arrayPath[k + 1].y} => x:{arrayPath[k].x} y:{arrayPath[k + 1].y}");
+                            }
+
+                            move(start.x, start.y, end.x, end.y);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            public void humanTurn()
+            {
+                Console.Write("  Piece start point: ");
                 string? pieceFrom = Console.ReadLine();
-                Console.Write("Piece end point: ");
+                Console.Write("  Piece end point: ");
                 string? pieceTo = Console.ReadLine();
 
                 int initialX = getPoint(pieceFrom[0]);
                 int initialY = getPoint(pieceFrom[1]);
                 int endX = getPoint(pieceTo[0]);
                 int endY = getPoint(pieceTo[1]);
+
+                if (initialY > 8 || initialX > 8 || endX > 8 || endY > 8 || initialX < 0 || initialY < 0 || endX < 0 || endY < 0)
+                {
+                    printBoard();
+                    Console.WriteLine("  Entrada inválida");
+                    humanTurn();
+                }
+
+                move(initialX, initialY, endX, endY);
+
+                int getPoint(char XY)
+                {
+                    char[] collumns = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
+                    char[] rows = { '1', '2', '3', '4', '5', '6', '7', '8' };
+
+                    for (int i = 0; i < 8; ++i)
+                    {
+                        if (collumns[i] == XY)
+                        {
+                            return i;
+                        }
+
+                        if (rows[i] == XY)
+                        {
+                            return i;
+                        }
+                    }
+
+                    return -1;
+                }
+            }
+
+            public void move(int initialX, int initialY, int endX, int endY)
+            {
 
                 string tmp = board[initialY, initialX];
 
@@ -76,86 +277,36 @@ namespace ChessRobot
                 }
                 else
                 {
-                    board[initialY, initialY] = E;
+                    board[initialY, initialX] = E;
+                }
+
+                Console.WriteLine($"{tmp} x{board[endY, endX]}");
+                Console.Read();
+
+                if (tmp == Pw && endY == 7)
+                {
+                    tmp = Qw;
+                }
+
+                if (tmp == Pb && endY == 0)
+                {
+                    tmp = Qb;
                 }
 
                 board[endY, endX] = tmp;
-
-                makeMove();
-            }
-
-            public bool computerMegaBrainThink(int[,] path, int[] curr, bool[] seen, int score)
-            {
-                //base case
-                if (curr[0] < 8 || curr[1] < 8 || curr[0] < 0 || curr[1] < 0)
-                {
-                    return false;
-                }
-
-                if (seen[0] == true)
-                {
-                    return false;
-                }
-
-                if (score == 10)
-                {
-                    return true;
-                }
-
-                for (int i = 0; i < pawnMoves.Length; ++i)
-                {
-                    int x = pawnMoves[i, 0];
-                    int y = pawnMoves[i, 1];
-
-                    if (computerMegaBrainThink(path, [0 + x, 1 + y], seen, score))
-                    {
-                        return true;
-                    }
-                }
-                //recursive
-                //pre
-                
-                //seen.push
-
-                //order
-                computerMegaBrainThink(path, curr, seen, score);
-                //post
-                
-                //seen.pop
-                return false;
-            }
-
-            public int getPoint(char XY)
-            {
-                char[] collumns = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
-                char[] rows = { '1', '2', '3', '4', '5', '6', '7', '8' };
-
-                for (int i = 0; i < 8; ++i)
-                {
-                    if (collumns[i] == XY)
-                    {
-                        return i;
-                    }
-
-                    if (rows[i] == XY)
-                    {
-                        return i;
-                    }
-                }
-
-                return -1;
             }
 
             public void printBoard()
             {
                 Console.Clear();
 
-                Console.WriteLine("     ₍ᐢ•(ܫ)•ᐢ₎ ");
-                Console.WriteLine(" _________________");
+
+                Console.WriteLine("     A B C D E F G H");
+                Console.WriteLine("    -----------------");
 
                 for (int i = 0; i < 8; i++)
                 {
-                    Console.Write("|");
+                    Console.Write($" {i + 1} |");
 
                     for (int j = 0; j < 8; ++j)
                     {
@@ -164,30 +315,59 @@ namespace ChessRobot
 
                     Console.WriteLine(" |");
                 }
-                Console.WriteLine(" -----------------");
+                Console.WriteLine("    -----------------");
+            }
+
+            public static void start()
+            {
+                Game chess = new Game();
+                chess.turnsCycle();
+            }
+
+            private void turnsCycle()
+            {
+                if (whitePiecesPosition.Count == 0 || blackPiecesPosition.Count == 0) {
+                    Console.Write("ACABOU CHEGA");
+                    return;
+                }
+
+                computerTurn(whitePiecesPosition, blackPiecesPosition);
+                printBoard();
+
+                computerTurn(blackPiecesPosition, whitePiecesPosition);
+                printBoard();
+
+                turnsCycle();
             }
 
             int[,] knightMoves =
             {
-                //this is how the knight moves
-                { 3, 1 },
-                { 3, -1 },
+                //THIS is how the knight moves
+                { 2, 1 },
+                { 2, -1 },
 
-                { -3, 1 },
-                { -3, -1 },
+                { -2, 1 },
+                { -2, -1 },
 
-                { 1, 3 },
-                { -1, 3 },
+                { 1, 2 },
+                { -1, 2 },
 
-                { 1, -3 },
-                {-1, -3 },
+                { 1, -2 },
+                {-1, -2 },
             };
 
-            int[,] pawnMoves =
+            int[,] whitePawnMoves =
             {
                 { 1, 0 },
                 { 1, 1 },
+                { 1, -1 },
+            };
+
+            int[,] blackPawnMoves =
+            {
+                { -1, 0 },
                 { -1, 1 },
+                { -1, -1 },
             };
 
             int[,] bishopMoves =
@@ -200,14 +380,14 @@ namespace ChessRobot
 
             int[,] QueenMoves =
             {
-                { 1, 1 },
-                { -1, 1 },
-                { -1, -1 },
-                { 1, -1 },
                 { 1, 0 },
                 { 0, 1 },
                 { -1, 0 },
                 { 0, -1 },
+                { 1, 1 },
+                { -1, 1 },
+                { -1, -1 },
+                { 1, -1 },
             };
 
             int[,] kingMoves =
@@ -222,8 +402,48 @@ namespace ChessRobot
             {
                 { 1, 0 },
                 { 0, 1 },
-                { -1, 0 },
                 { 0, -1 },
+                { -1, 0 },
+            };
+
+            List<Point> blackPiecesPosition = new List<Point>
+            {
+                new Point() { x = 0, y = 7 },
+                new Point() { x = 1, y = 7 },
+                new Point() { x = 2, y = 7 },
+                new Point() { x = 3, y = 7 },
+                new Point() { x = 4, y = 7 },
+                new Point() { x = 5, y = 7 },
+                new Point() { x = 6, y = 7 },
+                new Point() { x = 7, y = 7 },
+                new Point() { x = 0, y = 6 },
+                new Point() { x = 1, y = 6 },
+                new Point() { x = 2, y = 6 },
+                new Point() { x = 3, y = 6 },
+                new Point() { x = 4, y = 6 },
+                new Point() { x = 5, y = 6 },
+                new Point() { x = 6, y = 6 },
+                new Point() { x = 7, y = 6 },
+            };
+
+            List<Point> whitePiecesPosition = new List<Point>
+            {
+                new Point() { x = 0, y = 0 },
+                new Point() { x = 1, y = 0 },
+                new Point() { x = 2, y = 0 },
+                new Point() { x = 3, y = 0 },
+                new Point() { x = 4, y = 0 },
+                new Point() { x = 5, y = 0 },
+                new Point() { x = 6, y = 0 },
+                new Point() { x = 7, y = 0 },
+                new Point() { x = 0, y = 1 },
+                new Point() { x = 1, y = 1 },
+                new Point() { x = 2, y = 1 },
+                new Point() { x = 3, y = 1 },
+                new Point() { x = 4, y = 1 },
+                new Point() { x = 5, y = 1 },
+                new Point() { x = 6, y = 1 },
+                new Point() { x = 7, y = 1 },
             };
         }
     }
