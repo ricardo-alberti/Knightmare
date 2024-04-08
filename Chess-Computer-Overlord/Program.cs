@@ -1,305 +1,230 @@
-﻿
-namespace ChessRobot
+﻿namespace Chess
 {
-
     class Program
     {
         static void Main()
         {
-            Game.start();
+            Game chess = Game.Instance();
+            chess.Start();
+        }
+    }
+
+    public sealed class Game
+    {
+        private Game() { }
+        private static Game _instance;
+        public static Game Instance()
+        {
+            if (_instance == null)
+            {
+                _instance = new Game();
+            }
+            return _instance;
         }
 
-        public class Game
+        public abstract class ChessPiece
         {
-            private const string Nb = " \u2658";
-            private const string Tb = " \u2656";
-            private const string Bb = " \u2657";
-            private const string Kb = " \u2654";
-            private const string Qb = " \u2655";
-            private const string Pb = " \u2659";
+            protected readonly char code;
+            private readonly string shape;
+            private readonly Point position;
+            private readonly int[,] moveSet;
+            private readonly int side;
 
-            private const string Nw = " \u265E";
-            private const string Tw = " \u265C";
-            private const string Bw = " \u265D";
-            private const string Kw = " \u265A";
-            private const string Qw = " \u265B";
-            private const string Pw = " \u265F";
-
-            private const string E = " \u2022";
-
-            private string[,] board =
+            protected ChessPiece(char _code, string _shape, Point _position, int[,] _moveSet, int _side)
             {
-                {Tw, Nw, Bw, Qw, Kw, Bw, Nw, Tw},
-                {Pw, Pw, Pw, Pw, Pw, Pw, Pw, Pw},
-                { E,  E,  E,  E,  E,  E,  E,  E},
-                { E,  E,  E,  E,  E,  E,  E,  E},
-                { E,  E,  E,  E,  E,  E,  E,  E},
-                { E,  E,  E,  E,  E,  E,  E,  E},
-                {Pb, Pb, Pb, Pb, Pb, Pb, Pb, Pb},
-                {Tb, Nb, Bb, Qb, Kb, Bb, Nb, Tb},
-            };
-
-            public class Point
-            {
-                public int x;
-                public int y;
+                code = _code;
+                shape = _shape;
+                position = _position;
+                moveSet = _moveSet;
+                side = _side;
             }
 
-            int[,] pieceMoveSet = { };
-
-            public bool computerMegaBrainThink(bool[,] seen, Stack<Point> path, int movesAhead, Point pieceToMove, List<Point> myPieces, List<Point> enemyPieces)
+            public string Shape()
             {
-                //basecase
-                if (pieceToMove.x > 7 || pieceToMove.y > 7 || pieceToMove.x < 0 || pieceToMove.y < 0)
-                {
-                    return false;
-                }
-
-                if (seen[pieceToMove.y, pieceToMove.x] == true)
-                {
-                    return false;
-                }
-
-                if (path.Count > 1)
-                {
-                    Point[] arrayPath = path.ToArray();
-                    Array.Reverse(arrayPath);
-
-                    for (int i = 0; i < myPieces.Count; ++i)
-                    {
-                        if (arrayPath[1].x == myPieces[i].x && arrayPath[1].y == myPieces[i].y)
-                        {
-                            return false;
-                        }
-                    }
-                }
-
-                if (movesAhead == 1)
-                {
-                    Point urr = new Point() { x = pieceToMove.x, y = pieceToMove.y };
-                    path.Push(urr);
-
-                    return true;
-                }
-
-                //preorder
-                seen[pieceToMove.y, pieceToMove.x] = true;
-                Point curr = new Point() { x = pieceToMove.x, y = pieceToMove.y };
-
-                path.Push(curr);
-
-                switch (board[pieceToMove.y, pieceToMove.x])
-                {
-                    case Pb:
-                        pieceMoveSet = blackPawnMoves;
-                        break;
-                    case Nb:
-                        pieceMoveSet = knightMoves;
-                        break;
-                    case Kb:
-                        pieceMoveSet = kingMoves;
-                        break;
-                    case Qb:
-                        pieceMoveSet = QueenMoves;
-                        break;
-                    case Bb:
-                        pieceMoveSet = bishopMoves;
-                        break;
-                    case Tb:
-                        pieceMoveSet = towerMoves;
-                        break;
-                    case Pw:
-                        pieceMoveSet = whitePawnMoves;
-                        break;
-                    case Nw:
-                        pieceMoveSet = knightMoves;
-                        break;
-                    case Kw:
-                        pieceMoveSet = kingMoves;
-                        break;
-                    case Qw:
-                        pieceMoveSet = QueenMoves;
-                        break;
-                    case Bw:
-                        pieceMoveSet = bishopMoves;
-                        break;
-                    case Tw:
-                        pieceMoveSet = towerMoves;
-                        break;
-                }
-                //order
-
-                for (int i = 0; i < pieceMoveSet.GetLength(0); ++i)
-                {
-                    int y = pieceMoveSet[i, 0], x = pieceMoveSet[i, 1];
-
-                    Point pieceToMoveUpdated = new Point() { x = pieceToMove.x + x, y = pieceToMove.y + y };
-                    int movesAheadUpdated = movesAhead + 1;
-
-                    for (int j = 0; j < myPieces.Count; ++j)
-                    {
-                        if (pieceToMoveUpdated.x == myPieces[j].x && pieceToMoveUpdated.y == myPieces[j].y)
-                        {
-                            return false;
-                        }
-                    }
-
-                    if (computerMegaBrainThink(seen, path, movesAheadUpdated, pieceToMoveUpdated, myPieces, enemyPieces))
-                    {
-                        return true;
-                    }
-                }
-
-                //postOrder
-                path.Pop();
-                return false;
+                return shape;
             }
 
-            Random rnd = new Random();
-
-            public void computerTurn(List<Point> myPieces, List<Point> enemyPieces)
+            public int[,] MoveSet()
             {
-                bool[,] seen = new bool[8, 8];
-
-                Console.WriteLine($"number of pieces: {myPieces.Count}");
-                for (int i = 0; i < myPieces.Count; ++i)
-                {
-                    Console.WriteLine($"x:{myPieces[i].x}, y:{myPieces[i].y}");
-                }
-
-                Console.WriteLine();
-
-                for (int i = 0; i < 8; i++)
-                {
-                    for (int j = 0; j < 8; j++)
-                    {
-                        seen[i, j] = false;
-                    }
-                }
-
-                int movesAhead = 0;
-                Stack<Point> path = new Stack<Point>();
-
-
-                getPath();
-
-                void getPath()
-                {
-                    if (myPieces.Count == 0)
-                    {
-                    }
-
-                    for (int i = 0; i < myPieces.Count; ++i)
-                    {
-                        path.Clear();
-                        int num = rnd.Next(i, myPieces.Count);
-
-                        if (computerMegaBrainThink(seen, path, movesAhead, myPieces[num], myPieces, enemyPieces))
-                        {
-                            Point[] arrayPath = path.ToArray();
-                            Array.Reverse(arrayPath);
-                            Point start = arrayPath[0];
-                            Point end = arrayPath[1];
-
-                            for (int j = 0; j < enemyPieces.Count; ++j)
-                            {
-                                if (end.x == enemyPieces[j].x && end.y == enemyPieces[j].y)
-                                {
-                                    enemyPieces.RemoveAt(j);
-                                }
-                            }
-
-                            myPieces[num] = new Point() { x = end.x, y = end.y };
-
-                            for (int k = 0; k < path.Count - 1; ++k)
-                            {
-                                Console.WriteLine($"{k} x:{arrayPath[k].x} y:{arrayPath[k + 1].y} => x:{arrayPath[k].x} y:{arrayPath[k + 1].y}");
-                            }
-
-                            move(start.x, start.y, end.x, end.y);
-                            break;
-                        }
-                    }
-                }
+                return moveSet;
             }
 
-            public void humanTurn()
+            public Point Position()
             {
-                Console.Write("  Piece start point: ");
-                string? pieceFrom = Console.ReadLine();
-                Console.Write("  Piece end point: ");
-                string? pieceTo = Console.ReadLine();
-
-                int initialX = getPoint(pieceFrom[0]);
-                int initialY = getPoint(pieceFrom[1]);
-                int endX = getPoint(pieceTo[0]);
-                int endY = getPoint(pieceTo[1]);
-
-                if (initialY > 8 || initialX > 8 || endX > 8 || endY > 8 || initialX < 0 || initialY < 0 || endX < 0 || endY < 0)
-                {
-                    printBoard();
-                    Console.WriteLine("  Entrada inválida");
-                    humanTurn();
-                }
-
-                move(initialX, initialY, endX, endY);
-
-                int getPoint(char XY)
-                {
-                    char[] collumns = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
-                    char[] rows = { '1', '2', '3', '4', '5', '6', '7', '8' };
-
-                    for (int i = 0; i < 8; ++i)
-                    {
-                        if (collumns[i] == XY)
-                        {
-                            return i;
-                        }
-
-                        if (rows[i] == XY)
-                        {
-                            return i;
-                        }
-                    }
-
-                    return -1;
-                }
+                return position;
             }
+        }
 
-            public void move(int initialX, int initialY, int endX, int endY)
+        public static ChessPiece CreatePiece(char code, Point position, int side)
+        {
+            switch (code)
+            {
+                case 'N':
+                    return new Knight(position, side);
+                case 'T':
+                    return new Tower(position, side);
+                case 'P':
+                    return new Pawn(position, side);
+                case 'Q':
+                    return new Queen(position, side);
+                case 'K':
+                    return new King(position, side);
+                case 'B':
+                    return new Bishop(position, side);
+                default:
+                    return new Piece();
+            }
+        }
+
+        private class Knight : ChessPiece
+        {
+            public Knight(Point position, int side)
+                    : base('N', side == 1 ? " \u2658" : " \u265E", position, new int[,] { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 } }, side)
             {
 
-                string tmp = board[initialY, initialX];
+            }
+        }
 
-                if (board[endY, endX] == E)
-                {
-                    board[initialY, initialX] = board[endY, endX];
-                }
-                else
-                {
-                    board[initialY, initialX] = E;
-                }
+        private class Queen : ChessPiece
+        {
+            public Queen(Point position, int side)
+                : base('Q', side == 1 ? " \u2655" : " \u265B", position, new int[,] { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 } }, side)
+            {
 
-                Console.WriteLine($"{tmp} x{board[endY, endX]}");
-                Console.Read();
+            }
+        }
 
-                if (tmp == Pw && endY == 7)
-                {
-                    tmp = Qw;
-                }
+        private class King : ChessPiece
+        {
+            public King(Point position, int side)
+                : base('K', side == 1 ? " \u2654" : " \u265A", position, new int[,] { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 } }, side)
+            {
 
-                if (tmp == Pb && endY == 0)
-                {
-                    tmp = Qb;
-                }
+            }
+        }
 
-                board[endY, endX] = tmp;
+        private class Tower : ChessPiece
+        {
+            public Tower(Point position, int side)
+                : base('T', side == 1 ? " \u2656" : " \u265C", position, new int[,] { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 } }, side)
+            {
+
+            }
+        }
+
+        private class Pawn : ChessPiece
+        {
+            public Pawn(Point position, int side)
+                : base('P', side == 1 ? " \u2659" : " \u265F", position, new int[,] { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 } }, side)
+            {
+
+            }
+        }
+
+        private class Bishop : ChessPiece
+        {
+            public Bishop(Point position, int side)
+                : base('B', side == 1 ? " \u2657" : " \u265D", position, new int[,] { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 } }, side)
+            {
+
+            }
+        }
+
+        private class Piece : ChessPiece
+        {
+            public Piece()
+                : base('F', " \u2022", new Point(), new int[,] { { 0, 0 } }, 1)
+            {
+
+            }
+        }
+
+        public class Point
+        {
+            private readonly int x;
+            private readonly int y;
+
+            public Point() : this(0, 0)
+            {
+
             }
 
-            public void printBoard()
+            public Point(int X, int Y)
+            {
+                x = X;
+                y = Y;
+            }
+
+            public int X()
+            {
+                return x;
+            }
+
+            public int Y()
+            {
+                return y;
+            }
+        }
+
+        public class Tile
+        {
+            private readonly Point position;
+            private readonly ChessPiece piece;
+
+            public Tile() : this(new Piece()) {}
+
+            public Tile(ChessPiece _piece)
+            {
+                this.piece = _piece;
+            }
+
+            public ChessPiece Piece()
+            {
+                return piece;
+            }
+
+            public string Print()
+            {
+                return piece.Shape();
+            }
+        }
+
+        public class Board
+        {
+            private readonly ChessPiece[] whitePieces;
+            private readonly ChessPiece[] blackPieces;
+            private readonly ChessPiece[] pieces;
+            private readonly Tile[,] tiles;
+
+            public Board() : this(defaultPieces(1), defaultPieces(0), new Tile[8, 8], Pieces(defaultPieces(1), defaultPieces(0)))
+            {
+
+            }
+
+            public Board(ChessPiece[] _whitePieces, ChessPiece[] _blackPieces, Tile[,] _tiles, ChessPiece[] _pieces) 
+            {
+                whitePieces = _whitePieces;
+                blackPieces = _blackPieces;
+                pieces = _pieces;
+                tiles = _tiles;
+            }
+
+            public Board UpdateBoard(Tile[] tiles)
+            {
+                Tile[,] updatedTiles = {};
+
+                return new Board(this.whitePieces, this.blackPieces, updatedTiles, this.pieces);
+            }
+
+            public Tile Tile(Point _position)
+            {
+                Tile tile = tiles[_position.X(), _position.Y()];
+                return tile;
+            }
+
+            public void Print()
             {
                 Console.Clear();
-
 
                 Console.WriteLine("     A B C D E F G H");
                 Console.WriteLine("    -----------------");
@@ -310,141 +235,210 @@ namespace ChessRobot
 
                     for (int j = 0; j < 8; ++j)
                     {
-                        Console.Write(board[i, j]);
+                        Console.Write(tiles[i, j].Print());
                     }
 
                     Console.WriteLine(" |");
                 }
+
                 Console.WriteLine("    -----------------");
+                Console.Read();
             }
 
-            public static void start()
+            public ChessPiece[] SidePieces(int _side)
             {
-                Game chess = new Game();
-                chess.turnsCycle();
-            }
-
-            private void turnsCycle()
-            {
-                if (whitePiecesPosition.Count == 0 || blackPiecesPosition.Count == 0) {
-                    Console.Write("ACABOU CHEGA");
-                    return;
+                if (_side == 1)
+                {
+                    return whitePieces;
                 }
 
-                computerTurn(whitePiecesPosition, blackPiecesPosition);
-                printBoard();
-
-                computerTurn(blackPiecesPosition, whitePiecesPosition);
-                printBoard();
-
-                turnsCycle();
+                return blackPieces;
             }
 
-            int[,] knightMoves =
+            public ChessPiece[] Pieces()
             {
-                //THIS is how the knight moves
-                { 2, 1 },
-                { 2, -1 },
+                ChessPiece[] pieces = new ChessPiece[whitePieces.Length + blackPieces.Length];
+                Array.Copy(whitePieces, 0, pieces, 0, whitePieces.Length);
+                Array.Copy(blackPieces, 0, pieces, whitePieces.Length, blackPieces.Length);
+                return pieces;
+            }
 
-                { -2, 1 },
-                { -2, -1 },
-
-                { 1, 2 },
-                { -1, 2 },
-
-                { 1, -2 },
-                {-1, -2 },
-            };
-
-            int[,] whitePawnMoves =
+            public static ChessPiece[] Pieces(ChessPiece[] whitePieces, ChessPiece[] blackPieces)
             {
-                { 1, 0 },
-                { 1, 1 },
-                { 1, -1 },
-            };
+                ChessPiece[] pieces = new ChessPiece[whitePieces.Length + blackPieces.Length];
+                Array.Copy(whitePieces, 0, pieces, 0, whitePieces.Length);
+                Array.Copy(blackPieces, 0, pieces, whitePieces.Length, blackPieces.Length);
+                return pieces;
+            }
 
-            int[,] blackPawnMoves =
+            public void SetPieces(ChessPiece[] pieces)
             {
-                { -1, 0 },
-                { -1, 1 },
-                { -1, -1 },
-            };
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        Tile tile = new Tile();
+                        tiles[i, j] = tile;
 
-            int[,] bishopMoves =
-            {
-                { 1, 1 },
-                { -1, 1 },
-                { -1, -1 },
-                { 1, -1 },
-            };
+                        for (int k = 0; k < pieces.Length; k++)
+                        {
+                            if (pieces[k].Position().X() == j && pieces[k].Position().Y() == i)
+                            {
+                                tiles[i, j] = new Tile(pieces[k]);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
 
-            int[,] QueenMoves =
+            private static ChessPiece[] defaultPieces(int _side)
             {
-                { 1, 0 },
-                { 0, 1 },
-                { -1, 0 },
-                { 0, -1 },
-                { 1, 1 },
-                { -1, 1 },
-                { -1, -1 },
-                { 1, -1 },
-            };
+                ChessPiece[] pieces = new ChessPiece[16];
 
-            int[,] kingMoves =
-            {
-                { 1, 0 },
-                { 0, 1 },
-                { -1, 0 },
-                { 0, -1 },
-            };
+                char[] codes = {
+                    'T','T','N','N','B','B','K','Q',
+                    'P','P','P','P','P','P','P','P',
+                };
 
-            int[,] towerMoves =
-            {
-                { 1, 0 },
-                { 0, 1 },
-                { 0, -1 },
-                { -1, 0 },
-            };
+                Point[] position = {
+                    new Point(0, 0), new Point(7, 0), new Point(1, 0), new Point(6, 0), new Point(2, 0), new Point(5, 0), new Point(4, 0), new Point(3, 0),
+                    new Point(0, 1), new Point(1, 1), new Point(2, 1), new Point(3, 1), new Point(4, 1), new Point(5, 1), new Point(6, 1), new Point(7, 1),
+                    new Point(0, 7), new Point(7, 7), new Point(1, 7), new Point(6, 7), new Point(2, 7), new Point(5, 7), new Point(4, 7), new Point(3, 7),
+                    new Point(0, 6), new Point(1, 6), new Point(2, 6), new Point(3, 6), new Point(4, 6), new Point(5, 6), new Point(6, 6), new Point(7, 6)
+                };
 
-            List<Point> blackPiecesPosition = new List<Point>
-            {
-                new Point() { x = 0, y = 7 },
-                new Point() { x = 1, y = 7 },
-                new Point() { x = 2, y = 7 },
-                new Point() { x = 3, y = 7 },
-                new Point() { x = 4, y = 7 },
-                new Point() { x = 5, y = 7 },
-                new Point() { x = 6, y = 7 },
-                new Point() { x = 7, y = 7 },
-                new Point() { x = 0, y = 6 },
-                new Point() { x = 1, y = 6 },
-                new Point() { x = 2, y = 6 },
-                new Point() { x = 3, y = 6 },
-                new Point() { x = 4, y = 6 },
-                new Point() { x = 5, y = 6 },
-                new Point() { x = 6, y = 6 },
-                new Point() { x = 7, y = 6 },
-            };
+                for (int i = 0; i < 16; i++)
+                {
+                    ChessPiece piece = CreatePiece(codes[i], position[(_side * 16) + i], _side);
+                    pieces[i] = piece;
+                }
 
-            List<Point> whitePiecesPosition = new List<Point>
+                return pieces;
+            }
+        }
+
+        public abstract class Player
+        {
+            private readonly int side;
+            private readonly ChessPiece[] pieces;
+
+            public Player(int _side, Board _chessBoard)
             {
-                new Point() { x = 0, y = 0 },
-                new Point() { x = 1, y = 0 },
-                new Point() { x = 2, y = 0 },
-                new Point() { x = 3, y = 0 },
-                new Point() { x = 4, y = 0 },
-                new Point() { x = 5, y = 0 },
-                new Point() { x = 6, y = 0 },
-                new Point() { x = 7, y = 0 },
-                new Point() { x = 0, y = 1 },
-                new Point() { x = 1, y = 1 },
-                new Point() { x = 2, y = 1 },
-                new Point() { x = 3, y = 1 },
-                new Point() { x = 4, y = 1 },
-                new Point() { x = 5, y = 1 },
-                new Point() { x = 6, y = 1 },
-                new Point() { x = 7, y = 1 },
-            };
+                side = _side;
+                pieces = _chessBoard.SidePieces(_side);;
+            }
+
+            protected Boolean moveValid(Tile fromTile, Tile toTile)
+            {
+                return true;
+            }
+
+            protected Tile[] moveToPlay()
+            {
+                Tile[] tiles = { new Tile() };
+                return tiles;
+            }
+
+            protected void movePiece(Tile fromTile, Tile toTile)
+            {
+                fromTile = new Tile();
+                toTile = new Tile(fromTile.Piece());
+            }
+        }
+
+        public class Robot : Player
+        {
+            private readonly MoveTree possibleMoves;
+            private readonly Board chessBoard;
+            private readonly Board updatedBoard;
+
+            public Robot(int _side, Board _chessBoard) : base(_side, _chessBoard)
+            {
+                possibleMoves = new MoveTree();
+                updatedBoard = _chessBoard;
+            }
+
+            private MoveTree moveTree()
+            {
+                return possibleMoves;
+            }
+
+            private Tile[] bestMove()
+            {
+                Tile[] tiles = { new Tile() };
+                return tiles;
+            }
+
+            public void play()
+            {
+                Tile tile1 = chessBoard.Tile(new Point(0, 0));
+                Tile tile2 = chessBoard.Tile(new Point(7, 6));
+                tile1 = new Tile(tile2.Piece());
+            }
+
+            public Board UpdatedBoard()
+            {
+                return updatedBoard;
+            }
+
+            private sealed class MoveTree
+            {
+                private readonly Move head;
+                private readonly Move left;
+                private readonly Move right;
+
+                public MoveTree()
+                {
+                    head = new Move();
+                    left = new Move();
+                    right = new Move();
+                }
+            }
+
+            private sealed class Move
+            {
+                private readonly ChessPiece piece;
+                private readonly Point initialPosition;
+                private readonly Point finalPosition;
+
+                public Move() : this(new Piece(), new Point())
+                {
+
+                }
+
+                public Move(ChessPiece _piece, Point _finalPosition)
+                {
+                    piece = _piece;
+                    initialPosition = new Point(piece.Position().X(), piece.Position().Y());
+                    finalPosition = _finalPosition;
+                }
+            }
+        }
+
+        public class Mortal : Player
+        {
+            public Mortal(int _side, Board _chessBoard) : base(_side, _chessBoard)
+            {
+
+            }
+        }
+
+        public void Start()
+        {
+            Board chessBoard = new Board();
+            chessBoard.SetPieces(chessBoard.Pieces());
+            //Mortal human = new Mortal(0, chessBoard.SidePieces(0));
+
+            chessBoard.Print();
+
+            Robot chessRobot0 = new Robot(1, chessBoard);
+            chessRobot0.play();
+
+            chessBoard.Print();
+
+            Robot chessRobot1 = new Robot(0, chessBoard);
+            chessRobot1.play();
         }
     }
 }
