@@ -88,7 +88,7 @@
         private class Queen : ChessPiece
         {
             public Queen(Point position, int side)
-                : base('Q', side == 1 ? " \u2655" : " \u265B", position, new int[,] { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 } }, side)
+                : base('Q', side == 1 ? " \u2655" : " \u265B", position, new int[,] { { 0, -1 }, { 0, 1 }, { 1, 0 }, { 1, 1 }, { -1, 0 }, { -1, -1 }, { 1, -1 }, { -1, 1 } }, side)
             {
 
             }
@@ -97,7 +97,7 @@
         private class King : ChessPiece
         {
             public King(Point position, int side)
-                : base('K', side == 1 ? " \u2654" : " \u265A", position, new int[,] { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 } }, side)
+                : base('K', side == 1 ? " \u2654" : " \u265A", position, new int[,] { { 0, -1 }, { 0, 1 }, { 1, 0 }, { 1, 1 }, { -1, 0 }, { -1, -1 }, { 1, -1 }, { -1, -1 } }, side)
             {
 
             }
@@ -106,7 +106,7 @@
         private class Tower : ChessPiece
         {
             public Tower(Point position, int side)
-                : base('T', side == 1 ? " \u2656" : " \u265C", position, new int[,] { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 } }, side)
+                : base('T', side == 1 ? " \u2656" : " \u265C", position, new int[,] { { -1, 0 }, { 1, 0 }, { 0, 1 }, { 0, -1 } }, side)
             {
 
             }
@@ -115,7 +115,7 @@
         private class Pawn : ChessPiece
         {
             public Pawn(Point position, int side)
-                : base('P', side == 1 ? " \u2659" : " \u265F", position, new int[,] { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 } }, side)
+                : base('P', side == 1 ? " \u2659" : " \u265F", position, new int[,] { { 1, 1 }, { 1, -1 }, { 1, 0 } }, side)
             {
 
             }
@@ -124,7 +124,16 @@
         private class Bishop : ChessPiece
         {
             public Bishop(Point position, int side)
-                : base('B', side == 1 ? " \u2657" : " \u265D", position, new int[,] { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 } }, side)
+                : base('B', side == 1 ? " \u2657" : " \u265D", position, new int[,] { { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } }, side)
+            {
+
+            }
+        }
+
+        private class Dragon : ChessPiece
+        {
+            public Dragon(Point position, int side)
+                : base('D', side == 1 ? " &" : " \u265D", position, new int[,] { { 1, 1 }, { 1, -3 }, { -3, 1 }, { -3, -3 } }, side)
             {
 
             }
@@ -133,7 +142,7 @@
         private class Piece : ChessPiece
         {
             public Piece()
-                : base('F', " \u2022", new Point(), new int[,] { { 0, 0 } }, 1)
+                : base('F', " \u2022", new Point(), new int[,] { { 0, 0 } }, -1)
             {
 
             }
@@ -144,10 +153,7 @@
             private readonly int x;
             private readonly int y;
 
-            public Point() : this(0, 0)
-            {
-
-            }
+            public Point() : this(0, 0) { }
 
             public Point(int X, int Y)
             {
@@ -171,16 +177,30 @@
             private readonly Point position;
             private readonly ChessPiece piece;
 
-            public Tile() : this(new Piece()) {}
-
-            public Tile(ChessPiece _piece)
+            public Tile(Point _point) : this(new Piece(), _point)
             {
-                this.piece = _piece;
+
+            }
+
+            public Tile(ChessPiece _piece, Point _point)
+            {
+                position = _point;
+                piece = _piece;
             }
 
             public ChessPiece Piece()
             {
                 return piece;
+            }
+
+            public Tile SetPiece(ChessPiece _piece)
+            {
+                return new Tile(_piece, this.position);
+            }
+
+            public Point Position()
+            {
+                return position;
             }
 
             public string Print()
@@ -196,12 +216,9 @@
             private readonly ChessPiece[] pieces;
             private readonly Tile[,] tiles;
 
-            public Board() : this(defaultPieces(1), defaultPieces(0), new Tile[8, 8], Pieces(defaultPieces(1), defaultPieces(0)))
-            {
+            public Board() : this(defaultPieces(1), defaultPieces(0), new Tile[8, 8] , Pieces(defaultPieces(1), defaultPieces(0))) { }
 
-            }
-
-            public Board(ChessPiece[] _whitePieces, ChessPiece[] _blackPieces, Tile[,] _tiles, ChessPiece[] _pieces) 
+            public Board(ChessPiece[] _whitePieces, ChessPiece[] _blackPieces, Tile[,] _tiles, ChessPiece[] _pieces)
             {
                 whitePieces = _whitePieces;
                 blackPieces = _blackPieces;
@@ -209,9 +226,19 @@
                 tiles = _tiles;
             }
 
-            public Board UpdateBoard(Tile[] tiles)
+            public Board UpdateBoard(Move _move)
             {
-                Tile[,] updatedTiles = {};
+                Tile[] newTiles = _move.Tiles();
+                Tile[,] updatedTiles = { };
+
+                for (int i = 0; i < newTiles.Length; ++i)
+                {
+                    int x = newTiles[i].Position().X();
+                    int y = newTiles[i].Position().Y();
+
+                    updatedTiles = tiles;
+                    updatedTiles[x, y] = newTiles[i];
+                }
 
                 return new Board(this.whitePieces, this.blackPieces, updatedTiles, this.pieces);
             }
@@ -277,14 +304,14 @@
                 {
                     for (int j = 0; j < 8; j++)
                     {
-                        Tile tile = new Tile();
+                        Tile tile = new Tile(new Point(i, j));
                         tiles[i, j] = tile;
 
                         for (int k = 0; k < pieces.Length; k++)
                         {
                             if (pieces[k].Position().X() == j && pieces[k].Position().Y() == i)
                             {
-                                tiles[i, j] = new Tile(pieces[k]);
+                                tiles[i, j] = new Tile(pieces[k], new Point(i, j));
                                 break;
                             }
                         }
@@ -326,37 +353,29 @@
             public Player(int _side, Board _chessBoard)
             {
                 side = _side;
-                pieces = _chessBoard.SidePieces(_side);;
+                pieces = _chessBoard.SidePieces(_side); ;
             }
 
-            protected Boolean moveValid(Tile fromTile, Tile toTile)
+            protected Boolean ValidMove(Move _move)
             {
                 return true;
             }
 
-            protected Tile[] moveToPlay()
+            protected Board Play(Move _move, Board _position)
             {
-                Tile[] tiles = { new Tile() };
-                return tiles;
-            }
+                Board newPosition = _position.UpdateBoard(_move);
 
-            protected void movePiece(Tile fromTile, Tile toTile)
-            {
-                fromTile = new Tile();
-                toTile = new Tile(fromTile.Piece());
+                return newPosition;
             }
         }
 
         public class Robot : Player
         {
             private readonly MoveTree possibleMoves;
-            private readonly Board chessBoard;
-            private readonly Board updatedBoard;
 
             public Robot(int _side, Board _chessBoard) : base(_side, _chessBoard)
             {
                 possibleMoves = new MoveTree();
-                updatedBoard = _chessBoard;
             }
 
             private MoveTree moveTree()
@@ -364,55 +383,21 @@
                 return possibleMoves;
             }
 
-            private Tile[] bestMove()
+            private Move bestMove(Board chessBoard)
             {
-                Tile[] tiles = { new Tile() };
-                return tiles;
+                Tile tile1 = chessBoard.Tile(new Point(0, 1));
+                Tile tile2 = chessBoard.Tile(new Point(2, 2));
+
+                tile2 = tile2.SetPiece(tile1.Piece());
+                tile1 = tile1.SetPiece(tile2.Piece());
+
+                Tile[] updatedTiles = { tile1, tile2 };
+                return new Move(tile1, tile2);
             }
 
-            public void play()
+            public Board Play(Board chessBoard)
             {
-                Tile tile1 = chessBoard.Tile(new Point(0, 0));
-                Tile tile2 = chessBoard.Tile(new Point(7, 6));
-                tile1 = new Tile(tile2.Piece());
-            }
-
-            public Board UpdatedBoard()
-            {
-                return updatedBoard;
-            }
-
-            private sealed class MoveTree
-            {
-                private readonly Move head;
-                private readonly Move left;
-                private readonly Move right;
-
-                public MoveTree()
-                {
-                    head = new Move();
-                    left = new Move();
-                    right = new Move();
-                }
-            }
-
-            private sealed class Move
-            {
-                private readonly ChessPiece piece;
-                private readonly Point initialPosition;
-                private readonly Point finalPosition;
-
-                public Move() : this(new Piece(), new Point())
-                {
-
-                }
-
-                public Move(ChessPiece _piece, Point _finalPosition)
-                {
-                    piece = _piece;
-                    initialPosition = new Point(piece.Position().X(), piece.Position().Y());
-                    finalPosition = _finalPosition;
-                }
+                return chessBoard.UpdateBoard(bestMove(chessBoard));
             }
         }
 
@@ -424,21 +409,74 @@
             }
         }
 
+        public sealed class MoveTree
+        {
+            private readonly Move head;
+            private readonly Move left;
+            private readonly Move right;
+
+            public MoveTree()
+            {
+                head = new Move();
+                left = new Move();
+                right = new Move();
+            }
+
+            public void AddMove()
+            {
+
+            }
+
+            public void RemoveMove()
+            {
+
+            }
+        }
+
+        public sealed class Move
+        {
+            private readonly ChessPiece piece;
+            private readonly Tile initialTile;
+            private readonly Tile finalTile;
+
+            public Move() : this(new Tile(new Piece(), new Point(0, 0)), new Tile(new Piece(), new Point(0, 0))) { }
+
+            public Move(Tile _initialTile, Tile _finalTile)
+            {
+                piece = _initialTile.Piece();
+                initialTile = _initialTile.SetPiece(new Piece()); ;
+                finalTile = _finalTile.SetPiece(piece);
+            }
+
+            public Tile[] Tiles()
+            {
+                return new Tile[] { initialTile, finalTile };
+            }
+        }
+
         public void Start()
         {
             Board chessBoard = new Board();
             chessBoard.SetPieces(chessBoard.Pieces());
-            //Mortal human = new Mortal(0, chessBoard.SidePieces(0));
 
             chessBoard.Print();
 
+            turnCycle(chessBoard);
+        }
+
+        private void turnCycle(Board chessBoard) 
+        {
             Robot chessRobot0 = new Robot(1, chessBoard);
-            chessRobot0.play();
+            Board newPosition0 = chessRobot0.Play(chessBoard);
 
-            chessBoard.Print();
+            newPosition0.Print();
 
-            Robot chessRobot1 = new Robot(0, chessBoard);
-            chessRobot1.play();
+            Robot chessRobot1 = new Robot(1, chessBoard);
+            Board newPosition1 = chessRobot0.Play(chessBoard);
+
+            newPosition1.Print();
+
+            turnCycle(newPosition1);
         }
     }
 }
