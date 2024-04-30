@@ -1,4 +1,8 @@
-﻿namespace Chess
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace Chess
 {
     class Program
     {
@@ -24,8 +28,8 @@
 
         public abstract class ChessPiece
         {
-            protected readonly char notation;
             private readonly int id;
+            private readonly char notation;
             private readonly string shape;
             private readonly Point position;
             private readonly int[,] moveSet;
@@ -61,18 +65,17 @@
                 return side;
             }
 
-            public virtual Move[] MoveRange(Board _boardPosition)
+            public virtual List<Move> MoveRange(Board _boardPosition)
             {
-                Move[] moveRange = new Move[1];
+                List<Move> moveRange = new List<Move>();
 
                 Tile initialTile = _boardPosition.Tile(Position().x, Position().y);
                 ChessPiece piece = initialTile.Piece();
                 int[,] moveSet = piece.MoveSet();
 
-                int moveset_x;
-                int moveset_y;
-                int finaltile_x;
-                int finaltile_y;
+                int moveset_x, moveset_y, finaltile_x, finaltile_y;
+                Tile finalTile = new Tile(new Point());
+                Move move = new Move();
 
                 for (int i = 0; i < moveSet.GetLength(0); ++i)
                 {
@@ -82,19 +85,17 @@
                     finaltile_x = initialTile.Position().x + moveset_x;
                     finaltile_y = initialTile.Position().y + moveset_y;
 
-                    if (finaltile_x < 0 || finaltile_y < 0 || finaltile_y > 7 || finaltile_x > 7) {
-                        continue;
+                    while (finaltile_x >= 0 && finaltile_y >= 0 && finaltile_y <= 7 && finaltile_x <= 7) {
+                        finalTile = _boardPosition.Tile(finaltile_x, finaltile_y);
+
+                        if (finalTile.Piece().Side() == initialTile.Piece().Side()) break;
+
+                        move = new Move(initialTile, finalTile);
+                        moveRange.Add(move);
+
+                        finaltile_x += moveset_x;
+                        finaltile_y += moveset_y;
                     }
-
-                    Tile finalTile = _boardPosition.Tile(finaltile_x, finaltile_y);
-
-                    if (finalTile.Piece().Side() == initialTile.Piece().Side()) {
-                        continue;
-                    }
-
-                    Move move = new Move(initialTile, finalTile);
-                    moveRange[0] = move;
-                    break;
                 }
 
                 return moveRange;
@@ -181,29 +182,32 @@
 
             }
 
-            public override Move[] MoveRange(Board _boardPosition)
+            public override List<Move> MoveRange(Board _boardPosition)
             {
-                Move[] moveRange = new Move[30];
+                List<Move> moveRange = new List<Move>();
 
                 Tile initialTile = _boardPosition.Tile(Position().x, Position().y);
                 ChessPiece piece = initialTile.Piece();
                 int[,] moveSet = piece.MoveSet();
+                int moveset_x, moveset_y, finaltile_x, finaltile_y;
 
                 for (int i = 0; i < moveSet.GetLength(0); ++i)
                 {
-                    int moveset_x = moveSet[i, 0];
-                    int moveset_y = moveSet[i, 1];
+                    moveset_x = moveSet[i, 0];
+                    moveset_y = moveSet[i, 1];
 
-                    int finaltile_x = initialTile.Position().x + moveset_x;
-                    int finaltile_y = initialTile.Position().y + moveset_y;
+                    finaltile_x = initialTile.Position().x + moveset_x;
+                    finaltile_y = initialTile.Position().y + moveset_y;
 
                     if (finaltile_x < 0 || finaltile_y < 0 || finaltile_y > 7 || finaltile_x > 7) continue;
 
                     Tile finalTile = _boardPosition.Tile(finaltile_x, finaltile_y);
+
                     if (finalTile.Piece().Side() == initialTile.Piece().Side()) continue;
 
                     Move move = new Move(initialTile, finalTile);
-                    moveRange[0] = move;
+                    moveRange.Add(move);
+
                     break;
                 }
 
@@ -350,9 +354,7 @@
                     blackPiecesUpdated[newTiles[1].Position()] = pieceUpdated;
                 }
 
-                Board updated = new Board(whitePiecesUpdated, blackPiecesUpdated, updatedTiles);
-
-                return updated;
+                return new Board(whitePiecesUpdated, blackPiecesUpdated, updatedTiles);
             }
 
             public Tile Tile(int x, int y)
@@ -546,9 +548,9 @@
                 Dictionary<Point, ChessPiece> pieces = chessBoard.SidePieces(side);
                 ChessPiece piece = Piece(pieces, id);
 
-                Move[] moverange = piece.MoveRange(chessBoard);
+                List<Move> moverange = piece.MoveRange(chessBoard);
 
-                return moverange[0];
+                return moverange.ElementAt(0);
             }
         }
 
