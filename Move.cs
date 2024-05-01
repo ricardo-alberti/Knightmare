@@ -15,12 +15,18 @@ public sealed class Move
 
     public Tile[] Tiles()
     {
-        return new Tile[] { initialTile, finalTile };
+        return new Tile[2] { initialTile, finalTile };
     }
 
     public void Print()
     {
+        Console.WriteLine(piece.Side() == 1 ? "White moved: " : "Black moved: ");
         Console.WriteLine($"{piece.Shape()} from ({initialTile.Position().x}, {initialTile.Position().y}) to ({finalTile.Position().x}, {finalTile.Position().y})");
         Console.Read();
+    }
+
+    public char pieceNotation()
+    {
+        return piece.Notation();
     }
 }

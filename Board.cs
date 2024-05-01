@@ -114,7 +114,8 @@ public class Board
 
     private static Dictionary<Point, ChessPiece> defaultPieces(int _side)
     {
-        Dictionary<Point, ChessPiece> pieces = new Dictionary<Point, ChessPiece> { };
+        Dictionary<Point, ChessPiece> pieces = new Dictionary<Point, ChessPiece>();
+
         int id = 1;
 
         char[] notations = {

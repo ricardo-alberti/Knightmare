@@ -17,8 +17,8 @@ class Pawn : ChessPiece
 
         for (int i = 0; i < moveSet.GetLength(0); ++i)
         {
-            moveset_x = moveSet[i, 0];
-            moveset_y = moveSet[i, 1];
+            moveset_x = moveSet[i, 1];
+            moveset_y = moveSet[i, 0];
 
             finaltile_x = initialTile.Position().x + moveset_x;
             finaltile_y = initialTile.Position().y + moveset_y;
@@ -29,10 +29,14 @@ class Pawn : ChessPiece
 
             if (finalTile.Piece().Side() == initialTile.Piece().Side()) continue;
 
+            if (finalTile.Position().y == 7 || finalTile.Position().y == 0)
+            {
+                piece = piece.Promote('Q');
+                initialTile = initialTile.SetPiece(piece);
+            }
+
             Move move = new Move(initialTile, finalTile);
             moveRange.Add(move);
-
-            break;
         }
 
         return moveRange;

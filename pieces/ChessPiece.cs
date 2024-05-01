@@ -27,6 +27,11 @@ public abstract class ChessPiece
         return shape;
     }
 
+    public char Notation()
+    {
+        return notation;
+    }
+
     public int Id()
     {
         return id;

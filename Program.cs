@@ -1,11 +1,9 @@
-﻿namespace Chess {
-    class Program
+﻿class Program
+{
+    static void Main()
     {
-        static void Main()
-        {
-            Game chess = Game.Instance();
-            chess.Start();
-        }
+        Game chess = Game.Instance();
+        chess.Start();
     }
 }
 

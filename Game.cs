@@ -15,11 +15,12 @@ public sealed class Game
     {
         Board chessBoard = new Board();
 
-        Robot Robot0 = new Robot(1, chessBoard, new MoveTree());
-        Robot Robot1 = new Robot(0, chessBoard, new MoveTree());
+        Robot Robot0 = new Robot(1, chessBoard, new MoveTree(), "robot1");
+        Robot Robot1 = new Robot(0, chessBoard, new MoveTree(), "robot2");
 
-        ChessPiece lastPiece = new Piece();
         Move move = new Move();
+        MoveTree movetree = new MoveTree();
+
         int piece0_id = chessBoard.SidePieces(1).ElementAt(2).Value.Id();
         int piece1_id = chessBoard.SidePieces(0).ElementAt(2).Value.Id();
 
@@ -28,11 +29,13 @@ public sealed class Game
 
         while (true)
         {
-            move = Robot0.MoveToPlay(chessBoard, piece0_id);
+            movetree = Robot0.Calculate(chessBoard); 
+            move = Robot0.MoveToPlay(movetree);
             chessBoard = chessBoard.Update(move);
             chessBoard.Print();
 
-            move = Robot1.MoveToPlay(chessBoard, piece1_id);
+            movetree = Robot1.Calculate(chessBoard); 
+            move = Robot1.MoveToPlay(movetree);
             chessBoard = chessBoard.Update(move);
             chessBoard.Print();
         }

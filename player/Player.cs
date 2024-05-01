@@ -1,10 +1,12 @@
 abstract class Player
 {
     private readonly int side;
+    private readonly string name;
 
-    public Player(int _side, Board _chessBoard)
+    public Player(int _side, Board _chessBoard, string _name)
     {
         side = _side;
+        name = _name;
     }
 
     public Move AskMove(Board chessBoard)

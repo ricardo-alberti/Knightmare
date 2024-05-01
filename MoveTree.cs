@@ -1,28 +1,44 @@
 public sealed class MoveTree
 {
-    private readonly Move head;
-    private readonly Move left;
-    private readonly Move right;
+    public Node root { get; }
 
-    public MoveTree()
+    public MoveTree(Node _root = null)
     {
-        head = new Move();
-        left = new Move();
-        right = new Move();
+        root = _root;
     }
 
-    public void findMoves(Board position, int side)
+    public Node Root()
     {
-
+        return root;
     }
 
-    public void AddMove()
+    public MoveTree Insert(Move _move)
     {
+        if (root == null)
+        {
+            return new MoveTree(new Node(_move));
+        }
 
+        return new MoveTree(InsertRecursively(root, _move));
     }
 
-    public void RemoveMove()
+    private Node InsertRecursively(Node _root, Move _move)
     {
+        if (_root == null)
+        {
+            return new Node(_move);
+        }
 
+        if (_root.Left() == null)
+        {
+            return new Node(_root.Value(), InsertRecursively(_root.Left(), _move), _root.Right());
+        }
+
+        if (_root.Right() == null)
+        {
+            return new Node(_root.Value(), _root.Left(), InsertRecursively(_root.Right(), _move));
+        }
+        
+        return new Node(_root.Value(), _root.Left(), InsertRecursively(_root.Right(), _move));
     }
 }

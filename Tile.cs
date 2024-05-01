@@ -26,7 +26,7 @@ public class Tile
 
     public Tile SetPiece(ChessPiece _piece)
     {
-        return new Tile(_piece, this.position);
+        return new Tile(_piece, position);
     }
 
     public Point Position()
