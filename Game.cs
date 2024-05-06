@@ -29,12 +29,12 @@ public sealed class Game
 
         while (true)
         {
-            movetree = Robot0.Calculate(chessBoard); 
+            movetree = Robot0.Calculate(chessBoard, Robot0, Robot1, 2); 
             move = Robot0.MoveToPlay(movetree);
             chessBoard = chessBoard.Update(move);
             chessBoard.Print();
 
-            movetree = Robot1.Calculate(chessBoard); 
+            movetree = Robot1.Calculate(chessBoard, Robot1, Robot0, 2); 
             move = Robot1.MoveToPlay(movetree);
             chessBoard = chessBoard.Update(move);
             chessBoard.Print();

@@ -6,8 +6,9 @@ public abstract class ChessPiece
     private readonly Point position;
     private readonly int[,] moveSet;
     private readonly int side;
+    private readonly bool attacked;
 
-    protected ChessPiece(int _id, char _notation, string _shape, Point _position, int[,] _moveSet, int _side)
+    protected ChessPiece(int _id, char _notation, string _shape, Point _position, int[,] _moveSet, int _side, bool _attacked = false)
     {
         id = _id;
         notation = _notation;
@@ -15,6 +16,7 @@ public abstract class ChessPiece
         position = _position;
         moveSet = _moveSet;
         side = _side;
+        attacked = _attacked;
     }
 
     public ChessPiece UpdatePosition(Point _position)
@@ -25,6 +27,11 @@ public abstract class ChessPiece
     public string Shape()
     {
         return shape;
+    }
+
+    public bool Attacked()
+    {
+        return attacked;
     }
 
     public char Notation()

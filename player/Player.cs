@@ -9,6 +9,26 @@ abstract class Player
         name = _name;
     }
 
+    public int Side()
+    {
+        return side;
+    }
+
+    public ChessPiece Piece(Dictionary<Point, ChessPiece> pieces, int id)
+    {
+        ChessPiece piece = new Piece();
+
+        foreach (var pair in pieces)
+        {
+            if (pair.Value.Id() == id)
+            {
+                return pair.Value;
+            }
+        }
+
+        throw new Exception("NO PIECE WITH THIS ID");
+    }
+
     public Move AskMove(Board chessBoard)
     {
         Console.WriteLine("Tile1: ");

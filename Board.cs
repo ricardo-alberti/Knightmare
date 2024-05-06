@@ -3,14 +3,25 @@ public class Board
     private readonly Dictionary<Point, ChessPiece> whitePieces;
     private readonly Dictionary<Point, ChessPiece> blackPieces;
     private readonly Tile[,] tiles;
+    private readonly bool gameOver;
 
     public Board() : this(defaultPieces(1), defaultPieces(0), new Tile[8, 8]) { }
 
-    public Board(Dictionary<Point, ChessPiece> _whitePieces, Dictionary<Point, ChessPiece> _blackPieces, Tile[,] _tiles)
+    public Board(Dictionary<Point, ChessPiece> _whitePieces, Dictionary<Point, ChessPiece> _blackPieces, Tile[,] _tiles, bool _gameOver = false)
     {
         whitePieces = _whitePieces;
         blackPieces = _blackPieces;
         tiles = _tiles;
+    }
+
+    public bool GameOver()
+    {
+        return gameOver;
+    }
+
+    public int Evaluate(Board _position)
+    {
+        return 0;
     }
 
     public Board Update(Move _move)

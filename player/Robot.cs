@@ -20,20 +20,6 @@ class Robot : Player
         return possibleMoves;
     }
 
-    private ChessPiece Piece(Dictionary<Point, ChessPiece> pieces, int id)
-    {
-        ChessPiece piece = new Piece();
-
-        foreach (var pair in pieces)
-        {
-            if (pair.Value.Id() == id)
-            {
-                return pair.Value;
-            }
-        }
-        throw new Exception("NOT PIECE WITH THIS ID");
-    }
-
     private int[] PiecesIds(Dictionary<Point, ChessPiece> pieces)
     {
         int[] ids = new int[pieces.Count];
@@ -46,25 +32,37 @@ class Robot : Player
         return ids;
     }
 
-    public MoveTree Calculate(Board _position)
+    public MoveTree Calculate(Board _position, Robot me, Robot enemy, int level)
     {
         MoveTree movetree = new MoveTree();
-        Robot me = new Robot(1, board, possibleMoves, "me");
-        Robot enemy = new Robot(0, board, possibleMoves, "enemy");
 
-        int piece_id = PiecesIds(_position.SidePieces(side))[12];
-        List<Move> moverange = Piece(_position.SidePieces(side), piece_id).MoveRange(_position);
+        int piece_id = PiecesIds(_position.SidePieces(me.Side()))[12];
+        ChessPiece piece = Piece(_position.SidePieces(me.Side()), piece_id);
 
-        for (int i = 0; i < moverange.Count; i++)
-        {
-            movetree = movetree.Insert(moverange.ElementAt(i));
-        }
+        List<Move> moveRange = piece.MoveRange(_position);
+        Move move = moveRange.ElementAt(0);
+        Node node = movetree.Insert(move);
+        Board newposition = _position.Update(move);
+        movetree = new MoveTree(node);
+
+            piece_id = PiecesIds(_position.SidePieces(enemy.Side()))[12];
+            piece = Piece(_position.SidePieces(enemy.Side()), piece_id);
+
+            moveRange = piece.MoveRange(_position);
+            move = moveRange.ElementAt(0);
+            node = movetree.Insert(move);
 
         return movetree;
+
     }
 
     public Move MoveToPlay(MoveTree moves)
     {
         return moves.Root().Value();
+    }
+
+    public int Evaluate(Board _position)
+    {
+        return 0;
     }
 }

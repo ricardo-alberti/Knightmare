@@ -1,6 +1,6 @@
 public sealed class MoveTree
 {
-    public Node root { get; }
+    private Node root;
 
     public MoveTree(Node _root = null)
     {
@@ -12,33 +12,40 @@ public sealed class MoveTree
         return root;
     }
 
-    public MoveTree Insert(Move _move)
+    public Node Insert(Move _move, Node _node = null)
     {
         if (root == null)
-        {
-            return new MoveTree(new Node(_move));
-        }
-
-        return new MoveTree(InsertRecursively(root, _move));
-    }
-
-    private Node InsertRecursively(Node _root, Move _move)
-    {
-        if (_root == null)
         {
             return new Node(_move);
         }
 
-        if (_root.Left() == null)
+        return InsertIntoNode(_move, _node);
+    }
+
+    public Node InsertIntoNode(Move _move, Node _node)
+    {
+        Node node = new Node(_move);
+
+        if (_node == null)
         {
-            return new Node(_root.Value(), InsertRecursively(_root.Left(), _move), _root.Right());
+            return null;
         }
 
-        if (_root.Right() == null)
+        foreach (Node child in _node.Children())
         {
-            return new Node(_root.Value(), _root.Left(), InsertRecursively(_root.Right(), _move));
+            Node result = InsertIntoNode(_move, child);
+
+            if (result != null)
+            {
+                return result;
+            }
         }
-        
-        return new Node(_root.Value(), _root.Left(), InsertRecursively(_root.Right(), _move));
+
+        return null;
+    }
+
+    public int Score()
+    {
+        return 0;
     }
 }
