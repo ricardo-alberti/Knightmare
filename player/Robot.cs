@@ -41,19 +41,22 @@ class Robot : Player
 
         List<Move> moveRange = piece.MoveRange(_position);
         Move move = moveRange.ElementAt(0);
-        Node node = movetree.Insert(move);
+        Node node = new Node(move);
+        movetree = movetree.Insert(node);
         Board newposition = _position.Update(move);
-        movetree = new MoveTree(node);
 
-            piece_id = PiecesIds(_position.SidePieces(enemy.Side()))[12];
-            piece = Piece(_position.SidePieces(enemy.Side()), piece_id);
+        //enemy
+        piece_id = PiecesIds(_position.SidePieces(enemy.Side()))[12];
+        piece = Piece(_position.SidePieces(enemy.Side()), piece_id);
 
-            moveRange = piece.MoveRange(_position);
-            move = moveRange.ElementAt(0);
-            node = movetree.Insert(move);
+        moveRange = piece.MoveRange(newposition);
+
+        foreach (Move enemyMove in moveRange)
+        {
+            movetree = movetree.Insert(new Node(enemyMove), node);
+        }
 
         return movetree;
-
     }
 
     public Move MoveToPlay(MoveTree moves)

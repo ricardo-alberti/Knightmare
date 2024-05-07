@@ -1,14 +1,17 @@
 public class Node
 {
     private readonly Move value;
-    private readonly Node parent;
     private readonly List<Node> children;
 
-    public Node(Move _move, List<Node> _children = null, Node _node = null)
+
+    public Node() : this (new Move(), new List<Node>()) { }
+
+    public Node(Move _move) : this (_move, new List<Node>()) { }
+
+    public Node(Move _move, List<Node> _children)
     {
         value = _move;
         children = _children;
-        parent = _node;
     }
 
     public Move Value()
@@ -21,11 +24,6 @@ public class Node
         return new Node(_move, children);
     }
 
-    public Node Parent()
-    {
-        return parent;
-    }
-
     public List<Node> Children()
     {
         return children;
@@ -33,6 +31,11 @@ public class Node
 
     public Node Child(int idx)
     {
+        if (Children().Count > 0) 
+        {
+            return new Node();
+        }
+
         return children.ElementAt(idx);
     }
 }
