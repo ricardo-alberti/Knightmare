@@ -1,7 +1,7 @@
 class Pawn : ChessPiece
 {
     public Pawn(Point position, int side, int id)
-        : base(id, 'P', side == 1 ? " \u2659" : " \u265F", position, side == 0 ? new int[,] { { -1, -1 }, { -1, 1 }, { -1, 0 } } : new int[,] { { 1, 1 }, { 1, -1 }, { 1, 0 } }, side)
+        : base(id, 'P', side == 1 ? " \u2659" : " \u265F", position, side == 0 ? new int[,] { { -1, -1 }, { -1, 1 }, { -1, 0 } } : new int[,] { { 1, 1 }, { 1, -1 }, { 1, 0 } }, side, 1)
     {
 
     }
@@ -24,10 +24,11 @@ class Pawn : ChessPiece
             finaltile_y = initialTile.Position().y + moveset_y;
 
             if (finaltile_x < 0 || finaltile_y < 0 || finaltile_y > 7 || finaltile_x > 7) continue;
-
             Tile finalTile = _boardPosition.Tile(finaltile_x, finaltile_y);
 
             if (finalTile.Piece().Side() == initialTile.Piece().Side()) continue;
+            if (moveset_x != 0 && finalTile.Piece().Side() == 2) continue;
+            if (moveset_x == 0 && finalTile.Piece().Side() != 2) continue;
 
             if (finalTile.Position().y == 7 || finalTile.Position().y == 0)
             {
@@ -35,8 +36,7 @@ class Pawn : ChessPiece
                 initialTile = initialTile.SetPiece(piece);
             }
 
-            Move move = new Move(initialTile, finalTile);
-            moveRange.Add(move);
+            moveRange.Add(new Move(initialTile, finalTile));
         }
 
         return moveRange;

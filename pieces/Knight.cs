@@ -1,7 +1,7 @@
 class Knight : ChessPiece
 {
     public Knight(Point position, int side, int id)
-            : base(id, 'N', side == 1 ? " \u2658" : " \u265E", position, new int[,] { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 } }, side)
+            : base(id, 'N', side == 1 ? " \u2658" : " \u265E", position, new int[,] { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 } }, side, 3)
     {
 
     }
@@ -29,8 +29,7 @@ class Knight : ChessPiece
 
             if (finalTile.Piece().Side() == initialTile.Piece().Side()) continue;
 
-            Move move = new Move(initialTile, finalTile);
-            moveRange.Add(move);
+            moveRange.Add(new Move(initialTile, finalTile));
         }
 
         return moveRange;

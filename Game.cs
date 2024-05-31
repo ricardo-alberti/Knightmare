@@ -11,6 +11,26 @@ public sealed class Game
         return _instance;
     }
 
+    private void WinnerPrompt(Board positionState)
+    {
+        string result = positionState.GameOverResult()[true];
+
+        if (result == "tie")
+        {
+            Console.WriteLine("Tie");
+        }
+
+        else if (result == "white")
+        {
+            Console.WriteLine("White wins");
+        }
+
+        else
+        {
+            Console.WriteLine("Black wins");
+        }
+    }
+
     public void Start()
     {
         Board chessBoard = new Board();
@@ -21,23 +41,26 @@ public sealed class Game
         Move move = new Move();
         MoveTree movetree = new MoveTree();
 
-        int piece0_id = chessBoard.SidePieces(1).ElementAt(2).Value.Id();
-        int piece1_id = chessBoard.SidePieces(0).ElementAt(2).Value.Id();
-
         chessBoard.SetPieces();
         chessBoard.Print();
 
-        while (true)
+        while (!chessBoard.GameOver())
         {
-            movetree = Robot0.Calculate(chessBoard, Robot0, Robot1, 2); 
+            movetree = Robot0.Calculate(chessBoard, 4);
             move = Robot0.MoveToPlay(movetree);
+            movetree.Print(movetree.Root());
+            Console.Read();
             chessBoard = chessBoard.Update(move);
             chessBoard.Print();
 
-            movetree = Robot1.Calculate(chessBoard, Robot1, Robot0, 2); 
+            movetree = Robot1.Calculate(chessBoard, 4);
             move = Robot1.MoveToPlay(movetree);
+            movetree.Print(movetree.Root());
+            Console.Read();
             chessBoard = chessBoard.Update(move);
             chessBoard.Print();
         }
+
+        WinnerPrompt(chessBoard);
     }
 }

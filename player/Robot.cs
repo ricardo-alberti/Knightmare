@@ -23,7 +23,6 @@ class Robot : Player
     private int[] PiecesIds(Dictionary<Point, ChessPiece> pieces)
     {
         int[] ids = new int[pieces.Count];
-
         for (int i = 0; i < pieces.Count; i++)
         {
             ids[i] = pieces.ElementAt(i).Value.Id();
@@ -32,40 +31,51 @@ class Robot : Player
         return ids;
     }
 
-    public MoveTree Calculate(Board _position, Robot me, Robot enemy, int level)
+    public MoveTree Calculate(Board _position, int level)
     {
-        MoveTree movetree = new MoveTree();
+        Dictionary<int, MoveTree> moveMap = new Dictionary<int, MoveTree>();
+        Robot me = new Robot(Side(), _position, new MoveTree(), "robot1");
+        Robot enemy = new Robot(Side() == 1 ? 0 : 1, _position, new MoveTree(), "robot2");
+        Board position = _position.Copy();
+        Dictionary<int, MoveTree> movetrees = moveTrees(position, me, enemy, level);
 
-        int piece_id = PiecesIds(_position.SidePieces(me.Side()))[12];
-        ChessPiece piece = Piece(_position.SidePieces(me.Side()), piece_id);
+        return movetrees.First().Value;
+    }
 
-        List<Move> moveRange = piece.MoveRange(_position);
-        Move move = moveRange.ElementAt(0);
-        Node node = new Node(move);
-        movetree = movetree.Insert(node);
-        Board newposition = _position.Update(move);
-
-        //enemy
-        piece_id = PiecesIds(_position.SidePieces(enemy.Side()))[12];
-        piece = Piece(_position.SidePieces(enemy.Side()), piece_id);
-
-        moveRange = piece.MoveRange(newposition);
-
-        foreach (Move enemyMove in moveRange)
+    public Dictionary<int, MoveTree> moveTrees(Board _position, Robot me, Robot enemy, int level, Dictionary<int, MoveTree> movetrees = null)
+    {
+        if (level == 0)
         {
-            movetree = movetree.Insert(new Node(enemyMove), node);
+            return movetrees;
         }
 
-        return movetree;
+        foreach (ChessPiece piece in _position.SidePieces(me.Side()).Values.ToList())
+        {
+            List<Move> moveRange = piece.MoveRange(_position);
+
+            if (piece.MoveRange(_position).Count == 0) continue;
+
+            foreach (Move move in moveRange)
+            {
+                _position = _position.Update(move);
+                move.UpdateEval(_position.Evaluate());
+
+                Node node = new Node(move);
+                MoveTree movetree = new MoveTree();
+                movetree = movetree.Insert(node);
+
+                if (_position.GameOver())
+                {
+                    return movetrees;
+                }
+            }
+        }
+
+        return movetrees;
     }
 
     public Move MoveToPlay(MoveTree moves)
     {
         return moves.Root().Value();
-    }
-
-    public int Evaluate(Board _position)
-    {
-        return 0;
     }
 }

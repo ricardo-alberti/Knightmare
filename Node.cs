@@ -3,7 +3,6 @@ public class Node
     private readonly Move value;
     private readonly List<Node> children;
 
-
     public Node() : this (new Move(), new List<Node>()) { }
 
     public Node(Move _move) : this (_move, new List<Node>()) { }
