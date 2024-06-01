@@ -2,12 +2,13 @@ public abstract class ChessPiece
 {
     private readonly int id;
     private readonly char notation;
+    private readonly int value;
     private readonly string shape;
     private readonly Point position;
     private readonly int[,] moveSet;
     private readonly int side;
 
-    protected ChessPiece(int _id, char _notation, string _shape, Point _position, int[,] _moveSet, int _side)
+    protected ChessPiece(int _id, char _notation, string _shape, Point _position, int[,] _moveSet, int _side, int _value)
     {
         id = _id;
         notation = _notation;
@@ -15,6 +16,7 @@ public abstract class ChessPiece
         position = _position;
         moveSet = _moveSet;
         side = _side;
+        value = _value;
     }
 
     public ChessPiece UpdatePosition(Point _position)
@@ -25,6 +27,11 @@ public abstract class ChessPiece
     public string Shape()
     {
         return shape;
+    }
+
+    public int Value()
+    {
+        return value;
     }
 
     public char Notation()
@@ -40,6 +47,31 @@ public abstract class ChessPiece
     public int Side()
     {
         return side;
+    }
+
+    public void PrintMoveRange(ChessPiece piece, Board position)
+    {
+        List<Move> moverange = piece.MoveRange(position);
+
+        foreach (Move move in moverange)
+        {
+            Tile[] tiles = move.Tiles();
+            foreach (Tile tile in tiles)
+            {
+
+            }
+        }
+
+        position.Print();
+
+        foreach (Move move in moverange)
+        {
+            Tile[] tiles = move.Tiles();
+            foreach (Tile tile in tiles)
+            {
+
+            }
+        }
     }
 
     public virtual List<Move> MoveRange(Board _boardPosition)
@@ -67,6 +99,13 @@ public abstract class ChessPiece
                 finalTile = _boardPosition.Tile(finaltile_x, finaltile_y);
 
                 if (finalTile.Piece().Side() == initialTile.Piece().Side()) break;
+                if (finalTile.Piece().Side() != initialTile.Piece().Side() && finalTile.Piece().Side() != 2)
+                {
+                    move = new Move(initialTile, finalTile);
+                    moveRange.Add(move);
+
+                    break;
+                }
 
                 move = new Move(initialTile, finalTile);
                 moveRange.Add(move);

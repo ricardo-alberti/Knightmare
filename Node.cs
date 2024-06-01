@@ -1,14 +1,16 @@
 public class Node
 {
-    private readonly Node left;
-    private readonly Node right;
     private readonly Move value;
+    private readonly List<Node> children;
 
-    public Node(Move _move, Node _left = null, Node _right= null)
+    public Node() : this (new Move(), new List<Node>()) { }
+
+    public Node(Move _move) : this (_move, new List<Node>()) { }
+
+    public Node(Move _move, List<Node> _children)
     {
-        left = _left;
-        right = _right;
         value = _move;
+        children = _children;
     }
 
     public Move Value()
@@ -16,28 +18,23 @@ public class Node
         return value;
     }
 
-    public Node Left()
-    {
-        return left;
-    }
-
-    public Node Right()
-    {
-        return right;
-    }
-
     public Node Value(Move _move)
     {
-        return new Node(_move, left, right);
+        return new Node(_move, children);
     }
 
-    public Node Left(Node _node)
+    public List<Node> Children()
     {
-        return new Node(value, _node, right);
+        return children;
     }
 
-    public Node Right(Node _node)
+    public Node Child(int idx)
     {
-        return new Node(value, left, _node);
+        if (Children().Count > 0) 
+        {
+            return new Node();
+        }
+
+        return children.ElementAt(idx);
     }
 }

@@ -3,14 +3,49 @@ public class Board
     private readonly Dictionary<Point, ChessPiece> whitePieces;
     private readonly Dictionary<Point, ChessPiece> blackPieces;
     private readonly Tile[,] tiles;
+    private readonly Dictionary<bool, string> gameOver;
 
-    public Board() : this(defaultPieces(1), defaultPieces(0), new Tile[8, 8]) { }
+    public Board() : this(defaultPieces(1), defaultPieces(0), new Tile[8, 8], new Dictionary<bool, string> {[false] = ""}) { }
 
-    public Board(Dictionary<Point, ChessPiece> _whitePieces, Dictionary<Point, ChessPiece> _blackPieces, Tile[,] _tiles)
+    public Board(Dictionary<Point, ChessPiece> _whitePieces, Dictionary<Point, ChessPiece> _blackPieces, Tile[,] _tiles, Dictionary<bool, string> _gameOver)
     {
         whitePieces = _whitePieces;
         blackPieces = _blackPieces;
         tiles = _tiles;
+        gameOver = _gameOver;
+    }
+
+    public bool GameOver()
+    {
+        return gameOver.First().Key;
+    }
+
+    public Board UpdateGameOverProperty(string result)
+    {
+        return new Board(whitePieces, blackPieces, tiles, new Dictionary<bool, string> {[true] = result});
+    }
+
+    public Dictionary<bool, string> GameOverResult()
+    {
+        return gameOver;
+    }
+
+    public int Evaluate()
+    {
+        int whiteQuality = 0;
+        int blackQuality = 0;
+
+        foreach (var pair in whitePieces)
+        {
+            whiteQuality += pair.Value.Value();
+        }
+
+        foreach (var pair in blackPieces)
+        {
+            blackQuality += pair.Value.Value();
+        }
+
+        return (whiteQuality) - (blackQuality);
     }
 
     public Board Update(Move _move)
@@ -35,19 +70,88 @@ public class Board
         {
             whitePiecesUpdated.Remove(newTiles[0].Position());
             whitePiecesUpdated[newTiles[1].Position()] = pieceUpdated;
+
+            if (blackPiecesUpdated.ContainsKey(newTiles[1].Position())) {
+                if (blackPiecesUpdated[newTiles[1].Position()].Notation() == 'K')
+                {
+                    return new Board(whitePiecesUpdated, blackPiecesUpdated, updatedTiles, new Dictionary<bool, string> {[true] = "white"});
+                }
+
+                blackPiecesUpdated.Remove(newTiles[1].Position());
+            }
         }
         else
         {
             blackPiecesUpdated.Remove(newTiles[0].Position());
             blackPiecesUpdated[newTiles[1].Position()] = pieceUpdated;
+
+            if (whitePiecesUpdated.ContainsKey(newTiles[1].Position())) {
+                if (whitePiecesUpdated[newTiles[1].Position()].Notation() == 'K')
+                {
+                    return new Board(whitePiecesUpdated, blackPiecesUpdated, updatedTiles, new Dictionary<bool, string> {[true] = "black"});
+                }
+                
+                whitePiecesUpdated.Remove(newTiles[1].Position());
+            }
         }
 
-        return new Board(whitePiecesUpdated, blackPiecesUpdated, updatedTiles);
+        return new Board(whitePiecesUpdated, blackPiecesUpdated, updatedTiles, gameOver);
+    }
+
+    public Board Copy()
+    {
+        Dictionary<Point, ChessPiece> whitepiecesCopy = new Dictionary<Point, ChessPiece>();
+        Dictionary<Point, ChessPiece> blackpiecesCopy = new Dictionary<Point, ChessPiece>();
+        Tile[,] tilesCopy = new Tile[8,8];
+
+        foreach (var pair in whitePieces)
+        {
+            whitepiecesCopy[pair.Key] = pair.Value;
+        }
+
+        foreach (var pair in blackPieces)
+        {
+            blackpiecesCopy[pair.Key] = pair.Value;
+        }
+
+        foreach (Tile tile in tiles)
+        {
+            tilesCopy[tile.Position().y, tile.Position().x] = tile;
+        }
+
+        Board board = new Board(whitepiecesCopy, blackpiecesCopy, tilesCopy, gameOver);
+        board.SetPieces();
+        return board;
     }
 
     public Tile Tile(int x, int y)
     {
         return tiles[y, x];
+    }
+
+    public void Print(Move move)
+    {
+        Console.Clear();
+
+        Console.WriteLine("     A B C D E F G H");
+        Console.WriteLine("    -----------------");
+
+        for (int i = 0; i < 8; i++)
+        {
+            Console.Write($" {i + 1} |");
+
+            for (int j = 0; j < 8; ++j)
+            {
+                Console.Write(tiles[i, j].Print());
+            }
+
+            Console.WriteLine(" |");
+        }
+
+        Console.WriteLine("    -----------------");
+
+        move.Print();
+        Console.Read();
     }
 
     public void Print()
@@ -70,7 +174,6 @@ public class Board
         }
 
         Console.WriteLine("    -----------------");
-        Console.ReadLine();
     }
 
     public Dictionary<Point, ChessPiece> SidePieces(int _side)
@@ -94,14 +197,14 @@ public class Board
 
                 for (int k = 0; k < 16; k++)
                 {
-                    if (whitePieces.ElementAt(k).Value.Position().y == i
+                    if (whitePieces.Count - 1 >= k && whitePieces.ElementAt(k).Value.Position().y == i
                             && whitePieces.ElementAt(k).Value.Position().x == j)
                     {
                         tiles[i, j] = new Tile(whitePieces.ElementAt(k).Value, new Point(j, i));
                         break;
                     }
 
-                    if (blackPieces.ElementAt(k).Value.Position().y == i
+                    if (blackPieces.Count - 1 >= k && blackPieces.ElementAt(k).Value.Position().y == i
                             && blackPieces.ElementAt(k).Value.Position().x == j)
                     {
                         tiles[i, j] = new Tile(blackPieces.ElementAt(k).Value, new Point(j, i));
