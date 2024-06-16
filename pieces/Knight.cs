@@ -6,11 +6,11 @@ class Knight : ChessPiece
 
     }
 
-    public override List<Move> MoveRange(Board _boardPosition)
+    public override List<Move> MoveRange(Board _position)
     {
         List<Move> moveRange = new List<Move>();
 
-        Tile initialTile = _boardPosition.Tile(Position().x, Position().y);
+        Tile initialTile = _position.Tile(Position().x, Position().y);
         ChessPiece piece = initialTile.Piece();
         int[,] moveSet = piece.MoveSet();
         int moveset_x, moveset_y, finaltile_x, finaltile_y;
@@ -25,7 +25,7 @@ class Knight : ChessPiece
 
             if (finaltile_x < 0 || finaltile_y < 0 || finaltile_y > 7 || finaltile_x > 7) continue;
 
-            Tile finalTile = _boardPosition.Tile(finaltile_x, finaltile_y);
+            Tile finalTile = _position.Tile(finaltile_x, finaltile_y);
 
             if (finalTile.Piece().Side() == initialTile.Piece().Side()) continue;
 

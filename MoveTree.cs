@@ -27,7 +27,6 @@ public sealed class MoveTree
         if (_root == _node)
         {
             _root.Children().Add(_move);
-            _root.Value().UpdateEval(average(_root));
             return root;
         }
 
@@ -37,28 +36,11 @@ public sealed class MoveTree
             if (result != null)
             {
                 child.Children().Add(_move);
-                child.Value().UpdateEval(child.Value().Eval());
                 return root;
             }
         }
 
         return null;
-    }
-
-    private int average(Node _root)
-    {
-        if (_root.Children().Count == 0)
-        {
-            return root.Value().Eval();
-        }
-
-        int sum = 0;
-        foreach (Node child in _root.Children())
-        {
-            sum += average(child);
-        }
-
-        return _root.Value().Eval() + (sum / _root.Children().Count);
     }
 
     public void Print(Node _root)

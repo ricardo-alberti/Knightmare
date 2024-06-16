@@ -5,7 +5,7 @@ public class Board
     private readonly Tile[,] tiles;
     private readonly Dictionary<bool, string> gameOver;
 
-    public Board() : this(defaultPieces(1), defaultPieces(0), new Tile[8, 8], new Dictionary<bool, string> {[false] = ""}) { }
+    public Board() : this(defaultPieces(1), defaultPieces(0), new Tile[8, 8], new Dictionary<bool, string> { [false] = "" }) { }
 
     public Board(Dictionary<Point, ChessPiece> _whitePieces, Dictionary<Point, ChessPiece> _blackPieces, Tile[,] _tiles, Dictionary<bool, string> _gameOver)
     {
@@ -22,7 +22,7 @@ public class Board
 
     public Board UpdateGameOverProperty(string result)
     {
-        return new Board(whitePieces, blackPieces, tiles, new Dictionary<bool, string> {[true] = result});
+        return new Board(whitePieces, blackPieces, tiles, new Dictionary<bool, string> { [true] = result });
     }
 
     public Dictionary<bool, string> GameOverResult()
@@ -30,7 +30,7 @@ public class Board
         return gameOver;
     }
 
-    public int Evaluate()
+    public int Evaluation()
     {
         int whiteQuality = 0;
         int blackQuality = 0;
@@ -51,6 +51,7 @@ public class Board
     public Board Update(Move _move)
     {
         Tile[] newTiles = _move.Tiles();
+
         Tile[,] updatedTiles = tiles;
 
         ChessPiece pieceUpdated = _move.Tiles()[1].Piece();
@@ -65,16 +66,18 @@ public class Board
 
         Dictionary<Point, ChessPiece> whitePiecesUpdated = whitePieces;
         Dictionary<Point, ChessPiece> blackPiecesUpdated = blackPieces;
+        Dictionary<bool, string> gameOverUpdated = gameOver;
 
         if (pieceUpdated.Side() == 1)
         {
             whitePiecesUpdated.Remove(newTiles[0].Position());
             whitePiecesUpdated[newTiles[1].Position()] = pieceUpdated;
 
-            if (blackPiecesUpdated.ContainsKey(newTiles[1].Position())) {
+            if (blackPiecesUpdated.ContainsKey(newTiles[1].Position()))
+            {
                 if (blackPiecesUpdated[newTiles[1].Position()].Notation() == 'K')
                 {
-                    return new Board(whitePiecesUpdated, blackPiecesUpdated, updatedTiles, new Dictionary<bool, string> {[true] = "white"});
+                    gameOverUpdated = new Dictionary<bool, string> { [true] = "white" };
                 }
 
                 blackPiecesUpdated.Remove(newTiles[1].Position());
@@ -85,24 +88,25 @@ public class Board
             blackPiecesUpdated.Remove(newTiles[0].Position());
             blackPiecesUpdated[newTiles[1].Position()] = pieceUpdated;
 
-            if (whitePiecesUpdated.ContainsKey(newTiles[1].Position())) {
+            if (whitePiecesUpdated.ContainsKey(newTiles[1].Position()))
+            {
                 if (whitePiecesUpdated[newTiles[1].Position()].Notation() == 'K')
                 {
-                    return new Board(whitePiecesUpdated, blackPiecesUpdated, updatedTiles, new Dictionary<bool, string> {[true] = "black"});
+                    gameOverUpdated = new Dictionary<bool, string> { [true] = "black" };
                 }
-                
+
                 whitePiecesUpdated.Remove(newTiles[1].Position());
             }
         }
 
-        return new Board(whitePiecesUpdated, blackPiecesUpdated, updatedTiles, gameOver);
+        return new Board(whitePiecesUpdated, blackPiecesUpdated, updatedTiles, gameOverUpdated);
     }
 
     public Board Copy()
     {
         Dictionary<Point, ChessPiece> whitepiecesCopy = new Dictionary<Point, ChessPiece>();
         Dictionary<Point, ChessPiece> blackpiecesCopy = new Dictionary<Point, ChessPiece>();
-        Tile[,] tilesCopy = new Tile[8,8];
+        Tile[,] tilesCopy = new Tile[8, 8];
 
         foreach (var pair in whitePieces)
         {
@@ -121,12 +125,18 @@ public class Board
 
         Board board = new Board(whitepiecesCopy, blackpiecesCopy, tilesCopy, gameOver);
         board.SetPieces();
+
         return board;
     }
 
     public Tile Tile(int x, int y)
     {
         return tiles[y, x];
+    }
+
+    public Tile Tile(Point axis)
+    {
+        return tiles[axis.y, axis.x];
     }
 
     public void Print(Move move)

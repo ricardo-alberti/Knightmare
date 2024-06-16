@@ -37,41 +37,67 @@ class Robot : Player
         Robot me = new Robot(Side(), _position, new MoveTree(), "robot1");
         Robot enemy = new Robot(Side() == 1 ? 0 : 1, _position, new MoveTree(), "robot2");
         Board position = _position.Copy();
-        Dictionary<int, MoveTree> movetrees = moveTrees(position, me, enemy, level);
 
-        return movetrees.First().Value;
+        Dictionary<int, MoveTree> movetrees = moveTrees(position, me, enemy, new Dictionary<int, MoveTree>(), level);
+        movetrees.Values.First().Print(movetrees.Values.First().Root());
+        Console.Read();
+
+        return Side() == 1 ? movetrees[movetrees.Keys.Max()] : movetrees[movetrees.Keys.Min()];
     }
 
-    public Dictionary<int, MoveTree> moveTrees(Board _position, Robot me, Robot enemy, int level, Dictionary<int, MoveTree> movetrees = null)
+    public Dictionary<int, MoveTree> moveTrees(Board _position, Robot me, Robot enemy, Dictionary<int, MoveTree> movetrees, int level)
     {
-        if (level == 0)
-        {
-            return movetrees;
-        }
+        List<ChessPiece> pieces = _position.SidePieces(me.Side()).Values.ToList();
 
-        foreach (ChessPiece piece in _position.SidePieces(me.Side()).Values.ToList())
+        foreach (ChessPiece piece in pieces)
         {
-            List<Move> moveRange = piece.MoveRange(_position);
-
-            if (piece.MoveRange(_position).Count == 0) continue;
+            Board copy = _position.Copy();
+            List<Move> moveRange = piece.MoveRange(copy);
 
             foreach (Move move in moveRange)
             {
-                _position = _position.Update(move);
-                move.UpdateEval(_position.Evaluate());
-
+                copy = _position.Copy();
+                Board newPosition = copy.Update(move);
                 Node node = new Node(move);
-                MoveTree movetree = new MoveTree();
-                movetree = movetree.Insert(node);
 
-                if (_position.GameOver())
-                {
-                    return movetrees;
-                }
+                MoveTree treeRoot = new MoveTree(node);
+                MoveTree movetree = moveTree(treeRoot, newPosition, me, enemy, level, treeRoot.Root());
+
+                movetrees[newPosition.Evaluation()] = movetree;
             }
         }
 
         return movetrees;
+    }
+
+    private MoveTree moveTree(MoveTree _movetree, Board _position, Robot me, Robot enemy, int level, Node _root)
+    {
+        if (level == 0)
+        {
+            return _movetree;
+        }
+
+        List<ChessPiece> pieces = _position.SidePieces(me.Side()).Values.ToList();
+        Board newPosition = _position;
+        Node node = new Node();
+
+        foreach (ChessPiece piece in pieces)
+        {
+            Board copy = _position.Copy();
+            List<Move> moveRange = piece.MoveRange(copy);
+
+            foreach (Move move in moveRange)
+            {
+                copy = _position.Copy();
+                newPosition = copy.Update(move);
+                node = new Node(move);
+
+                _movetree = _movetree.Insert(node, _root);
+            }
+        }
+
+        _movetree = moveTree(_movetree, newPosition, enemy, me, level - 1, node);
+        return _movetree;
     }
 
     public Move MoveToPlay(MoveTree moves)

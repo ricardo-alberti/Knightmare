@@ -49,36 +49,20 @@ public abstract class ChessPiece
         return side;
     }
 
-    public void PrintMoveRange(ChessPiece piece, Board position)
+    public void PrintMoveRange(List<Move> moveRange)
     {
-        List<Move> moverange = piece.MoveRange(position);
-
-        foreach (Move move in moverange)
+        foreach (Move move in moveRange)
         {
-            Tile[] tiles = move.Tiles();
-            foreach (Tile tile in tiles)
-            {
-
-            }
-        }
-
-        position.Print();
-
-        foreach (Move move in moverange)
-        {
-            Tile[] tiles = move.Tiles();
-            foreach (Tile tile in tiles)
-            {
-
-            }
+            move.Print();
         }
     }
 
-    public virtual List<Move> MoveRange(Board _boardPosition)
+    public virtual List<Move> MoveRange(Board _position)
     {
+        Board position = _position.Copy();
         List<Move> moveRange = new List<Move>();
 
-        Tile initialTile = _boardPosition.Tile(Position().x, Position().y);
+        Tile initialTile = _position.Tile(Position().x, Position().y);
         ChessPiece piece = initialTile.Piece();
         int[,] moveSet = piece.MoveSet();
 
@@ -96,7 +80,7 @@ public abstract class ChessPiece
 
             while (finaltile_x >= 0 && finaltile_y >= 0 && finaltile_y <= 7 && finaltile_x <= 7)
             {
-                finalTile = _boardPosition.Tile(finaltile_x, finaltile_y);
+                finalTile = position.Tile(finaltile_x, finaltile_y);
 
                 if (finalTile.Piece().Side() == initialTile.Piece().Side()) break;
                 if (finalTile.Piece().Side() != initialTile.Piece().Side() && finalTile.Piece().Side() != 2)
@@ -131,6 +115,11 @@ public abstract class ChessPiece
     public Point Position()
     {
         return position;
+    }
+
+    public ChessPiece Copy()
+    {
+        return CreatePiece(notation, position, side, id);
     }
 
     public static ChessPiece CreatePiece(char notation, Point position, int side, int id)

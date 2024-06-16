@@ -4,22 +4,15 @@ public sealed class Move
     private readonly ChessPiece captured;
     private readonly Tile initialTile;
     private readonly Tile finalTile;
-    private readonly int evaluation;
 
     public Move() : this(new Tile(new Point(0, 0)), new Tile(new Point(0, 0))) { }
 
-    public Move(Tile _initialTile, Tile _finalTile) : this(_initialTile, _finalTile, 0)
-    {
-
-    }
-
-    public Move(Tile _initialTile, Tile _finalTile, int _evaluation)
+    public Move(Tile _initialTile, Tile _finalTile)
     {
         piece = _initialTile.Piece();
         captured = _finalTile.Piece();
         initialTile = _initialTile.SetPiece(new Piece());
         finalTile = _finalTile.SetPiece(piece.UpdatePosition(_finalTile.Position()));
-        evaluation = _evaluation;
     }
 
     public Tile[] Tiles()
@@ -35,12 +28,10 @@ public sealed class Move
         Console.WriteLine($"{piece.Shape()} from ({initialTile.Position().x}, {initialTile.Position().y}) to ({finalTile.Position().x}, {finalTile.Position().y})");
     }
 
-    public void Print(int eval)
+    public void Print()
     {
         Console.WriteLine(piece.Side() == 1 ? "White moved: " : "Black moved: ");
         Console.WriteLine($"{piece.Shape()} from ({initialTile.Position().x}, {initialTile.Position().y}) to ({finalTile.Position().x}, {finalTile.Position().y})");
-        Console.Write("\nEvaluation: ");
-        Console.WriteLine(eval);
     }
 
     public Move Undo()
@@ -48,17 +39,7 @@ public sealed class Move
         return new Move(finalTile, initialTile);
     }
 
-    public int Eval()
-    {
-        return evaluation;
-    }
-
-    public Move UpdateEval(int _evalutation)
-    {
-        return new Move(initialTile, finalTile, _evalutation);
-    }
-
-    public char pieceNotation()
+    public char Notation()
     {
         return piece.Notation();
     }

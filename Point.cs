@@ -31,6 +31,11 @@ public class Point
         return x == other.x && y == other.y;
     }
 
+    public Point Copy()
+    {
+        return new Point(x, y);
+    }
+
     public void Print()
     {
         Console.WriteLine($"Point: ({x}, {y})");
