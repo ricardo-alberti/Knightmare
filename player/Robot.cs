@@ -39,8 +39,6 @@ class Robot : Player
         Board position = _position.Copy();
 
         Dictionary<int, MoveTree> movetrees = moveTrees(position, me, enemy, new Dictionary<int, MoveTree>(), level);
-        movetrees.Values.First().Print(movetrees.Values.First().Root());
-        Console.Read();
 
         return Side() == 1 ? movetrees[movetrees.Keys.Max()] : movetrees[movetrees.Keys.Min()];
     }
@@ -58,10 +56,11 @@ class Robot : Player
             {
                 copy = _position.Copy();
                 Board newPosition = copy.Update(move);
-                Node node = new Node(move);
+                int eval = newPosition.Evaluation();
+                Node node = new Node(move, eval);
 
                 MoveTree treeRoot = new MoveTree(node);
-                MoveTree movetree = moveTree(treeRoot, newPosition, me, enemy, level, treeRoot.Root());
+                MoveTree movetree = moveTree(treeRoot, newPosition, enemy, me, level, treeRoot.Root());
 
                 movetrees[newPosition.Evaluation()] = movetree;
             }
@@ -90,7 +89,8 @@ class Robot : Player
             {
                 copy = _position.Copy();
                 newPosition = copy.Update(move);
-                node = new Node(move);
+                int eval = newPosition.Evaluation();
+                node = new Node(move, eval);
 
                 _movetree = _movetree.Insert(node, _root);
             }
