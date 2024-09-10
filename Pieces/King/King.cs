@@ -14,7 +14,7 @@ namespace Knightmare.Pieces
 
         }
 
-        public new static ChessPiece Create(Point position, PlayerSide side, int id)
+        public static ChessPiece Create(Point position, PlayerSide side, int id)
         {
             switch (side)
             {
