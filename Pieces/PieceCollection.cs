@@ -21,6 +21,12 @@ namespace Knightmare.Pieces
             }
         }
 
+        public void Add(ChessPiece _piece)
+        {
+            pieces.Add(_piece.Position(), _piece);
+            pieceList.Add(_piece);
+        }
+
         public PieceCollection(List<ChessPiece> _pieces)
         {
             pieceList = _pieces;

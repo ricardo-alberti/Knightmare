@@ -7,20 +7,20 @@ namespace Knightmare.Pieces
     {
         private const int pieceValue = 1;
 
-        protected Pawn(int id, char notation, string shape, Point position, int[,] moveSet, PlayerSide side)
-            : base(id, notation, shape, position, moveSet, side, pieceValue)
+        protected Pawn(char notation, string shape, Point position, int[,] moveSet, PlayerSide side)
+            : base(notation, shape, position, moveSet, side, pieceValue)
         {
 
         }
 
-        public static ChessPiece Create(Point position, PlayerSide side, int id)
+        public static ChessPiece Create(Point position, PlayerSide side)
         {
             switch (side)
             {
                 case PlayerSide.White:
-                    return new WhitePawn(position, id);
+                    return new WhitePawn(position);
                 case PlayerSide.Black:
-                    return new BlackPawn(position, id);
+                    return new BlackPawn(position);
                 default:
                     return new Piece();
             }

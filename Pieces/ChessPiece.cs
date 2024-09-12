@@ -5,7 +5,6 @@ namespace Knightmare.Pieces
 {
     internal abstract class ChessPiece
     {
-        private readonly int id;
         private readonly char notation;
         private readonly int value;
         private readonly string shape;
@@ -13,9 +12,8 @@ namespace Knightmare.Pieces
         private readonly int[,] moveSet;
         private readonly PlayerSide side;
 
-        protected ChessPiece(int _id, char _notation, string _shape, Point _position, int[,] _moveSet, PlayerSide _side, int _value)
+        protected ChessPiece(char _notation, string _shape, Point _position, int[,] _moveSet, PlayerSide _side, int _value)
         {
-            id = _id;
             notation = _notation;
             shape = _shape;
             position = _position;
@@ -26,7 +24,7 @@ namespace Knightmare.Pieces
 
         public ChessPiece UpdatePosition(Point _position)
         {
-            return Create(notation, _position, side, id);
+            return Create(notation, _position, side);
         }
 
         public string Shape()
@@ -44,11 +42,6 @@ namespace Knightmare.Pieces
             return notation;
         }
 
-        public int Id()
-        {
-            return id;
-        }
-
         public PlayerSide Side()
         {
             return side;
@@ -56,7 +49,7 @@ namespace Knightmare.Pieces
 
         public ChessPiece Promote(char notation)
         {
-            return Create(notation, position, side, id);
+            return Create(notation, position, side);
         }
 
         public int[,] MoveSet()
@@ -71,7 +64,7 @@ namespace Knightmare.Pieces
 
         public ChessPiece Copy()
         {
-            return Create(notation, position, side, id);
+            return Create(notation, position, side);
         }
 
         public virtual List<Move> MoveRange(Board _position)
@@ -118,24 +111,24 @@ namespace Knightmare.Pieces
             return moveRange;
         }
 
-        public static ChessPiece Create(char notation, Point position, PlayerSide side, int id)
+        public static ChessPiece Create(char notation, Point position, PlayerSide side)
         {
             char lowerNotation = char.ToLower(notation);
 
             switch (lowerNotation)
             {
                 case 'n':
-                    return Knight.Create(position, side, id);
+                    return Knight.Create(position, side);
                 case 'r':
-                    return Rook.Create(position, side, id);
+                    return Rook.Create(position, side);
                 case 'p':
-                    return Pawn.Create(position, side, id);
+                    return Pawn.Create(position, side);
                 case 'q':
-                    return Queen.Create(position, side, id);
+                    return Queen.Create(position, side);
                 case 'k':
-                    return King.Create(position, side, id);
+                    return King.Create(position, side);
                 case 'b':
-                    return Bishop.Create(position, side, id);
+                    return Bishop.Create(position, side);
                 default:
                     return new Piece();
             }

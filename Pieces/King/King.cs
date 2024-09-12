@@ -8,20 +8,20 @@ namespace Knightmare.Pieces
         private static readonly int[,] moveSet = new int[,] { { 0, -1 }, { 0, 1 }, { 1, 0 }, { 1, 1 }, { -1, 0 }, { -1, -1 }, { 1, -1 }, { -1, -1 } };
         private const int value = 500;
 
-        protected King(int id, char notation, string shape, Point position, PlayerSide side)
-            : base(id, notation, shape, position, moveSet, side, value)
+        protected King(char notation, string shape, Point position, PlayerSide side)
+            : base(notation, shape, position, moveSet, side, value)
         {
 
         }
 
-        public static ChessPiece Create(Point position, PlayerSide side, int id)
+        public static ChessPiece Create(Point position, PlayerSide side)
         {
             switch (side)
             {
                 case PlayerSide.White:
-                    return new WhiteKing(position, id);
+                    return new WhiteKing(position);
                 case PlayerSide.Black:
-                    return new BlackKing(position, id);
+                    return new BlackKing(position);
                 default:
                     return new Piece();
             }

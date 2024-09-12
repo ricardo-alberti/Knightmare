@@ -7,8 +7,8 @@ namespace Knightmare.Pieces
         private static readonly int[,] moveSet = new int[,] { { 1, 1 }, { 1, -1 }, { 1, 0 } };
         private const PlayerSide side = PlayerSide.White;
 
-        public WhitePawn(Point position, int id)
-            : base(id, notation, shape, position, moveSet, side)
+        public WhitePawn(Point position)
+            : base(notation, shape, position, moveSet, side)
         {
 
         }

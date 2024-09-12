@@ -7,8 +7,8 @@ namespace Knightmare.Pieces
         private static readonly int[,] moveSet = new int[,] { { -1, -1 }, { -1, 1 }, { -1, 0 } }; 
         private const PlayerSide side = PlayerSide.Black;
 
-        public BlackPawn(Point position, int id)
-            : base(id, notation, shape, position, moveSet, side)
+        public BlackPawn(Point position)
+            : base(notation, shape, position, moveSet, side)
         {
 
         }

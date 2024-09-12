@@ -2,7 +2,6 @@ namespace Knightmare.Pieces
 {
     internal class Piece : ChessPiece
     {
-        private const int id = 0;
         private const char notation = 'F'; 
         private const string shape = " \u2024";
         private const PlayerSide side = PlayerSide.None;
@@ -11,7 +10,7 @@ namespace Knightmare.Pieces
         private static readonly int[,] moveSet = new int[,] { { 0, 0 } };
 
         public Piece()
-            : base(id, notation, shape, position, moveSet, side, value)
+            : base(notation, shape, position, moveSet, side, value)
         {
 
         }

@@ -6,8 +6,8 @@ namespace Knightmare.Pieces
         private const string shape = " \u265E";
         private const PlayerSide side = PlayerSide.Black;
 
-        public BlackKnight(Point position, int id)
-            : base(id, notation, shape, position, side)
+        public BlackKnight(Point position)
+            : base(notation, shape, position, side)
         {
 
         }
