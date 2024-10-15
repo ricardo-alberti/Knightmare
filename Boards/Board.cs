@@ -8,6 +8,7 @@ namespace Knightmare.Boards
         private readonly PieceCollection whitePieces;
         private readonly PieceCollection blackPieces;
         private readonly Tile[,] tiles;
+        private readonly Stack<Move> history;
 
         public Board()
             : this(new PieceCollection(), new PieceCollection(), new Tile[8, 8])
@@ -26,6 +27,7 @@ namespace Knightmare.Boards
             whitePieces = _whitePieces;
             blackPieces = _blackPieces;
             tiles = _tiles;
+            history = new Stack<Move>();
         }
 
 
@@ -36,6 +38,7 @@ namespace Knightmare.Boards
 
         public Board Update(Move _move)
         {
+            history.Push(_move);
             Tile[] newTiles = _move.Tiles();
             Tile[,] updatedTiles = tiles;
 
@@ -70,41 +73,21 @@ namespace Knightmare.Boards
             return new Board(new PieceCollection(whitePiecesUpdated), new PieceCollection(blackPiecesUpdated), updatedTiles);
         }
 
+        public void Undo()
+        {
+            Move lastMove = history.Pop();
+            
+            this.Update(lastMove.Undo());
+        }
+
         public Board Copy()
         {
-            Dictionary<Point, ChessPiece> whitepiecesCopy = new Dictionary<Point, ChessPiece>();
-            Dictionary<Point, ChessPiece> blackpiecesCopy = new Dictionary<Point, ChessPiece>();
-            Tile[,] tilesCopy = new Tile[8, 8];
-
-            foreach (var pair in whitePieces.List())
-            {
-                whitepiecesCopy[pair.Key] = pair.Value;
-            }
-
-            foreach (var pair in blackPieces.List())
-            {
-                blackpiecesCopy[pair.Key] = pair.Value;
-            }
-
-            foreach (Tile tile in tiles)
-            {
-                tilesCopy[tile.Position().y, tile.Position().x] = tile;
-            }
-
-            Board board = new Board(new PieceCollection(whitepiecesCopy), new PieceCollection(blackpiecesCopy), tilesCopy);
-            board.SetPieces(whitepiecesCopy, blackpiecesCopy);
-
-            return board;
+            return Create(FEN());
         }
 
         public Tile Tile(int x, int y)
         {
             return tiles[y, x];
-        }
-
-        public Tile Tile(Point axis)
-        {
-            return tiles[axis.y, axis.x];
         }
 
         public Dictionary<Point, ChessPiece> SidePieces(PlayerSide _side)
@@ -113,7 +96,7 @@ namespace Knightmare.Boards
 
             if (_side == PlayerSide.Black)
             {
-                pieces =  blackPieces.List();
+                pieces = blackPieces.List();
             }
 
             return pieces;
@@ -129,27 +112,55 @@ namespace Knightmare.Boards
             return blackPieces.List();
         }
 
-        public void SetPieces(Dictionary<Point, ChessPiece> _whitePieces, Dictionary<Point, ChessPiece> _blackPieces)
+        static public Board Create(string _fen = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr")
         {
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    Point position = new Point(j, i);
-                    Tile tile = new Tile(position);
+            Board board = new();
+            Tile tile = new();
+            Point point = new();
+            PieceCollection white = new();
+            PieceCollection black = new();
+            int x = 0;
+            int y = 0;
 
-                    foreach (var piece in _whitePieces.Values.Concat(_blackPieces.Values))
+            foreach (char k in _fen)
+            {
+                if (k == '/')
+                {
+                    x = 0;
+                    y++;
+                }
+                else if (char.IsDigit(k))
+                {
+                    int num = (int)char.GetNumericValue(k);
+
+                    for (int i = 0; i < num; i++)
                     {
-                        if (piece.Position().Equals(position))
-                        {
-                            tile = new Tile(piece, position);
-                            break;
-                        }
+                        point = new Point(x, y);
+                        board.Tiles()[y, x] = new Tile(point);
+                        x++;
+                    }
+                }
+                else
+                {
+                    point = new Point(x, y);
+
+                    if (Char.IsUpper(k))
+                    {
+                        tile = new Tile(ChessPiece.Create(k, point, PlayerSide.White), point);
+                        white.Add(tile.Piece());
+                    }
+                    else if (char.IsLower(k))
+                    {
+                        tile = new Tile(ChessPiece.Create(k, point, PlayerSide.Black), point);
+                        black.Add(tile.Piece());
                     }
 
-                    tiles[i, j] = tile;
+                    board.Tiles()[y, x] = tile;
+                    x++;
                 }
             }
+
+            return new Board(white, black, board.Tiles());
         }
 
         public string FEN()

@@ -6,6 +6,7 @@ namespace Knightmare.Moves
     internal sealed class Move
     {
         private readonly ChessPiece piece;
+        private readonly ChessPiece captured;
         private readonly Tile initialTile;
         private readonly Tile finalTile;
 
@@ -14,6 +15,7 @@ namespace Knightmare.Moves
         public Move(Tile _initialTile, Tile _finalTile)
         {
             piece = _initialTile.Piece();
+            captured = _finalTile.Piece();
             initialTile = _initialTile.SetPiece(new Piece());
             finalTile = _finalTile.SetPiece(piece.UpdatePosition(_finalTile.Position()));
         }
@@ -26,6 +28,16 @@ namespace Knightmare.Moves
         public ChessPiece Piece()
         {
             return piece;
+        }
+
+        public ChessPiece Captured()
+        {
+            return captured;
+        }
+
+        public Move Undo()
+        {
+            return new(initialTile.SetPiece(piece), finalTile.SetPiece(captured));
         }
 
         public char Notation()
