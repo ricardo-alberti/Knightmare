@@ -21,19 +21,7 @@ namespace Knightmare.Views
 
         private void PrintBestMoves(Node _node, int _level)
         {
-            if (_node == null)
-                return;
 
-            Move move = _node.Value();
-            Console.WriteLine($"[Height: {_level} - Eval: {_node.eval}]:");
-            moveView.Print(move);
-
-            _level++;
-
-            if (_node.Children().Count > 0)
-            {
-                PrintBestMoves(_node.bestChild, _level);
-            }
         }
     }
 }

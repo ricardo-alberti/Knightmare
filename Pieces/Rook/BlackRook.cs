@@ -2,7 +2,7 @@ namespace Knightmare.Pieces
 {
     internal sealed class BlackRook : Rook
     {
-        private const char notation = 'R'; 
+        private const char notation = 'r'; 
         private const string shape = " \u265C";
         private const PlayerSide side = PlayerSide.Black;
 

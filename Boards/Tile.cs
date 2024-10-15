@@ -22,11 +22,6 @@ namespace Knightmare.Boards
             return piece;
         }
 
-        public Tile Copy()
-        {
-            return new Tile(piece.Copy(), position.Copy());
-        }
-
         public Tile SetPiece(ChessPiece _piece)
         {
             return new Tile(_piece, position);

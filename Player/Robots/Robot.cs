@@ -6,16 +6,13 @@ using Knightmare.DTO;
 internal class Robot : Player
 {
     private readonly PlayerSide side;
-    private readonly Dictionary<string, MoveTree> possiblePositions;
+    private readonly ITreeSearch search;
 
-    public Robot() : this(0, new Dictionary<string, MoveTree>()) { }
-
-    public Robot(PlayerSide _side) : this(_side, new Dictionary<string, MoveTree>()) { }
-
-    public Robot(PlayerSide _side, Dictionary<string, MoveTree> _positions) : base(_side)
+    public Robot(PlayerSide _side) : this(_side, new MinimaxAlphaBeta()) { }
+    public Robot(PlayerSide _side, ITreeSearch _search) : base(_side)
     {
         side = _side;
-        possiblePositions = _positions;
+        search = _search;
     }
 
     public CalculationResponse Calculate(Board _position, int level)
@@ -24,17 +21,15 @@ internal class Robot : Player
         Robot me = new Robot(Side());
         Robot enemy = new Robot(EnemySide());
         Board position = _position.Copy();
-        DFS dfs = new DFS(new SimpleEvaluation());
-        BFS bfs = new BFS(new SimpleEvaluation());
 
-        MoveTree movetree = dfs.Execute(position, me, enemy, level);
+        MoveTree movetree = search.Execute(position, me, enemy, level);
         Node root = movetree.Root();
 
         CalculationResponse response = new CalculationResponse(
-                dfs.TotalMoves, 
+                search.TotalMoves, 
                 movetree, 
                 root.Value(), 
-                dfs.ElapsedTime, 
+                search.ElapsedTime, 
                 root.eval
         );
 

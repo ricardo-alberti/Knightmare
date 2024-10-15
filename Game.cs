@@ -1,6 +1,5 @@
 using Knightmare.Views;
 using Knightmare.Moves;
-using Knightmare.Sets;
 using Knightmare.Boards;
 using Knightmare.DTO;
 
@@ -15,23 +14,21 @@ internal sealed class Game
 
     public void Start()
     {
-        DefaultPiecesSet pieces = new DefaultPiecesSet();
-        Board board = new Board(pieces.White(), pieces.Black());
-        Robot whiteBot = new Robot(PlayerSide.White);
-        Robot blackBot = new Robot(PlayerSide.Black);
-        MoveTree movetree = new MoveTree();
-        CalculationResponse calculation = new CalculationResponse();
+        Robot whiteBot = new(PlayerSide.White);
+        Robot blackBot = new(PlayerSide.Black);
+        MoveTree movetree = new();
+        CalculationResponse calculation = new();
+        Board board = Board.Create();
 
-        board.SetPieces(board.WhitePieces(), board.BlackPieces());
-        view.PrintBoard(board, new CalculationResponse());
+        view.PrintBoard(board, calculation);
 
         while (true)
         {
-            calculation = whiteBot.Calculate(board, 3);
+            calculation = whiteBot.Calculate(board, 5);
             board = whiteBot.Play(calculation.BestMove(), board);
             view.PrintBoard(board, calculation);
 
-            calculation = blackBot.Calculate(board, 1);
+            calculation = blackBot.Calculate(board, 3);
             board = blackBot.Play(calculation.BestMove(), board);
             view.PrintBoard(board, calculation);
         }

@@ -8,8 +8,7 @@ namespace Knightmare.Moves
         private readonly List<Node> children;
         private readonly Board position;
         private readonly Node parent;
-        private readonly Move value;
-        public Node bestChild { get; set; }
+        public Move value { get; set; }
         public int eval { get; set; }
 
         public Node() : this(new Move(), new List<Node>(), new Board(), null) { }

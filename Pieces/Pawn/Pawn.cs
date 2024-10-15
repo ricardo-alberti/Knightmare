@@ -36,8 +36,9 @@ namespace Knightmare.Pieces
             int[,] moveSet = piece.MoveSet();
 
             int moveset_x, moveset_y, finaltile_x, finaltile_y;
+            int offset = (piece.Position().y == 6 || piece.Position().y == 1) ? 0 : 1;
 
-            for (int i = 0; i < moveSet.GetLength(0); ++i)
+            for (int i = 0; i < moveSet.GetLength(0) - offset; ++i)
             {
                 moveset_x = moveSet[i, 1];
                 moveset_y = moveSet[i, 0];

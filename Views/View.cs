@@ -40,7 +40,6 @@ namespace Knightmare.Views
             Console.WriteLine($"Evaluation: {_calculation.Evaluation()}");
 
             moveView.Print(_calculation.BestMove());
-            moveTreeView.Print(_calculation.MoveTree());
 
             if (_FEN == true)
             {
