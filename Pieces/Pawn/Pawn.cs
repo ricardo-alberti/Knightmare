@@ -56,14 +56,27 @@ namespace Knightmare.Pieces
 
                 if (finalTile.Position().y == 7 || finalTile.Position().y == 0)
                 {
-                    piece = piece.Promote('Q');
-                    initialTile = initialTile.SetPiece(piece);
+                    char[] promotions = { 'Q', 'N', 'B', 'R' };
+
+                    foreach (char promotion in promotions)
+                    {
+                        piece = Promote('Q');
+                        initialTile = initialTile.SetPiece(piece);
+                        moveRange.Add(new Move(initialTile, finalTile));
+                    }
+
+                    continue;
                 }
 
                 moveRange.Add(new Move(initialTile, finalTile));
             }
 
             return moveRange;
+        }
+
+        private ChessPiece Promote(char notation)
+        {
+            return Create(notation, base.Position(), base.Side());
         }
     }
 }

@@ -47,11 +47,6 @@ namespace Knightmare.Pieces
             return side;
         }
 
-        public ChessPiece Promote(char notation)
-        {
-            return Create(notation, position, side);
-        }
-
         public int[,] MoveSet()
         {
             return moveSet;
