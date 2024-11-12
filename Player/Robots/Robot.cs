@@ -6,10 +6,10 @@ using Knightmare.DTO;
 internal class Robot : Player
 {
     private readonly PlayerSide side;
-    private readonly ITreeSearch search;
+    private readonly TreeSearch search;
 
     public Robot(PlayerSide _side) : this(_side, new MinimaxAlphaBeta()) { }
-    public Robot(PlayerSide _side, ITreeSearch _search) : base(_side)
+    public Robot(PlayerSide _side, TreeSearch _search) : base(_side)
     {
         side = _side;
         search = _search;
@@ -22,7 +22,7 @@ internal class Robot : Player
         Robot enemy = new Robot(EnemySide());
         Board position = _position.Copy();
 
-        MoveTree movetree = search.Execute(position, me, enemy, level);
+        MoveTree movetree = search.BestTree(position, me, enemy, level);
         Node root = movetree.Root();
 
         CalculationResponse response = new CalculationResponse(

@@ -37,7 +37,7 @@ namespace Knightmare.Moves
 
         public Move Undo()
         {
-            return new(initialTile.SetPiece(piece), finalTile.SetPiece(captured));
+            return new Move(finalTile, initialTile);
         }
 
         public char Notation()

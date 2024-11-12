@@ -1,30 +1,23 @@
 using Knightmare.Moves;
 using Knightmare.Boards;
-using Knightmare.Pieces;
 using System.Diagnostics;
 
 namespace Knightmare.Algorithm
 {
-    internal class MinimaxAlphaBeta : ITreeSearch
+    internal class MinimaxAlphaBeta : TreeSearch
     {
-        public int TotalMoves { get; set; }
-        public long ElapsedTime { get; set; }
-        private readonly IEvaluation evaluator;
-
         public MinimaxAlphaBeta() : this(new SimpleEvaluation()) { }
-        public MinimaxAlphaBeta(IEvaluation _evaluator)
+        public MinimaxAlphaBeta(IEvaluation _evaluator) : base(_evaluator)
         {
-            TotalMoves = 0;
-            ElapsedTime = 0;
-            evaluator = _evaluator;
+
         }
 
-        public MoveTree Execute(Board _position, Robot me, Robot enemy, int level)
+        public override MoveTree BestTree(Board _position, Robot me, Robot enemy, int level)
         {
             var watch = Stopwatch.StartNew();
 
             bool isMaximizing = me.Side() == PlayerSide.White;
-            var bestMoveTree = Evaluate(_position, me, enemy, level, int.MinValue, int.MaxValue, isMaximizing);
+            var bestMoveTree = EvaluateTrees(_position, me, enemy, level, int.MinValue, int.MaxValue, isMaximizing);
 
             watch.Stop();
             ElapsedTime = watch.ElapsedMilliseconds;
@@ -32,30 +25,30 @@ namespace Knightmare.Algorithm
             return bestMoveTree;
         }
 
-        private MoveTree Evaluate(Board _position, Robot me, Robot enemy, int depth, int alpha, int beta, bool isMaximizing)
+        private MoveTree EvaluateTrees(Board _position, Robot me, Robot enemy, int depth, int alpha, int beta, bool isMaximizing)
         {
             // or game over adicionar dps
             if (depth == 0)
             {
                 int eval = evaluator.Execute(_position);
-                return new MoveTree(new Node(null, _position) { eval = eval });
+                return new MoveTree(new Node() { eval = eval });
             }
 
-            List<Move> possibleMoves = GenerateMoves(_position, me);
+            List<Move> possibleMoves = base.GenerateMoves(_position, me);
             if (possibleMoves.Count == 0)
             {
                 int eval = evaluator.Execute(_position);
-                return new MoveTree(new Node(null, _position) { eval = eval });
+                return new MoveTree(new Node() { eval = eval });
             }
 
-            MoveTree bestMoveTree = null;
+            MoveTree? bestMoveTree = null;
 
             foreach (var move in possibleMoves)
             {
                 TotalMoves++;
                 Board newPosition = _position.Copy().Update(move);
 
-                MoveTree childTree = Evaluate(newPosition, enemy, me, depth - 1, alpha, beta, !isMaximizing);
+                MoveTree childTree = EvaluateTrees(newPosition, enemy, me, depth - 1, alpha, beta, !isMaximizing);
 
                 if (bestMoveTree == null)
                 {
@@ -88,19 +81,6 @@ namespace Knightmare.Algorithm
             }
 
             return bestMoveTree;
-        }
-
-        private List<Move> GenerateMoves(Board _position, Robot robot)
-        {
-            List<Move> allMoves = new List<Move>();
-            List<ChessPiece> pieces = _position.SidePieces(robot.Side()).Values.ToList();
-
-            foreach (ChessPiece piece in pieces)
-            {
-                allMoves.AddRange(piece.MoveRange(_position.Copy()));
-            }
-
-            return allMoves;
         }
     }
 }
