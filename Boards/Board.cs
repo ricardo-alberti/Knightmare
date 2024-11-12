@@ -23,13 +23,24 @@ namespace Knightmare.Boards
         }
 
         public Board(PieceCollection _whitePieces, PieceCollection _blackPieces, Tile[,] _tiles)
+            : this (_whitePieces, _blackPieces, _tiles, new Stack<Move>())
+        {
+
+        }
+
+        public Board(PieceCollection _whitePieces, PieceCollection _blackPieces, Tile[,] _tiles, Stack<Move> _history)
         {
             whitePieces = _whitePieces;
             blackPieces = _blackPieces;
             tiles = _tiles;
-            history = new Stack<Move>();
+            history = _history;
         }
 
+
+        public Stack<Move> History()
+        {
+            return history;
+        }
 
         public Tile[,] Tiles()
         {
@@ -39,6 +50,7 @@ namespace Knightmare.Boards
         public Board Update(Move _move)
         {
             history.Push(_move);
+
             Tile[] newTiles = _move.Tiles();
             Tile[,] updatedTiles = tiles;
 
@@ -70,7 +82,7 @@ namespace Knightmare.Boards
                 whitePiecesUpdated.Remove(end);
             }
 
-            return new Board(new PieceCollection(whitePiecesUpdated), new PieceCollection(blackPiecesUpdated), updatedTiles);
+            return new Board(new PieceCollection(whitePiecesUpdated), new PieceCollection(blackPiecesUpdated), updatedTiles, history);
         }
 
         public void Undo()

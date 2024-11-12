@@ -4,6 +4,8 @@ class Program
 {
     static void Main()
     {
+        AppSettings.Create("./appsettings.json");
+
         PuzzleTest test = new();
         test.Execute();
 
