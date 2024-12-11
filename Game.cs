@@ -1,37 +1,32 @@
 using Knightmare.Views;
-using Knightmare.Moves;
 using Knightmare.Boards;
-using Knightmare.DTO;
 
 internal sealed class Game
 {
     private readonly View view;
+    private readonly Player white;
+    private readonly Player black;
+    public Board ChessBoard { get; set; }
 
-    public Game()
+    public Game(Player _white, Player _black, string _initialPosition)
     {
         view = new View();
+        white = _white;
+        black = _black;
+        ChessBoard = Board.Create(_initialPosition);
     }
 
     public void Start()
     {
-        Robot whiteBot = new(PlayerSide.White);
-        Robot blackBot = new(PlayerSide.Black);
-
-        MoveTree movetree = new();
-        CalculationResponse calculation = new();
-        Board board = Board.Create(AppSettings.Instance.InitialPosition);
-
-        view.PrintBoard(board, calculation);
+        view.PrintBoard(ChessBoard);
 
         while (true)
         {
-            calculation = whiteBot.Calculate(board, AppSettings.Instance.WhiteLevel);
-            board = whiteBot.Play(calculation.BestMove(), board);
-            view.PrintBoard(board, calculation);
+            ChessBoard = white.Play(ChessBoard);
+            view.PrintBoard(ChessBoard);
 
-            calculation = blackBot.Calculate(board, AppSettings.Instance.BlackLevel);
-            board = blackBot.Play(calculation.BestMove(), board);
-            view.PrintBoard(board, calculation);
+            ChessBoard = black.Play(ChessBoard);
+            view.PrintBoard(ChessBoard);
         }
     }
 }

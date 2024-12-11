@@ -4,11 +4,9 @@ public class AppSettings
 {
     public static AppSettings? Instance { get; set; }
 
-    public string? Mode { get; set; }
+    public bool Debug { get; set; }
+    public bool GUI { get; set; }
     public string? InitialPosition { get; set; }
-    public bool Tests { get; set; }
-    public bool Steps { get; set; }
-    public bool Gui { get; set; }
     public int WhiteLevel { get; set; }
     public int BlackLevel { get; set; }
 

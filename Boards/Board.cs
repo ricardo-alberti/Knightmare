@@ -47,9 +47,10 @@ namespace Knightmare.Boards
             return tiles;
         }
 
-        public Board Update(Move _move)
+        public Board Update(Move _move, bool _keepHistory = true)
         {
-            history.Push(_move);
+            if (_keepHistory)
+                history.Push(_move);
 
             Tile[] newTiles = _move.Tiles();
             Tile[,] updatedTiles = tiles;
@@ -87,9 +88,12 @@ namespace Knightmare.Boards
 
         public void Undo()
         {
+            if (history.Count == 0)
+                return;
+
             Move lastMove = history.Pop();
             
-            this.Update(lastMove.Undo());
+            this.Update(lastMove.Undo(), false);
         }
 
         public Board Copy()

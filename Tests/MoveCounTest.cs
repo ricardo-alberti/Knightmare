@@ -26,15 +26,14 @@ namespace Knightmare.Tests
             int passed = 0;
             int failed = 0;
 
-            Robot whiteBot = new(PlayerSide.White, new Minimax());
-
             foreach (var pair in moveCount)
             {
                 int depth = pair.Key;
                 int moves = pair.Value;
 
+                Robot whiteBot = new(PlayerSide.White, new Minimax(), depth);
                 Board board = Board.Create();
-                CalculationResponse calculation = whiteBot.Calculate(board, depth);
+                CalculationResponse calculation = whiteBot.Calculate(board);
                 int result = calculation.CalculatedMovesTotal();
 
                 tested++;

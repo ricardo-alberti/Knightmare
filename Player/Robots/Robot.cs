@@ -7,19 +7,21 @@ internal class Robot : Player
 {
     private readonly PlayerSide side;
     private readonly TreeSearch search;
+    private readonly int level;
 
-    public Robot(PlayerSide _side) : this(_side, new MinimaxAlphaBeta()) { }
-    public Robot(PlayerSide _side, TreeSearch _search) : base(_side)
+    public Robot(PlayerSide _side, int _level) : this(_side, new MinimaxAlphaBeta(), _level) { }
+    public Robot(PlayerSide _side, TreeSearch _search, int _level) : base(_side)
     {
         side = _side;
         search = _search;
+        level = _level;
     }
 
-    public CalculationResponse Calculate(Board _position, int level)
+    public CalculationResponse Calculate(Board _position)
     {
         Dictionary<int, MoveTree> moveMap = new Dictionary<int, MoveTree>();
-        Robot me = new Robot(Side());
-        Robot enemy = new Robot(EnemySide());
+        Robot me = new Robot(Side(), level);
+        Robot enemy = new Robot(EnemySide(), level);
         Board position = _position.Copy();
 
         MoveTree movetree = search.BestTree(position, me, enemy, level);
@@ -34,5 +36,10 @@ internal class Robot : Player
         );
 
         return response;
+    }
+
+    override protected Move FindMove(Board _board)
+    {
+        return this.Calculate(_board).BestMove();
     }
 }

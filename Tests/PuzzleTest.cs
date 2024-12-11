@@ -25,7 +25,6 @@ namespace Knightmare.Tests
             int passed = 0;
             int failed = 0;
 
-            Robot whiteBot = new(PlayerSide.White);
 
             foreach (var pair in puzzles)
             {
@@ -34,9 +33,10 @@ namespace Knightmare.Tests
 
                 foreach (int level in depthLevel)
                 {
+                    Robot whiteBot = new(PlayerSide.White, level);
                     Board board = Board.Create(puzzle);
-                    CalculationResponse calculation = whiteBot.Calculate(board, level);
-                    board = whiteBot.Play(calculation.BestMove(), board);
+                    CalculationResponse calculation = whiteBot.Calculate(board);
+                    board = whiteBot.Play(board);
                     string result = board.FEN();
 
                     tested++;

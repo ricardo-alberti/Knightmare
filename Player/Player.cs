@@ -27,15 +27,19 @@ abstract class Player
         return enemySide;
     }
 
-    public Board Play(Move _move, Board _position)
+    public Board Play(Board _board)
     {
-        if (!_move.ValidPlayer(this))
+        Move move = FindMove(_board);
+
+        if (!move.ValidPlayer(this))
         {
-            throw new Exception("Invalid Player Move - player tried to move opposite side piece");
+            throw new Exception("Invalid Player Move");
         }
 
-        Board newPosition = _position.Update(_move);
+        Board newPosition = _board.Update(move);
 
         return newPosition;
     }
+
+    abstract protected Move FindMove(Board _board);
 }

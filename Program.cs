@@ -6,13 +6,20 @@ class Program
     {
         AppSettings.Create("./appsettings.json");
 
-        PuzzleTest test = new();
-        test.Execute();
+        PuzzleTest puzzleTest = new();
+        MoveCountTest moveCountTest = new();
 
-        MoveCountTest test2 = new();
-        test2.Execute();
+        Human human = new(PlayerSide.Black);
+        Robot robot = new(PlayerSide.White, AppSettings.Instance.WhiteLevel);
+        string initialPosition = AppSettings.Instance.InitialPosition;
 
-        Game chess = new Game();
+        if (AppSettings.Instance.Debug)
+        {
+            puzzleTest.Execute();
+            moveCountTest.Execute();
+        }
+
+        Game chess = new Game(robot, human, initialPosition);
         chess.Start();
     }
 }
