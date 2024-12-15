@@ -24,7 +24,7 @@ namespace Knightmare.Boards
 
         public Tile SetPiece(ChessPiece _piece)
         {
-            return new Tile(_piece, position);
+            return new Tile(_piece.UpdatePosition(this.Position()), position);
         }
 
         public Point Position()

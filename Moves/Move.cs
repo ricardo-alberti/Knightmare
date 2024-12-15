@@ -11,13 +11,20 @@ namespace Knightmare.Moves
         private readonly Tile finalTile;
 
         public Move() : this(new Tile(new Point(0, 0)), new Tile(new Point(0, 0))) { }
+        public Move(Move move)
+        {
+            piece = move.Piece();
+            captured = move.Captured();
+            initialTile = move.initialTile.SetPiece(piece);
+            finalTile = move.finalTile.SetPiece(captured);
+        }
 
         public Move(Tile _initialTile, Tile _finalTile)
         {
             piece = _initialTile.Piece();
             captured = _finalTile.Piece();
             initialTile = _initialTile.SetPiece(new Piece());
-            finalTile = _finalTile.SetPiece(piece.UpdatePosition(_finalTile.Position()));
+            finalTile = _finalTile.SetPiece(piece);
         }
 
         public Tile[] Tiles()
@@ -37,7 +44,7 @@ namespace Knightmare.Moves
 
         public Move Undo()
         {
-            return new Move(finalTile, initialTile);
+            return new Move(this);
         }
 
         public char Notation()
