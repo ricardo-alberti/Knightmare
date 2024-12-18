@@ -26,7 +26,7 @@ namespace Knightmare.Algorithm
 
             foreach (ChessPiece piece in pieces)
             {
-                allMoves.AddRange(piece.MoveRange(_position.Copy()));
+                allMoves.AddRange(piece.MoveRange(_position));
             }
 
             return allMoves;

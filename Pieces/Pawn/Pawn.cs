@@ -28,7 +28,7 @@ namespace Knightmare.Pieces
 
         public override List<Move> MoveRange(Board _position)
         {
-            Board position = _position.Copy();
+            Board position = _position;
             List<Move> moveRange = new List<Move>();
 
             Tile initialTile = position.Tile(Position().x, Position().y);

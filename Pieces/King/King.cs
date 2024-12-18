@@ -44,11 +44,14 @@ namespace Knightmare.Pieces
                 finaltile_x = initialTile.Position().x + moveset_x;
                 finaltile_y = initialTile.Position().y + moveset_y;
 
-                if (finaltile_x < 0 || finaltile_y < 0 || finaltile_y > 7 || finaltile_x > 7) continue;
+                if (finaltile_x < 0 || finaltile_y < 0 || 
+                        finaltile_y > 7 || finaltile_x > 7)
+                    continue;
 
                 Tile finalTile = _position.Tile(finaltile_x, finaltile_y);
 
-                if (finalTile.Piece().Side() == initialTile.Piece().Side()) continue;
+                if (finalTile.Piece().Side() == initialTile.Piece().Side()) 
+                    continue;
 
                 moveRange.Add(new Move(initialTile, finalTile));
             }

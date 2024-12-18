@@ -1,5 +1,6 @@
 using Knightmare.Moves;
 using Knightmare.Boards;
+using Knightmare.DTO;
 
 abstract class Player
 {
@@ -27,9 +28,10 @@ abstract class Player
         return enemySide;
     }
 
-    public void Play(Board _board)
+    public MoveStats Play(Board _board)
     {
-        Move move = FindMove(_board);
+        MoveStats stats = FindMove(_board);
+        Move move = stats.Move();
 
         if (!move.ValidPlayer(this))
         {
@@ -37,7 +39,9 @@ abstract class Player
         }
 
         _board.Update(move);
+
+        return stats;
     }
 
-    abstract protected Move FindMove(Board _board);
+    abstract protected MoveStats FindMove(Board _board);
 }

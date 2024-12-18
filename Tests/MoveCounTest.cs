@@ -33,8 +33,8 @@ namespace Knightmare.Tests
 
                 Robot whiteBot = new(PlayerSide.White, new Minimax(), depth);
                 Board board = Board.Create();
-                CalculationResponse calculation = whiteBot.Calculate(board);
-                int result = calculation.CalculatedMovesTotal();
+                MoveStats calculation = whiteBot.Calculate(board);
+                int result = calculation.CalculatedMoves();
 
                 tested++;
 

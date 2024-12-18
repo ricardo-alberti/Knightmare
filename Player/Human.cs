@@ -1,6 +1,7 @@
 using Knightmare.Boards;
 using Knightmare.Moves;
 using Knightmare.Views;
+using Knightmare.DTO;
 
 class Human : Player
 {
@@ -9,7 +10,7 @@ class Human : Player
 
     }
 
-    override protected Move FindMove(Board _board)
+    override protected MoveStats FindMove(Board _board)
     {
         View view = new();
         Move move = new();
@@ -31,7 +32,7 @@ class Human : Player
             _board.Undo();
             _board.Undo();
 
-            view.PrintBoard(_board);
+            view.PrintBoard(_board, new MoveStats(new Move()));
             return FindMove(_board);
         }
 
@@ -50,6 +51,6 @@ class Human : Player
         last = _board.Tile(lastX, lastY);
         move = new Move(first, last);
 
-        return move;
+        return new MoveStats(move);
     }
 }

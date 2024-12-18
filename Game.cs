@@ -18,15 +18,10 @@ internal sealed class Game
 
     public void Start()
     {
-        view.PrintBoard(ChessBoard);
-
         while (true)
         {
-            white.Play(ChessBoard);
-            view.PrintBoard(ChessBoard);
-
-            black.Play(ChessBoard);
-            view.PrintBoard(ChessBoard);
+            view.PrintBoard(ChessBoard, white.Play(ChessBoard), true);
+            view.PrintBoard(ChessBoard, black.Play(ChessBoard), true);
         }
     }
 }

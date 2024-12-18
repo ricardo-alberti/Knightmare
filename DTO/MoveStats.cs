@@ -2,34 +2,36 @@ using Knightmare.Moves;
 
 namespace Knightmare.DTO
 {
-    internal class CalculationResponse
+    internal class MoveStats
     {
         private readonly int calculatedMoves;
-        private readonly MoveTree bestMoveTree;
-        private readonly Move bestMove;
-        private readonly long elapsedTime;
         private readonly int evaluation;
+        private readonly long elapsedTime;
+        private readonly Move move;
+        private readonly MoveTree moveTree;
 
-        public CalculationResponse() : this(0, new MoveTree(), new Move(), 0, 0)
+        public MoveStats() : this(0, new MoveTree(), new Move(), 0, 0)
         {
 
         }
 
-        public CalculationResponse(int _calculatedMoves, MoveTree _bestMoveTree, Move _bestMove, long _elapsedTime, int _evaluation)
+        public MoveStats(Move _move) : this(0, new MoveTree(), _move, 0, 0) { }
+        public MoveStats(int _calculatedMoves, MoveTree _moveTree,
+                Move _move, long _elapsedTime, int _evaluation)
         {
             calculatedMoves = _calculatedMoves;
-            bestMoveTree = _bestMoveTree;
-            bestMove = _bestMove;
+            moveTree = _moveTree;
+            move = _move;
             elapsedTime = _elapsedTime;
             evaluation = _evaluation;
         }
 
-        public Move BestMove()
+        public Move Move()
         {
-            return bestMove;
+            return move;
         }
 
-        public int CalculatedMovesTotal()
+        public int CalculatedMoves()
         {
             return calculatedMoves;
         }
@@ -46,7 +48,7 @@ namespace Knightmare.DTO
 
         public MoveTree MoveTree()
         {
-            return bestMoveTree;
+            return moveTree;
         }
     }
 }

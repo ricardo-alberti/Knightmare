@@ -17,17 +17,17 @@ internal class Robot : Player
         level = _level;
     }
 
-    public CalculationResponse Calculate(Board _position)
+    public MoveStats Calculate(Board _position)
     {
         Dictionary<int, MoveTree> moveMap = new Dictionary<int, MoveTree>();
         Robot me = new Robot(Side(), level);
         Robot enemy = new Robot(EnemySide(), level);
-        Board position = _position.Copy();
+        Board position = _position;
 
         MoveTree movetree = search.BestTree(position, me, enemy, level);
         Node root = movetree.Root();
 
-        CalculationResponse response = new CalculationResponse(
+        MoveStats response = new MoveStats(
                 search.TotalMoves, 
                 movetree, 
                 root.Value(), 
@@ -38,8 +38,8 @@ internal class Robot : Player
         return response;
     }
 
-    override protected Move FindMove(Board _board)
+    override protected MoveStats FindMove(Board _board)
     {
-        return this.Calculate(_board).BestMove();
+        return this.Calculate(_board);
     }
 }

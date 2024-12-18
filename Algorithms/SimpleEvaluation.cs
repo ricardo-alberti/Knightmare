@@ -6,20 +6,8 @@ namespace Knightmare.Algorithm
     {
         public int Execute(Board _position)
         {
-            int whiteQuality = 0;
-            int blackQuality = 0;
-
-            foreach (var pair in _position.WhitePieces())
-            {
-                whiteQuality += pair.Value.Value();
-            }
-
-            foreach (var pair in _position.BlackPieces())
-            {
-                blackQuality += pair.Value.Value();
-            }
-
-            return (whiteQuality) - (blackQuality);
+            return _position.WhitePieces().Sum(pair => pair.Value.Value())
+                   - _position.BlackPieces().Sum(pair => pair.Value.Value());
         }
     }
 }

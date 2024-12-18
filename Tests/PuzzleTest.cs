@@ -35,7 +35,7 @@ namespace Knightmare.Tests
                 {
                     Robot whiteBot = new(PlayerSide.White, level);
                     Board board = Board.Create(puzzle);
-                    CalculationResponse calculation = whiteBot.Calculate(board);
+                    MoveStats calculation = whiteBot.Calculate(board);
                     whiteBot.Play(board);
                     string result = board.FEN();
 

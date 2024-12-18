@@ -1,4 +1,5 @@
 using Knightmare.Boards;
+using Knightmare.DTO;
 
 namespace Knightmare.Views
 {
@@ -13,7 +14,7 @@ namespace Knightmare.Views
             moveTreeView = new MoveTreeView();
         }
 
-        public void PrintBoard(Board _board, bool _FEN = true)
+        public void PrintBoard(Board _board, MoveStats _stats, bool _FEN = true)
         {
             Console.Clear();
 
@@ -33,6 +34,11 @@ namespace Knightmare.Views
             }
 
             Console.WriteLine("    -----------------");
+
+            Console.WriteLine($"Time elapsed: {_stats.ElapsedTime()}");
+            Console.WriteLine($"Calculated moves: {_stats.CalculatedMoves()}");
+            Console.WriteLine($"Eval: {_stats.Evaluation()}");
+            moveView.Print(_stats.Move());
 
             if (_FEN == true)
             {

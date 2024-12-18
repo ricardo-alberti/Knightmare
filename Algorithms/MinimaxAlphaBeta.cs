@@ -27,8 +27,7 @@ namespace Knightmare.Algorithm
 
         private MoveTree EvaluateTrees(Board _position, Robot me, Robot enemy, int depth, int alpha, int beta, bool isMaximizing)
         {
-            // or game over adicionar dps
-            if (depth == 0)
+            if (depth == 0)// || IsGameOver(_position, me))
             {
                 int eval = evaluator.Execute(_position);
                 return new MoveTree(new Node() { eval = eval });
@@ -41,7 +40,7 @@ namespace Knightmare.Algorithm
                 return new MoveTree(new Node() { eval = eval });
             }
 
-            MoveTree? bestMoveTree = null;
+            MoveTree bestMoveTree = new MoveTree(new Node() { eval = isMaximizing ? int.MinValue : int.MaxValue });
 
             foreach (var move in possibleMoves)
             {
@@ -51,14 +50,9 @@ namespace Knightmare.Algorithm
 
                 MoveTree childTree = EvaluateTrees(newPosition, enemy, me, depth - 1, alpha, beta, !isMaximizing);
 
-                if (bestMoveTree == null)
-                {
-                    bestMoveTree = new MoveTree(new Node(move, newPosition) { eval = childTree.Root().eval });
-                }
-
                 if (isMaximizing)
                 {
-                    if (childTree.Root().eval > (bestMoveTree.Root().eval))
+                    if (childTree.Root().eval > bestMoveTree.Root().eval)
                     {
                         bestMoveTree.Root().value = move;
                         bestMoveTree.Root().eval = childTree.Root().eval;
@@ -67,7 +61,7 @@ namespace Knightmare.Algorithm
                 }
                 else
                 {
-                    if (childTree.Root().eval < (bestMoveTree.Root().eval))
+                    if (childTree.Root().eval < bestMoveTree.Root().eval)
                     {
                         bestMoveTree.Root().value = move;
                         bestMoveTree.Root().eval = childTree.Root().eval;
