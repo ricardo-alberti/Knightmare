@@ -5,30 +5,35 @@ namespace Knightmare.Boards
 {
     internal class Board
     {
-        private readonly PieceCollection whitePieces;
-        private readonly PieceCollection blackPieces;
         private readonly Tile[,] tiles;
         private readonly Stack<Move> history;
+        private readonly Dictionary<Point, ChessPiece> whitePieces;
+        private readonly Dictionary<Point, ChessPiece> blackPieces;
 
         public Board()
-            : this(new PieceCollection(), new PieceCollection(), new Tile[8, 8])
+            : this(new Dictionary<Point, ChessPiece>(),
+                new Dictionary<Point, ChessPiece>(), new Tile[8, 8])
         {
 
         }
 
-        public Board(PieceCollection _whitePieces, PieceCollection _blackPieces)
+        public Board(Dictionary<Point, ChessPiece> _whitePieces,
+                Dictionary<Point, ChessPiece> _blackPieces)
             : this(_whitePieces, _blackPieces, new Tile[8, 8])
         {
 
         }
 
-        public Board(PieceCollection _whitePieces, PieceCollection _blackPieces, Tile[,] _tiles)
-            : this (_whitePieces, _blackPieces, _tiles, new Stack<Move>())
+        public Board(Dictionary<Point, ChessPiece> _whitePieces,
+                Dictionary<Point, ChessPiece> _blackPieces, Tile[,] _tiles)
+            : this(_whitePieces, _blackPieces, _tiles, new Stack<Move>())
         {
 
         }
 
-        public Board(PieceCollection _whitePieces, PieceCollection _blackPieces, Tile[,] _tiles, Stack<Move> _history)
+        public Board(Dictionary<Point, ChessPiece> _whitePieces,
+                Dictionary<Point, ChessPiece> _blackPieces,
+                Tile[,] _tiles, Stack<Move> _history)
         {
             whitePieces = _whitePieces;
             blackPieces = _blackPieces;
@@ -47,43 +52,36 @@ namespace Knightmare.Boards
             return tiles;
         }
 
-        public Board Update(Move _move, bool _keepHistory = true)
+        public void Update(Move _move, bool _keepHistory = true)
         {
             if (_keepHistory)
                 history.Push(_move);
 
             Tile[] newTiles = _move.Tiles();
-            Tile[,] updatedTiles = tiles;
-
             ChessPiece pieceUpdated = newTiles[1].Piece();
 
             foreach (var tile in newTiles)
             {
                 int x = tile.Position().x;
                 int y = tile.Position().y;
-                updatedTiles[y, x] = tile;
+                tiles[y, x] = tile;
             }
-
-            var whitePiecesUpdated = whitePieces.List();
-            var blackPiecesUpdated = blackPieces.List();
 
             var start = newTiles[0].Position();
             var end = newTiles[1].Position();
 
             if (pieceUpdated.Side() == PlayerSide.White)
             {
-                whitePiecesUpdated.Remove(start);
-                whitePiecesUpdated[end] = pieceUpdated;
-                blackPiecesUpdated.Remove(end);
+                whitePieces.Remove(start);
+                whitePieces[end] = pieceUpdated;
+                blackPieces.Remove(end);
             }
             else
             {
-                blackPiecesUpdated.Remove(start);
-                blackPiecesUpdated[end] = pieceUpdated;
-                whitePiecesUpdated.Remove(end);
+                blackPieces.Remove(start);
+                blackPieces[end] = pieceUpdated;
+                whitePieces.Remove(end);
             }
-
-            return new Board(new PieceCollection(whitePiecesUpdated), new PieceCollection(blackPiecesUpdated), updatedTiles, history);
         }
 
         public void Undo()
@@ -92,7 +90,7 @@ namespace Knightmare.Boards
                 return;
 
             Move lastMove = history.Pop();
-            
+
             this.Update(lastMove.Undo(), false);
         }
 
@@ -108,11 +106,11 @@ namespace Knightmare.Boards
 
         public Dictionary<Point, ChessPiece> SidePieces(PlayerSide _side)
         {
-            Dictionary<Point, ChessPiece> pieces = whitePieces.List();
+            Dictionary<Point, ChessPiece> pieces = whitePieces;
 
             if (_side == PlayerSide.Black)
             {
-                pieces = blackPieces.List();
+                pieces = blackPieces;
             }
 
             return pieces;
@@ -120,23 +118,24 @@ namespace Knightmare.Boards
 
         public Dictionary<Point, ChessPiece> WhitePieces()
         {
-            return whitePieces.List();
+            return whitePieces;
         }
 
         public Dictionary<Point, ChessPiece> BlackPieces()
         {
-            return blackPieces.List();
+            return blackPieces;
         }
 
         static public Board Create(string _fen = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr")
         {
+            int x = 0;
+            int y = 0;
+
             Board board = new();
             Tile tile = new();
             Point point = new();
-            PieceCollection white = new();
-            PieceCollection black = new();
-            int x = 0;
-            int y = 0;
+            Dictionary<Point, ChessPiece> white = new();
+            Dictionary<Point, ChessPiece> black = new();
 
             foreach (char k in _fen)
             {
@@ -158,17 +157,20 @@ namespace Knightmare.Boards
                 }
                 else
                 {
+                    ChessPiece piece;
                     point = new Point(x, y);
 
                     if (Char.IsUpper(k))
                     {
                         tile = new Tile(ChessPiece.Create(k, point, PlayerSide.White), point);
-                        white.Add(tile.Piece());
+                        piece = tile.Piece();
+                        white[piece.Position()] = piece;
                     }
                     else if (char.IsLower(k))
                     {
                         tile = new Tile(ChessPiece.Create(k, point, PlayerSide.Black), point);
-                        black.Add(tile.Piece());
+                        piece = tile.Piece();
+                        black[piece.Position()] = piece;
                     }
 
                     board.Tiles()[y, x] = tile;

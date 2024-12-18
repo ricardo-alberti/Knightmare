@@ -11,6 +11,7 @@ namespace Knightmare.Moves
         private readonly Tile finalTile;
 
         public Move() : this(new Tile(new Point(0, 0)), new Tile(new Point(0, 0))) { }
+
         public Move(Move move)
         {
             piece = move.Piece();

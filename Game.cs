@@ -22,10 +22,10 @@ internal sealed class Game
 
         while (true)
         {
-            ChessBoard = white.Play(ChessBoard);
+            white.Play(ChessBoard);
             view.PrintBoard(ChessBoard);
 
-            ChessBoard = black.Play(ChessBoard);
+            black.Play(ChessBoard);
             view.PrintBoard(ChessBoard);
         }
     }

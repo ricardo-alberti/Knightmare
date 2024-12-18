@@ -46,7 +46,8 @@ namespace Knightmare.Algorithm
             foreach (var move in possibleMoves)
             {
                 TotalMoves++;
-                Board newPosition = _position.Copy().Update(move);
+                Board newPosition = _position.Copy();
+                newPosition.Update(move);
 
                 MoveTree childTree = EvaluateTrees(newPosition, enemy, me, depth - 1, !isMaximizing);
 

@@ -27,7 +27,7 @@ abstract class Player
         return enemySide;
     }
 
-    public Board Play(Board _board)
+    public void Play(Board _board)
     {
         Move move = FindMove(_board);
 
@@ -36,9 +36,7 @@ abstract class Player
             throw new Exception("Invalid Player Move");
         }
 
-        Board newPosition = _board.Update(move);
-
-        return newPosition;
+        _board.Update(move);
     }
 
     abstract protected Move FindMove(Board _board);
