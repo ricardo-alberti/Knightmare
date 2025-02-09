@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Knightmare.Moves;
 using Knightmare.Boards;
 using System.Diagnostics;

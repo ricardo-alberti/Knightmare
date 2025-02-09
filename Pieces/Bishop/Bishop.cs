@@ -1,6 +1,6 @@
 namespace Knightmare.Pieces
 {
-    internal abstract class Bishop : ChessPiece
+    internal abstract class Bishop : Piece
     {
         private static readonly int[,] moveSet = new int[,] { { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
         private const int pieceValue = 3;
@@ -11,17 +11,14 @@ namespace Knightmare.Pieces
 
         }
 
-        public static ChessPiece Create(Point position, PlayerSide side)
+        public static Piece Create(Point position, PlayerSide side)
         {
-            switch (side)
+            if (side == PlayerSide.White)
             {
-                case PlayerSide.White:
-                    return new WhiteBishop(position);
-                case PlayerSide.Black:
-                    return new BlackBishop(position);
-                default:
-                    return new Piece();
+                return new WhiteBishop(position);
             }
+
+            return new BlackBishop(position);
         }
     }
 }

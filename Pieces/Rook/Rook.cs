@@ -1,6 +1,6 @@
 namespace Knightmare.Pieces
 {
-    internal abstract class Rook : ChessPiece
+    internal abstract class Rook : Piece
     {
         private static readonly int[,] moveSet = new int[,] { { -1, 0 }, { 1, 0 }, { 0, 1 }, { 0, -1 } };
         private const int pieceValue = 5;
@@ -11,17 +11,12 @@ namespace Knightmare.Pieces
 
         }
 
-        public static ChessPiece Create(Point position, PlayerSide side)
+        public static Piece Create(Point position, PlayerSide side)
         {
-            switch (side)
-            {
-                case PlayerSide.White:
-                    return new WhiteRook(position);
-                case PlayerSide.Black:
-                    return new BlackRook(position);
-                default:
-                    return new Piece();
-            }
+            if (side == PlayerSide.White)
+                return new WhiteRook(position);
+
+            return new BlackRook(position);
         }
     }
 }

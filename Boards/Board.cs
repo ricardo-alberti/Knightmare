@@ -5,21 +5,21 @@ namespace Knightmare.Boards
 {
     internal class Board
     {
-        public Dictionary<Point, ChessPiece> WhitePieces;
-        public Dictionary<Point, ChessPiece> BlackPieces;
+        public Dictionary<Point, Piece> WhitePieces;
+        public Dictionary<Point, Piece> BlackPieces;
         public PlayerSide SidePlayable { get; set; } = PlayerSide.White;
         private Tile[,] Tiles { get; set; }
 
         public Board()
-            : this(new Dictionary<Point, ChessPiece>(),
-                   new Dictionary<Point, ChessPiece>(),
+            : this(new Dictionary<Point, Piece>(),
+                   new Dictionary<Point, Piece>(),
                    new Tile[8, 8])
         {
 
         }
 
-        public Board(Dictionary<Point, ChessPiece> _whitePieces,
-                     Dictionary<Point, ChessPiece> _blackPieces,
+        public Board(Dictionary<Point, Piece> _whitePieces,
+                     Dictionary<Point, Piece> _blackPieces,
                      Tile[,] _tiles)
         {
             Tiles = _tiles;
@@ -29,7 +29,6 @@ namespace Knightmare.Boards
 
         public static Board CreateUCI(string _inputUCI)
         {
-            //position startpos e2e4
             if (string.IsNullOrWhiteSpace(_inputUCI))
                 throw new ArgumentException("UCI input cannot be null or empty");
 
@@ -82,7 +81,7 @@ namespace Knightmare.Boards
         public void Update(Move _move)
         {
             Tile[] newTiles = _move.Tiles();
-            ChessPiece pieceUpdated = newTiles[1].Piece();
+            Piece pieceUpdated = newTiles[1].Piece();
 
             foreach (var tile in newTiles)
             {
@@ -120,9 +119,9 @@ namespace Knightmare.Boards
             return Tiles[y, x];
         }
 
-        public Dictionary<Point, ChessPiece> SidePieces()
+        public Dictionary<Point, Piece> SidePieces()
         {
-            Dictionary<Point, ChessPiece> pieces = WhitePieces;
+            Dictionary<Point, Piece> pieces = WhitePieces;
 
             if (SidePlayable == PlayerSide.Black)
             {
@@ -135,8 +134,8 @@ namespace Knightmare.Boards
         static public Board Create(string _fen = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr/ w - - 0 0")
         {
             Board board = new();
-            Dictionary<Point, ChessPiece> white = new();
-            Dictionary<Point, ChessPiece> black = new();
+            Dictionary<Point, Piece> white = new();
+            Dictionary<Point, Piece> black = new();
 
             string[] fenParts = _fen.Split(' ');
             string piecePlacement = fenParts[0];
@@ -154,9 +153,7 @@ namespace Knightmare.Boards
                         for (int i = 0; i < (int)char.GetNumericValue(k); x++, i++)
                         {
                             Point point = new Point(x, y);
-                            PlayerSide side = char.IsUpper(k) ? PlayerSide.White : PlayerSide.Black;
-                            ChessPiece piece = new Piece(); //placeholder
-                            Tile tile = new Tile(piece, point);
+                            Tile tile = new Tile(point);
                             board.Tiles[y, x] = tile;
                         }
                     }
@@ -164,7 +161,7 @@ namespace Knightmare.Boards
                     {
                         Point point = new Point(x, y);
                         PlayerSide side = char.IsUpper(k) ? PlayerSide.White : PlayerSide.Black;
-                        ChessPiece piece = ChessPiece.Create(k, point, side);
+                        Piece piece = Piece.Create(k, point, side);
 
                         Tile tile = new Tile(piece, point);
                         board.Tiles[y, x] = tile;
@@ -196,42 +193,38 @@ namespace Knightmare.Boards
                 int empty = 0;
                 for (int j = 0; j < 8; ++j)
                 {
-                    if (tiles[i, j].Piece().Side() != PlayerSide.None)
+                    Piece piece = tiles[i, j].Piece();
+                    if (piece == null)
                     {
-                        if (empty != 0)
+                        empty++;
+                    }
+                    else
+                    {
+                        if (empty > 0)
                         {
                             fen += empty.ToString();
+                            empty = 0;
                         }
-
-                        fen += tiles[i, j].Piece().Notation();
-                        empty = 0;
-                        continue;
+                        fen += piece.Notation();
                     }
-
-                    empty++;
                 }
 
-                if (empty != 0)
+                if (empty > 0)
                 {
                     fen += empty.ToString();
-                    fen += '/';
-                    continue;
                 }
 
-                fen += '/';
+                if (i < 7) fen += '/';
             }
-
-            fen = fen.Remove(fen.Length - 1);
 
             fen += " ";
-            if (SidePlayable == PlayerSide.White)
-            {
-                fen += "w";
-            }
-            else
-            {
-                fen += "b";
-            }
+            fen += (SidePlayable == PlayerSide.White) ? "w" : "b";
+
+            //string castling = GetCastlingRights();
+            //fen += " " + (castling == "" ? "-" : castling);
+
+            //string enPassant = GetEnPassantSquare();
+            //fen += " " + (enPassant == "" ? "-" : enPassant);
 
             fen += " - - 0 0";
 

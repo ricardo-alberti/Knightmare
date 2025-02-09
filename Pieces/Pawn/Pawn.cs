@@ -3,7 +3,7 @@ using Knightmare.Boards;
 
 namespace Knightmare.Pieces
 {
-    internal abstract class Pawn : ChessPiece
+    internal abstract class Pawn : Piece
     {
         private const int pieceValue = 1;
 
@@ -13,17 +13,12 @@ namespace Knightmare.Pieces
 
         }
 
-        public static ChessPiece Create(Point position, PlayerSide side)
+        public static Piece Create(Point position, PlayerSide side)
         {
-            switch (side)
-            {
-                case PlayerSide.White:
-                    return new WhitePawn(position);
-                case PlayerSide.Black:
-                    return new BlackPawn(position);
-                default:
-                    return new Piece();
-            }
+            if (side == PlayerSide.White)
+                return new WhitePawn(position);
+
+            return new BlackPawn(position);
         }
 
         public override List<Move> MoveRange(Board _position)
@@ -32,7 +27,7 @@ namespace Knightmare.Pieces
             List<Move> moveRange = new List<Move>();
 
             Tile initialTile = position.Tile(Position().x, Position().y);
-            ChessPiece piece = initialTile.Piece();
+            Piece piece = initialTile.Piece();
             int[,] moveSet = piece.MoveSet();
 
             int moveset_x, moveset_y, finaltile_x, finaltile_y;
@@ -49,9 +44,10 @@ namespace Knightmare.Pieces
 
                 Tile finalTile = position.Tile(finaltile_x, finaltile_y);
 
-                if (finalTile.Piece().Side() == initialTile.Piece().Side()) continue;
-                if (moveset_x != 0 && finalTile.Piece().Side() == PlayerSide.None) continue;
-                if (moveset_x == 0 && finalTile.Piece().Side() != PlayerSide.None) continue;
+
+                if (finalTile.Piece() != null && finalTile.Piece().Side() == initialTile.Piece().Side()) continue;
+                if (moveset_x != 0 && finalTile.Piece() == null) continue;
+                if (moveset_x == 0 && finalTile.Piece() != null) continue;
 
                 if (finalTile.Position().y == 7 || finalTile.Position().y == 0)
                 {
@@ -73,7 +69,7 @@ namespace Knightmare.Pieces
             return moveRange;
         }
 
-        private ChessPiece Promote(char notation)
+        private Piece Promote(char notation)
         {
             return Create(notation, base.Position(), base.Side());
         }
