@@ -12,7 +12,7 @@ namespace Knightmare.Views
 
         public void Print(Move _move)
         {
-            Console.WriteLine(@$"bestmove {MoveToString(_move)}");
+            Console.WriteLine($"bestmove {MoveToString(_move)}");
         }
 
         public string MoveToString(Move _move)

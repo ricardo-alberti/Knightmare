@@ -44,8 +44,8 @@ namespace Knightmare.Views
 
             if (_FEN == true)
             {
-                Console.Write("FEN: ");
-                Console.Write(_board.FEN());
+                Console.WriteLine("FEN: ");
+                Console.WriteLine(_board.FEN());
             }
         }
 
@@ -56,6 +56,12 @@ namespace Knightmare.Views
 
         private void PrintTile(Tile _tile)
         {
+            if (_tile.Piece() == null)
+            {
+                Console.Write(" _");
+                return;
+            }
+
             Console.Write(_tile.Piece().Shape());
         }
     }

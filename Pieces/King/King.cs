@@ -3,7 +3,7 @@ using Knightmare.Boards;
 
 namespace Knightmare.Pieces
 {
-    internal abstract class King : ChessPiece
+    internal abstract class King : Piece
     {
         private static readonly int[,] moveSet = new int[,] { { 0, -1 }, { 0, 1 }, { 1, 0 }, { 1, 1 }, { -1, 0 }, { -1, -1 }, { 1, -1 }, { -1, -1 } };
         private const int value = 500;
@@ -14,17 +14,12 @@ namespace Knightmare.Pieces
 
         }
 
-        public static ChessPiece Create(Point position, PlayerSide side)
+        public static Piece Create(Point position, PlayerSide side)
         {
-            switch (side)
-            {
-                case PlayerSide.White:
-                    return new WhiteKing(position);
-                case PlayerSide.Black:
-                    return new BlackKing(position);
-                default:
-                    return new Piece();
-            }
+            if (side == PlayerSide.White)
+                return new WhiteKing(position);
+
+            return new BlackKing(position);
         }
 
         public override List<Move> MoveRange(Board _position)
@@ -32,7 +27,7 @@ namespace Knightmare.Pieces
             List<Move> moveRange = new List<Move>();
 
             Tile initialTile = _position.Tile(Position().x, Position().y);
-            ChessPiece piece = initialTile.Piece();
+            Piece piece = initialTile.Piece();
             int[,] moveSet = piece.MoveSet();
             int moveset_x, moveset_y, finaltile_x, finaltile_y;
 
@@ -44,13 +39,13 @@ namespace Knightmare.Pieces
                 finaltile_x = initialTile.Position().x + moveset_x;
                 finaltile_y = initialTile.Position().y + moveset_y;
 
-                if (finaltile_x < 0 || finaltile_y < 0 || 
+                if (finaltile_x < 0 || finaltile_y < 0 ||
                         finaltile_y > 7 || finaltile_x > 7)
                     continue;
 
                 Tile finalTile = _position.Tile(finaltile_x, finaltile_y);
 
-                if (finalTile.Piece().Side() == initialTile.Piece().Side()) 
+                if (finalTile.Piece() != null && finalTile.Piece().Side() == initialTile.Piece().Side())
                     continue;
 
                 moveRange.Add(new Move(initialTile, finalTile));

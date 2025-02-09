@@ -22,9 +22,9 @@ namespace Knightmare.Algorithm
         public List<Move> GenerateMoves(Board _position)
         {
             List<Move> allMoves = new List<Move>();
-            List<ChessPiece> pieces = _position.SidePieces().Values.ToList();
+            List<Piece> pieces = _position.SidePieces().Values.ToList();
 
-            foreach (ChessPiece piece in pieces)
+            foreach (Piece piece in pieces)
             {
                 allMoves.AddRange(piece.MoveRange(_position));
             }
