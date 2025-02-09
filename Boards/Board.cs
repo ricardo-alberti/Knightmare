@@ -5,9 +5,9 @@ namespace Knightmare.Boards
 {
     internal class Board
     {
-        private Dictionary<Point, ChessPiece> whitePieces;
-        private Dictionary<Point, ChessPiece> blackPieces;
-        public PlayerSide sidePlayable { get; set; } = PlayerSide.White;
+        public Dictionary<Point, ChessPiece> WhitePieces;
+        public Dictionary<Point, ChessPiece> BlackPieces;
+        public PlayerSide SidePlayable { get; set; } = PlayerSide.White;
         private Tile[,] Tiles { get; set; }
 
         public Board()
@@ -23,8 +23,8 @@ namespace Knightmare.Boards
                      Tile[,] _tiles)
         {
             Tiles = _tiles;
-            whitePieces = _whitePieces;
-            blackPieces = _blackPieces;
+            WhitePieces = _whitePieces;
+            BlackPieces = _blackPieces;
         }
 
         public static Board CreateUCI(string _inputUCI)
@@ -74,7 +74,7 @@ namespace Knightmare.Boards
                 board.Update(parsedMove);
             }
 
-            board.sidePlayable = (moves.Length % 2 == 0) ? PlayerSide.White : PlayerSide.Black;
+            board.SidePlayable = (moves.Length % 2 == 0) ? PlayerSide.White : PlayerSide.Black;
 
             return board;
         }
@@ -96,17 +96,17 @@ namespace Knightmare.Boards
 
             if (pieceUpdated.Side() == PlayerSide.White)
             {
-                sidePlayable = PlayerSide.Black;
-                whitePieces.Remove(start);
-                whitePieces[end] = pieceUpdated;
-                blackPieces.Remove(end);
+                SidePlayable = PlayerSide.Black;
+                WhitePieces.Remove(start);
+                WhitePieces[end] = pieceUpdated;
+                BlackPieces.Remove(end);
             }
             else
             {
-                sidePlayable = PlayerSide.White;
-                blackPieces.Remove(start);
-                blackPieces[end] = pieceUpdated;
-                whitePieces.Remove(end);
+                SidePlayable = PlayerSide.White;
+                BlackPieces.Remove(start);
+                BlackPieces[end] = pieceUpdated;
+                WhitePieces.Remove(end);
             }
         }
 
@@ -122,24 +122,14 @@ namespace Knightmare.Boards
 
         public Dictionary<Point, ChessPiece> SidePieces()
         {
-            Dictionary<Point, ChessPiece> pieces = whitePieces;
+            Dictionary<Point, ChessPiece> pieces = WhitePieces;
 
-            if (this.sidePlayable == PlayerSide.Black)
+            if (SidePlayable == PlayerSide.Black)
             {
-                pieces = blackPieces;
+                pieces = BlackPieces;
             }
 
             return pieces;
-        }
-
-        public Dictionary<Point, ChessPiece> WhitePieces()
-        {
-            return whitePieces;
-        }
-
-        public Dictionary<Point, ChessPiece> BlackPieces()
-        {
-            return blackPieces;
         }
 
         static public Board Create(string _fen = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr/ w - - 0 0")
@@ -189,9 +179,9 @@ namespace Knightmare.Boards
                 }
             }
 
-            board.sidePlayable = (sideToMove == 'w' ? PlayerSide.White : PlayerSide.Black);
-            board.whitePieces = white;
-            board.blackPieces = black;
+            board.SidePlayable = (sideToMove == 'w' ? PlayerSide.White : PlayerSide.Black);
+            board.WhitePieces = white;
+            board.BlackPieces = black;
 
             return board;
         }
@@ -234,7 +224,7 @@ namespace Knightmare.Boards
             fen = fen.Remove(fen.Length - 1);
 
             fen += " ";
-            if (this.sidePlayable == PlayerSide.White)
+            if (SidePlayable == PlayerSide.White)
             {
                 fen += "w";
             }

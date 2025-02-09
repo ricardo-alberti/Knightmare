@@ -16,7 +16,7 @@ namespace Knightmare.Algorithm
         {
             var watch = Stopwatch.StartNew();
 
-            bool isMaximizing = _position.sidePlayable == PlayerSide.White;
+            bool isMaximizing = _position.SidePlayable == PlayerSide.White;
             var bestMoveTree = EvaluateTrees(_position, level, int.MinValue, int.MaxValue, isMaximizing);
 
             watch.Stop();
