@@ -15,13 +15,26 @@ namespace Knightmare.Views
 
         public void Print(MoveTree _move)
         {
-            int level = 0;
-            PrintBestMoves(_move.Root(), level);
-        }
+            int column = 0;
+            string cell = "";
 
-        private void PrintBestMoves(Node _node, int _level)
-        {
+            foreach (Node node in _move.Root().Children())
+            {
+                cell += $"{moveView.MoveToString(node.Value())} Eval: {node.eval} | ";
 
+                column++;
+                if (column >= 8)
+                {
+                    Console.WriteLine(cell);
+                    cell = "";
+                    column = 0;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(cell))
+            {
+                Console.WriteLine(cell);
+            }
         }
     }
 }

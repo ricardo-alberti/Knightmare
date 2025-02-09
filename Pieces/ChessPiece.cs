@@ -95,12 +95,12 @@ namespace Knightmare.Pieces
                         if (finalPiece.Side() != piece.Side()
                             && finalPiece.Side() != PlayerSide.None)
                         {
-                            moveRange.Add(new Move(initialTile, finalTile)); // Capture move
+                            moveRange.Add(new Move(initialTile, finalTile));
                             break;
                         }
                     }
 
-                    moveRange.Add(new Move(initialTile, finalTile)); // Valid move to empty tile
+                    moveRange.Add(new Move(initialTile, finalTile));
 
                     finaltile_x += moveset_x;
                     finaltile_y += moveset_y;

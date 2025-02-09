@@ -1,4 +1,5 @@
 using Knightmare.Moves;
+using Knightmare.Boards;
 
 namespace Knightmare.Views
 {
@@ -11,44 +12,54 @@ namespace Knightmare.Views
 
         public void Print(Move _move)
         {
-            string player = _move.Piece().Side() == PlayerSide.White ? "White" : "Black";
-
-            Console.WriteLine(@$"{_move.Piece().Shape()} from {Notation(_move.Tiles()[0].Position().x, _move.Tiles()[0].Position().y)} to {Notation(_move.Tiles()[1].Position().x, _move.Tiles()[1].Position().y)}");
+            Console.WriteLine(@$"bestmove {MoveToString(_move)}");
         }
 
-        private string Notation(int y, int x)
+        public string MoveToString(Move _move)
         {
             string ret = "";
 
-            switch (y)
+            foreach (Tile tile in _move.Tiles())
+            {
+                ret += Notation(tile.Position());
+            }
+
+            return ret;
+        }
+
+        public string Notation(Point _point)
+        {
+            string ret = "";
+
+            switch (_point.x)
             {
                 case 0:
-                    ret += 'a';
+                    ret += 'h';
                     break;
                 case 1:
-                    ret += 'b';
-                    break;
-                case 2:
-                    ret += 'c';
-                    break;
-                case 3:
-                    ret += 'd';
-                    break;
-                case 4:
-                    ret += 'e';
-                    break;
-                case 5:
-                    ret += 'f';
-                    break;
-                case 6:
                     ret += 'g';
                     break;
+                case 2:
+                    ret += 'f';
+                    break;
+                case 3:
+                    ret += 'e';
+                    break;
+                case 4:
+                    ret += 'd';
+                    break;
+                case 5:
+                    ret += 'c';
+                    break;
+                case 6:
+                    ret += 'b';
+                    break;
                 case 7:
-                    ret += 'h';
+                    ret += 'a';
                     break;
             }
 
-            switch (x)
+            switch (_point.y)
             {
                 case 0:
                     ret += '1';
@@ -75,7 +86,6 @@ namespace Knightmare.Views
                     ret += '8';
                     break;
             }
-
 
             return ret;
         }

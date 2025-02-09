@@ -4,24 +4,46 @@ using Knightmare.Boards;
 internal sealed class Game
 {
     private readonly View view;
-    private readonly Player white;
-    private readonly Player black;
+    private readonly Player chessBot;
     public Board ChessBoard { get; set; }
 
-    public Game(Player _white, Player _black, string _initialPosition)
+    public Game()
     {
         view = new View();
-        white = _white;
-        black = _black;
-        ChessBoard = Board.Create(_initialPosition);
+        chessBot = new Robot(5);
+        ChessBoard = Board.Create();
     }
 
     public void Start()
     {
+        Console.WriteLine("id name Knightmare");
+        Console.WriteLine("id author Ricardo Alberti");
+        Console.WriteLine("uciok");
+
         while (true)
         {
-            view.PrintBoard(ChessBoard, white.Play(ChessBoard), true);
-            view.PrintBoard(ChessBoard, black.Play(ChessBoard), true);
+            string? input = Console.ReadLine();
+            if (input == null) continue;
+
+            if (input == "uci")
+            {
+                Console.WriteLine("id name Knightmare");
+                Console.WriteLine("id author Ricardo Alberti");
+                Console.WriteLine("uciok");
+            }
+            else if (input.StartsWith("isready"))
+            {
+                Console.WriteLine("readyok");
+            }
+            else if (input.StartsWith("position"))
+            {
+                ChessBoard = Board.CreateUCI(input);
+            }
+            else if (input.StartsWith("go"))
+            {
+                view.PrintMove(chessBot.Play(ChessBoard));
+                view.PrintBoard(ChessBoard);
+            }
         }
     }
 }

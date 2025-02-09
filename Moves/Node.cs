@@ -1,5 +1,3 @@
-using Knightmare.Boards;
-
 namespace Knightmare.Moves
 {
     internal class Node
