@@ -1,4 +1,4 @@
-public class Point
+public struct Point
 {
     public int x { get; }
     public int y { get; }

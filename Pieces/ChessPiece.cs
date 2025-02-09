@@ -12,7 +12,9 @@ namespace Knightmare.Pieces
         private readonly int[,] moveSet;
         private readonly PlayerSide side;
 
-        protected ChessPiece(char _notation, string _shape, Point _position, int[,] _moveSet, PlayerSide _side, int _value)
+        protected ChessPiece(char _notation, string _shape, 
+                Point _position, int[,] _moveSet, 
+                PlayerSide _side, int _value)
         {
             notation = _notation;
             shape = _shape;
@@ -64,7 +66,7 @@ namespace Knightmare.Pieces
 
         public virtual List<Move> MoveRange(Board _position)
         {
-            Board position = _position.Copy();
+            Board position = _position;
             List<Move> moveRange = new List<Move>();
 
             Tile initialTile = position.Tile(Position().x, Position().y);
@@ -79,7 +81,8 @@ namespace Knightmare.Pieces
                 int finaltile_x = initialTile.Position().x + moveset_x;
                 int finaltile_y = initialTile.Position().y + moveset_y;
 
-                while (finaltile_x >= 0 && finaltile_y >= 0 && finaltile_x <= 7 && finaltile_y <= 7)
+                while (finaltile_x >= 0 && finaltile_y >= 0
+                        && finaltile_x <= 7 && finaltile_y <= 7)
                 {
                     Tile finalTile = position.Tile(finaltile_x, finaltile_y);
                     ChessPiece finalPiece = finalTile.Piece();
@@ -89,14 +92,15 @@ namespace Knightmare.Pieces
                         if (finalPiece.Side() == piece.Side())
                             break;
 
-                        if (finalPiece.Side() != piece.Side() && finalPiece.Side() != PlayerSide.None)
+                        if (finalPiece.Side() != piece.Side()
+                            && finalPiece.Side() != PlayerSide.None)
                         {
-                            moveRange.Add(new Move(initialTile, finalTile)); // Capture move
+                            moveRange.Add(new Move(initialTile, finalTile));
                             break;
                         }
                     }
 
-                    moveRange.Add(new Move(initialTile, finalTile)); // Valid move to empty tile
+                    moveRange.Add(new Move(initialTile, finalTile));
 
                     finaltile_x += moveset_x;
                     finaltile_y += moveset_y;

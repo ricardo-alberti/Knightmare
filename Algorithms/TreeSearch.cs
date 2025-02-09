@@ -17,16 +17,16 @@ namespace Knightmare.Algorithm
             evaluator = _evaluator;
         }
 
-        public abstract MoveTree BestTree(Board _position, Robot me, Robot enemy, int level);
+        public abstract MoveTree BestTree(Board _position, int level);
 
-        public List<Move> GenerateMoves(Board _position, Robot robot)
+        public List<Move> GenerateMoves(Board _position)
         {
             List<Move> allMoves = new List<Move>();
-            List<ChessPiece> pieces = _position.SidePieces(robot.Side()).Values.ToList();
+            List<ChessPiece> pieces = _position.SidePieces().Values.ToList();
 
             foreach (ChessPiece piece in pieces)
             {
-                allMoves.AddRange(piece.MoveRange(_position.Copy()));
+                allMoves.AddRange(piece.MoveRange(_position));
             }
 
             return allMoves;

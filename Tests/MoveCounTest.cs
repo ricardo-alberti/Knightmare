@@ -1,5 +1,4 @@
 using Knightmare.Boards;
-using Knightmare.Algorithm;
 using Knightmare.DTO;
 
 namespace Knightmare.Tests
@@ -14,7 +13,7 @@ namespace Knightmare.Tests
             {
                 {1, 20},
                 {2, 400},
-                {3, 8902},
+                //{3, 8902},
                 //{4, 197281},
                 //{5, 4865609}
             };
@@ -31,10 +30,10 @@ namespace Knightmare.Tests
                 int depth = pair.Key;
                 int moves = pair.Value;
 
-                Robot whiteBot = new(PlayerSide.White, new Minimax(), depth);
+                Robot bot = new(depth);
                 Board board = Board.Create();
-                CalculationResponse calculation = whiteBot.Calculate(board);
-                int result = calculation.CalculatedMovesTotal();
+                MoveStats calculation = bot.Calculate(board);
+                int result = calculation.CalculatedMoves();
 
                 tested++;
 

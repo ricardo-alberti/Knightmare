@@ -17,7 +17,23 @@ namespace Knightmare.Moves
             piece = _initialTile.Piece();
             captured = _finalTile.Piece();
             initialTile = _initialTile.SetPiece(new Piece());
-            finalTile = _finalTile.SetPiece(piece.UpdatePosition(_finalTile.Position()));
+            finalTile = _finalTile.SetPiece(piece);
+        }
+
+        public static Move Create(string _inputUCI, Board _board)
+        {
+            //a2a3
+            Move move = new();
+            string input = _inputUCI.ToLower();
+
+            int firstX = 7 - (input[0] - 'a');
+            int firstY = input[1] - '1';
+            int lastX = 7 - (input[2] - 'a');
+            int lastY = input[3] - '1';
+
+            move = new Move(_board.Tile(firstX, firstY), _board.Tile(lastX, lastY));
+
+            return move;
         }
 
         public Tile[] Tiles()
@@ -35,26 +51,9 @@ namespace Knightmare.Moves
             return captured;
         }
 
-        public Move Undo()
-        {
-            return new Move(finalTile, initialTile);
-        }
-
         public char Notation()
         {
             return piece.Notation();
-        }
-
-        public bool ValidPlayer(Player _player)
-        {
-            bool ret = false;
-
-            if (Piece().Side() == _player.Side())
-            {
-                ret = true;
-            }
-
-            return ret;
         }
     }
 }

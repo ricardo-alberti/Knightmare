@@ -12,12 +12,12 @@ namespace Knightmare.Algorithm
 
         }
 
-        public override MoveTree BestTree(Board _position, Robot me, Robot enemy, int level)
+        public override MoveTree BestTree(Board _position, int level)
         {
             var watch = Stopwatch.StartNew();
 
-            bool isMaximizing = me.Side() == PlayerSide.White;
-            var bestMoveTree = EvaluateTrees(_position, me, enemy, level, int.MinValue, int.MaxValue, isMaximizing);
+            bool isMaximizing = _position.sidePlayable == PlayerSide.White;
+            var bestMoveTree = EvaluateTrees(_position, level, int.MinValue, int.MaxValue, isMaximizing);
 
             watch.Stop();
             ElapsedTime = watch.ElapsedMilliseconds;
@@ -25,53 +25,53 @@ namespace Knightmare.Algorithm
             return bestMoveTree;
         }
 
-        private MoveTree EvaluateTrees(Board _position, Robot me, Robot enemy, int depth, int alpha, int beta, bool isMaximizing)
+        private MoveTree EvaluateTrees(Board _position, int depth, int alpha, int beta, bool isMaximizing)
         {
-            // or game over adicionar dps
             if (depth == 0)
             {
                 int eval = evaluator.Execute(_position);
                 return new MoveTree(new Node() { eval = eval });
             }
 
-            List<Move> possibleMoves = base.GenerateMoves(_position, me);
+            List<Move> possibleMoves = base.GenerateMoves(_position);
             if (possibleMoves.Count == 0)
             {
                 int eval = evaluator.Execute(_position);
                 return new MoveTree(new Node() { eval = eval });
             }
 
-            MoveTree? bestMoveTree = null;
+            Node rootNode = new Node() { eval = isMaximizing ? alpha : beta };
+            MoveTree bestMoveTree = new MoveTree(rootNode);
 
             foreach (var move in possibleMoves)
             {
                 TotalMoves++;
-                Board newPosition = _position.Copy().Update(move);
+                Board newPosition = _position.Copy();
+                newPosition.Update(move);
 
-                MoveTree childTree = EvaluateTrees(newPosition, enemy, me, depth - 1, alpha, beta, !isMaximizing);
+                MoveTree childTree = EvaluateTrees(newPosition, depth - 1, alpha, beta, !isMaximizing);
+                int childEval = childTree.Root().eval;
 
-                if (bestMoveTree == null)
-                {
-                    bestMoveTree = new MoveTree(new Node(move, newPosition) { eval = childTree.Root().eval });
-                }
+                Node childNode = new Node() { value = move, eval = childEval };
+                rootNode.AddChild(childNode);
 
                 if (isMaximizing)
                 {
-                    if (childTree.Root().eval > (bestMoveTree.Root().eval))
+                    if (childEval > rootNode.eval)
                     {
-                        bestMoveTree.Root().value = move;
-                        bestMoveTree.Root().eval = childTree.Root().eval;
+                        rootNode.value = move;
+                        rootNode.eval = childEval;
                     }
-                    alpha = Math.Max(alpha, bestMoveTree.Root().eval);
+                    alpha = Math.Max(alpha, childEval);
                 }
                 else
                 {
-                    if (childTree.Root().eval < (bestMoveTree.Root().eval))
+                    if (childEval < rootNode.eval)
                     {
-                        bestMoveTree.Root().value = move;
-                        bestMoveTree.Root().eval = childTree.Root().eval;
+                        rootNode.value = move;
+                        rootNode.eval = childEval;
                     }
-                    beta = Math.Min(beta, bestMoveTree.Root().eval);
+                    beta = Math.Min(beta, childEval);
                 }
 
                 if (beta <= alpha)

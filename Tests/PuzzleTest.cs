@@ -1,5 +1,6 @@
 using Knightmare.Boards;
 using Knightmare.DTO;
+using Knightmare.Views;
 
 namespace Knightmare.Tests
 {
@@ -7,15 +8,16 @@ namespace Knightmare.Tests
     {
         private readonly int[] depthLevel;
         private readonly Dictionary<string, string> puzzles;
+        private readonly View view;
 
         public PuzzleTest()
         {
-            depthLevel = new int[] { 1, 2, 3, 4 };
-
+            view = new View();
+            depthLevel = new int[] { 4 };
             puzzles = new Dictionary<string, string>()
             {
-                {"8/PPPPPPPP/k7/8/8/8/8/8", "8/P1PPPPPP/P7/8/8/8/8/8/"},
-                {"8/PPPPPPPP/kn6/8/8/8/8/8", "8/P1PPPPPP/Pn6/8/8/8/8/8/"},
+                {"B2rK2R/P1P3PP/pP3P1N/1pN5/2p1pq2/5nb1/b4ppp/6k1 w - - 0 0",
+                 "B2K3R/P1P3PP/pP3P1N/1pN5/2p1pq2/5nb1/b4ppp/6k1 b - - 0 0"}
             };
         }
 
@@ -25,7 +27,6 @@ namespace Knightmare.Tests
             int passed = 0;
             int failed = 0;
 
-
             foreach (var pair in puzzles)
             {
                 string puzzle = pair.Key;
@@ -33,10 +34,14 @@ namespace Knightmare.Tests
 
                 foreach (int level in depthLevel)
                 {
-                    Robot whiteBot = new(PlayerSide.White, level);
+                    Console.Clear();
+
+                    Robot bot = new(level);
                     Board board = Board.Create(puzzle);
-                    CalculationResponse calculation = whiteBot.Calculate(board);
-                    board = whiteBot.Play(board);
+                    MoveStats calculation = bot.Calculate(board);
+                    view.PrintBoard(board, calculation);
+
+                    bot.Play(board);
                     string result = board.FEN();
 
                     tested++;
@@ -51,6 +56,10 @@ namespace Knightmare.Tests
                     Console.WriteLine($"Received: {puzzle} -> {result}");
                     Console.WriteLine($"Expected: {puzzle} -> {solution}");
                     failed++;
+
+                    calculation = bot.Calculate(board);
+                    view.PrintBoard(board, calculation);
+                    Console.Read();
                 }
             }
 
