@@ -1,19 +1,20 @@
 using Knightmare.Boards;
 using Knightmare.DTO;
 using Knightmare.Views;
+using Knightmare.Moves;
 
 internal sealed class UCIHandler
 {
     private bool Debug;
     private readonly View view;
-    private readonly Player chessBot;
+    private readonly Robot chessBot;
     private Board chessBoard;
 
     public UCIHandler()
     {
-        view = new View();
-        chessBot = new Robot(5);
-        chessBoard = Board.Create();
+        view = new();
+        chessBoard = new();
+        chessBot = new Robot(6);
     }
 
     public void ProcessCommand(string input)
@@ -37,7 +38,7 @@ internal sealed class UCIHandler
                 break;
 
             case "position":
-                chessBoard = Board.CreateUCI(input);
+                chessBoard = BoardParser.CreateUCI(input);
                 break;
 
             case "go":
@@ -59,14 +60,17 @@ internal sealed class UCIHandler
 
     private void ExecuteGoCommand()
     {
-        MoveStats stats = chessBot.Play(chessBoard);
-
         if (Debug)
         {
             Console.WriteLine("Debug Info: Move Statistics");
-            view.PrintBoard(chessBoard, stats);
+
+            view.PrintBoard(chessBoard);
+            List<MoveTree> moveTrees = chessBot.GetInitialMoveTrees(chessBoard, 5);
+            MoveTreeView moveTreeView = new MoveTreeView();
+            moveTreeView.PrintAllMoveTrees(moveTrees);
         }
 
+        MoveStats stats = chessBot.Play(chessBoard);
         view.PrintMove(stats);
     }
 

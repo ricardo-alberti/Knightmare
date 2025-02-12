@@ -4,37 +4,25 @@ namespace Knightmare.Boards
 {
     internal class Tile
     {
-        private readonly Point position;
-        private readonly Piece piece;
-
-        public Tile() : this(null, new Point(0, 0)) { }
-
-        public Tile(Point _point) : this(null, _point) { }
-
-        public Tile(Piece _piece, Point _point)
+        public Point Position { get; }
+        private Piece? _tilePiece;
+        public Piece? TilePiece
         {
-            position = _point;
-            piece = _piece;
-        }
-
-        public Piece Piece()
-        {
-            return piece;
-        }
-
-        public Tile SetPiece(Piece _piece)
-        {
-            if (_piece == null)
+            get => _tilePiece;
+            set
             {
-                return new Tile(position);
+                _tilePiece = value;
+                if (_tilePiece != null)
+                {
+                    _tilePiece.Position = Position;
+                }
             }
-
-            return new Tile(_piece.UpdatePosition(Position()), position);
         }
 
-        public Point Position()
+        public Tile(Point _point, Piece _piece = null)
         {
-            return position;
+            Position = _point;
+            TilePiece = _piece;
         }
     }
 }

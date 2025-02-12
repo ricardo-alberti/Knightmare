@@ -11,7 +11,7 @@ abstract class Player
         MoveStats stats = FindMove(_board);
         Move move = stats.Move();
 
-        _board.Update(move);
+        move.Execute(_board);
 
         return stats;
     }

@@ -25,10 +25,8 @@ namespace Knightmare.Pieces
         public override List<Move> MoveRange(Board _position)
         {
             List<Move> moveRange = new List<Move>();
-
-            Tile initialTile = _position.Tile(Position().x, Position().y);
-            Piece piece = initialTile.Piece();
-            int[,] moveSet = piece.MoveSet();
+            Tile initialTile = _position.Tile(Position.x, Position.y);
+            int[,] moveSet = MoveSet;
             int moveset_x, moveset_y, finaltile_x, finaltile_y;
 
             for (int i = 0; i < moveSet.GetLength(0); ++i)
@@ -36,14 +34,14 @@ namespace Knightmare.Pieces
                 moveset_x = moveSet[i, 1];
                 moveset_y = moveSet[i, 0];
 
-                finaltile_x = initialTile.Position().x + moveset_x;
-                finaltile_y = initialTile.Position().y + moveset_y;
+                finaltile_x = initialTile.Position.x + moveset_x;
+                finaltile_y = initialTile.Position.y + moveset_y;
 
                 if (finaltile_x < 0 || finaltile_y < 0 || finaltile_y > 7 || finaltile_x > 7) continue;
 
                 Tile finalTile = _position.Tile(finaltile_x, finaltile_y);
 
-                if (finalTile.Piece() != null && finalTile.Piece().Side() == initialTile.Piece().Side()) continue;
+                if (finalTile.TilePiece != null && finalTile.TilePiece.Side == initialTile.TilePiece.Side) continue;
 
                 moveRange.Add(new Move(initialTile, finalTile));
             }

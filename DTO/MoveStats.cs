@@ -10,8 +10,6 @@ namespace Knightmare.DTO
         private readonly Move move;
         private readonly MoveTree moveTree;
 
-        public MoveStats() : this(0, new MoveTree(), new Move(), 0, 0) { }
-
         public MoveStats(int _calculatedMoves, MoveTree _moveTree,
                 Move _move, long _elapsedTime, int _evaluation)
         {

@@ -5,94 +5,50 @@ namespace Knightmare.Pieces
 {
     internal abstract class Piece
     {
-        private readonly char notation;
-        private readonly int value;
-        private readonly string shape;
-        private readonly Point position;
-        private readonly int[,] moveSet;
-        private readonly PlayerSide side;
+        public char Notation { get; }
+        public int Value { get; }
+        public string Shape { get; }
+        public int[,] MoveSet { get; }
+        public PlayerSide Side { get; }
+        public Point Position { get; set; }
 
         protected Piece(char _notation, string _shape,
                 Point _position, int[,] _moveSet,
                 PlayerSide _side, int _value)
         {
-            notation = _notation;
-            shape = _shape;
-            position = _position;
-            moveSet = _moveSet;
-            side = _side;
-            value = _value;
-        }
-
-        public Piece UpdatePosition(Point _position)
-        {
-            return Create(notation, _position, side);
-        }
-
-        public string Shape()
-        {
-            return shape;
-        }
-
-        public int Value()
-        {
-            return value;
-        }
-
-        public char Notation()
-        {
-            return notation;
-        }
-
-        public PlayerSide Side()
-        {
-            return side;
-        }
-
-        public int[,] MoveSet()
-        {
-            return moveSet;
-        }
-
-        public Point Position()
-        {
-            return position;
-        }
-
-        public Piece Copy()
-        {
-            return Create(notation, position, side);
+            Notation = _notation;
+            Shape = _shape;
+            MoveSet = _moveSet;
+            Side = _side;
+            Value = _value;
+            Position = _position;
         }
 
         public virtual List<Move> MoveRange(Board _position)
         {
-            Board position = _position;
             List<Move> moveRange = new List<Move>();
+            Tile initialTile = _position.Tile(Position.x, Position.y);
 
-            Tile initialTile = position.Tile(Position().x, Position().y);
-            Piece piece = initialTile.Piece();
-            int[,] moveSet = piece.MoveSet();
-
-            for (int i = 0; i < moveSet.GetLength(0); ++i)
+            for (int i = 0; i < MoveSet.GetLength(0); ++i)
             {
-                int moveset_x = moveSet[i, 0];
-                int moveset_y = moveSet[i, 1];
+                int moveset_x = MoveSet[i, 0];
+                int moveset_y = MoveSet[i, 1];
 
-                int finaltile_x = initialTile.Position().x + moveset_x;
-                int finaltile_y = initialTile.Position().y + moveset_y;
+                int finaltile_x = initialTile.Position.x + moveset_x;
+                int finaltile_y = initialTile.Position.y + moveset_y;
 
                 while (finaltile_x >= 0 && finaltile_y >= 0
                         && finaltile_x <= 7 && finaltile_y <= 7)
                 {
-                    Tile finalTile = position.Tile(finaltile_x, finaltile_y);
-                    Piece finalPiece = finalTile.Piece();
+                    Tile finalTile = _position.Tile(finaltile_x, finaltile_y);
+                    Piece? finalPiece = finalTile.TilePiece;
 
                     if (finalPiece != null)
                     {
-                        if (finalPiece.Side() == piece.Side())
+                        if (finalPiece.Side == Side)
                             break;
 
-                        if (finalPiece.Side() != piece.Side())
+                        if (finalPiece.Side != Side)
                         {
                             moveRange.Add(new Move(initialTile, finalTile));
                             break;

@@ -1,9 +1,7 @@
-public struct Point
+public readonly struct Point
 {
     public int x { get; }
     public int y { get; }
-
-    public Point() : this(0, 0) { }
 
     public Point(int _x, int _y)
     {
@@ -24,10 +22,6 @@ public struct Point
 
     public override bool Equals(object obj)
     {
-        if (obj == null || GetType() != obj.GetType())
-            return false;
-
-        Point other = (Point)obj;
-        return x == other.x && y == other.y;
+        return obj is Point other && x == other.x && y == other.y;
     }
 }
