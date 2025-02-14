@@ -19,16 +19,21 @@ internal class Robot : Player
     {
         Board position = _position;
         MoveTree movetree = search.BestTree(position, level);
-        Node root = movetree.Root();
+        Node root = movetree.Root;
         MoveStats response = new MoveStats(
                 search.TotalMoves,
                 movetree,
-                root.Value(),
+                root.Value,
                 search.ElapsedTime,
-                root.eval
+                root.Eval
         );
 
         return response;
+    }
+
+    public List<MoveTree> GetInitialMoveTrees(Board _position, int _depth)
+    {
+        return search.GetInitialMoveTrees(_position, _depth);
     }
 
     override protected MoveStats FindMove(Board _board)

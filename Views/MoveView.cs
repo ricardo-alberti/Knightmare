@@ -17,11 +17,13 @@ namespace Knightmare.Views
 
         public string MoveToString(Move _move)
         {
+            if (_move == null) throw new ArgumentException();
+
             string ret = "";
 
             foreach (Tile tile in _move.Tiles())
             {
-                ret += Notation(tile.Position());
+                ret += Notation(tile.Position);
             }
 
             return ret;
@@ -34,56 +36,56 @@ namespace Knightmare.Views
             switch (_point.x)
             {
                 case 0:
-                    ret += 'h';
+                    ret += 'a';
                     break;
                 case 1:
-                    ret += 'g';
-                    break;
-                case 2:
-                    ret += 'f';
-                    break;
-                case 3:
-                    ret += 'e';
-                    break;
-                case 4:
-                    ret += 'd';
-                    break;
-                case 5:
-                    ret += 'c';
-                    break;
-                case 6:
                     ret += 'b';
                     break;
+                case 2:
+                    ret += 'c';
+                    break;
+                case 3:
+                    ret += 'd';
+                    break;
+                case 4:
+                    ret += 'e';
+                    break;
+                case 5:
+                    ret += 'f';
+                    break;
+                case 6:
+                    ret += 'g';
+                    break;
                 case 7:
-                    ret += 'a';
+                    ret += 'h';
                     break;
             }
 
             switch (_point.y)
             {
                 case 0:
-                    ret += '1';
+                    ret += '8';
                     break;
                 case 1:
-                    ret += '2';
-                    break;
-                case 2:
-                    ret += '3';
-                    break;
-                case 3:
-                    ret += '4';
-                    break;
-                case 4:
-                    ret += '5';
-                    break;
-                case 5:
-                    ret += '6';
-                    break;
-                case 6:
                     ret += '7';
                     break;
+                case 2:
+                    ret += '6';
+                    break;
+                case 3:
+                    ret += '5';
+                    break;
+                case 4:
+                    ret += '4';
+                    break;
+                case 5:
+                    ret += '3';
+                    break;
+                case 6:
+                    ret += '2';
+                    break;
                 case 7:
-                    ret += '8';
+                    ret += '1';
                     break;
             }
 

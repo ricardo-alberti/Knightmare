@@ -4,36 +4,33 @@ namespace Knightmare.Views
 {
     internal class MoveTreeView
     {
-        Queue<Node> queue;
         MoveView moveView;
 
         public MoveTreeView()
         {
-            queue = new Queue<Node>();
             moveView = new MoveView();
         }
 
-        public void Print(MoveTree _move)
+        public void PrintAllMoveTrees(List<MoveTree> moveTrees)
         {
-            int column = 0;
-            string cell = "";
-
-            foreach (Node node in _move.Root().Children())
+            foreach (MoveTree tree in moveTrees)
             {
-                cell += $"{moveView.MoveToString(node.Value())} Eval: {node.eval} | ";
+                PrintBestContinuation(tree.Root, 0);
+                Console.WriteLine();
+            }
+        }
 
-                column++;
-                if (column >= 8)
-                {
-                    Console.WriteLine(cell);
-                    cell = "";
-                    column = 0;
-                }
+        private void PrintBestContinuation(Node _node, int depth)
+        {
+            if (_node.Value != null)
+            {
+                Console.WriteLine($"{new string(' ', depth * 4)}{_node?.Value?.Tiles()?[0]?.TilePiece?.Shape} {moveView.MoveToString(_node.Value)} E: {_node.Eval} OE: {_node.OriginalEval}");
             }
 
-            if (!string.IsNullOrEmpty(cell))
+            Node? bestNode = _node.Subnodes.FirstOrDefault();
+            if (bestNode != null)
             {
-                Console.WriteLine(cell);
+                PrintBestContinuation(bestNode, depth + 1);
             }
         }
     }
