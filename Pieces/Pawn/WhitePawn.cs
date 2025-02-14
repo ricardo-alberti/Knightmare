@@ -4,7 +4,7 @@ namespace Knightmare.Pieces
     {
         private const char notation = 'P';
         private const string shape = " \u2659";
-        private static readonly int[,] moveSet = new int[,] { { 1, 1 }, { 1, -1 }, { 1, 0 } };
+        private static readonly int[,] moveSet = new int[,] { { -1, 1 }, { -1, -1 }, { -1, 0 } };
         private const PlayerSide side = PlayerSide.White;
 
         public WhitePawn(Point position)

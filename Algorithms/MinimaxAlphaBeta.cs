@@ -16,8 +16,8 @@ namespace Knightmare.Algorithm
         {
             var watch = Stopwatch.StartNew();
 
-            bool isMaximizing = _position.sidePlayable == PlayerSide.White;
-            var bestMoveTree = EvaluateTrees(_position, level, int.MinValue, int.MaxValue, isMaximizing);
+            bool isMaximizing = _position.SidePlayable == PlayerSide.White;
+            var bestMoveTree = EvaluateBestContinuation(_position, level, int.MinValue, int.MaxValue, isMaximizing);
 
             watch.Stop();
             ElapsedTime = watch.ElapsedMilliseconds;
@@ -25,62 +25,106 @@ namespace Knightmare.Algorithm
             return bestMoveTree;
         }
 
-        private MoveTree EvaluateTrees(Board _position, int depth, int alpha, int beta, bool isMaximizing)
+        private MoveTree EvaluateBestContinuation(Board _position, int depth, int alpha, int beta, bool isMaximizing)
         {
+            int currentEval = evaluator.Execute(_position);
             if (depth == 0)
             {
-                int eval = evaluator.Execute(_position);
-                return new MoveTree(new Node() { eval = eval });
+                return new MoveTree(new Node() { Eval = currentEval, OriginalEval = currentEval });
             }
 
-            List<Move> possibleMoves = base.GenerateMoves(_position);
+            List<Move> possibleMoves = GenerateMoves(_position);
             if (possibleMoves.Count == 0)
             {
-                int eval = evaluator.Execute(_position);
-                return new MoveTree(new Node() { eval = eval });
+                return new MoveTree(new Node() { Eval = currentEval, OriginalEval = currentEval });
             }
 
-            Node rootNode = new Node() { eval = isMaximizing ? alpha : beta };
-            MoveTree bestMoveTree = new MoveTree(rootNode);
+            Node rootNode = new Node() { Eval = isMaximizing ? int.MinValue : int.MaxValue, OriginalEval = currentEval };
+            MoveTree? bestMoveTree = null;
+            Move? bestMove = null;
 
             foreach (var move in possibleMoves)
             {
                 TotalMoves++;
-                Board newPosition = _position.Copy();
-                newPosition.Update(move);
 
-                MoveTree childTree = EvaluateTrees(newPosition, depth - 1, alpha, beta, !isMaximizing);
-                int childEval = childTree.Root().eval;
+                move.Execute(_position);
+                MoveTree childTree = EvaluateBestContinuation(_position, depth - 1, alpha, beta, !isMaximizing);
+                int afterMoveEval = evaluator.Execute(_position);
+                _position.Undo();
 
-                Node childNode = new Node() { value = move, eval = childEval };
-                rootNode.AddChild(childNode);
+                int childEval = childTree.Root.Eval;
 
                 if (isMaximizing)
                 {
-                    if (childEval > rootNode.eval)
+                    if (childEval > rootNode.Eval)
                     {
-                        rootNode.value = move;
-                        rootNode.eval = childEval;
+                        rootNode.OriginalEval = afterMoveEval;
+                        rootNode.Eval = childEval;
+                        bestMoveTree = childTree;
+                        bestMove = move;
                     }
                     alpha = Math.Max(alpha, childEval);
                 }
                 else
                 {
-                    if (childEval < rootNode.eval)
+                    if (childEval < rootNode.Eval)
                     {
-                        rootNode.value = move;
-                        rootNode.eval = childEval;
+                        rootNode.OriginalEval = afterMoveEval;
+                        rootNode.Eval = childEval;
+                        bestMoveTree = childTree;
+                        bestMove = move;
                     }
                     beta = Math.Min(beta, childEval);
                 }
 
-                if (beta <= alpha)
+                if (beta <= alpha) // Alpha-beta pruning
                 {
                     break;
                 }
             }
 
-            return bestMoveTree;
+            if (bestMoveTree == null)
+            {
+                bestMoveTree = new MoveTree(new Node() { Eval = rootNode.Eval });
+            }
+
+            rootNode.Value = bestMove;
+            rootNode.Subnodes.Add(bestMoveTree.Root);
+            return new MoveTree(rootNode);
         }
+
+        public override List<MoveTree> GetInitialMoveTrees(Board _position, int depth)
+        {
+            List<MoveTree> moveTrees = new List<MoveTree>();
+            List<Move> possibleMoves = GenerateMoves(_position);
+            if (possibleMoves.Count == 0) return moveTrees;
+
+            bool isMaximizing = _position.SidePlayable == PlayerSide.White;
+            int alpha = int.MinValue, beta = int.MaxValue;
+
+            foreach (var move in possibleMoves)
+            {
+                move.Execute(_position);
+                MoveTree bestContinuation = EvaluateBestContinuation(_position, depth - 1, alpha, beta, !isMaximizing);
+                _position.Undo();
+
+                Node rootNode = new Node() { Value = move, Eval = bestContinuation.Root.Eval, OriginalEval = evaluator.Execute(_position) };
+                rootNode.Subnodes.Add(bestContinuation.Root);
+
+                moveTrees.Add(new MoveTree(rootNode));
+
+                // Update alpha-beta bounds
+                if (isMaximizing)
+                    alpha = Math.Max(alpha, rootNode.Eval);
+                else
+                    beta = Math.Min(beta, rootNode.Eval);
+
+                if (beta <= alpha) // Alpha-beta pruning
+                    break;
+            }
+
+            return moveTrees;
+        }
+
     }
 }

@@ -31,7 +31,9 @@ namespace Knightmare.Tests
                 int moves = pair.Value;
 
                 Robot bot = new(depth);
-                Board board = Board.Create();
+                Board board = new();
+                board = BoardParser.Create();
+
                 MoveStats calculation = bot.Calculate(board);
                 int result = calculation.CalculatedMoves();
 
@@ -52,6 +54,7 @@ namespace Knightmare.Tests
             Console.WriteLine($"TESTS PASSED: {passed}");
             Console.WriteLine($"TESTS FAILED: {failed}");
             Console.WriteLine($"TESTS EXECUTED: {tested}");
+            Console.WriteLine($"MoveCount Tests completed");
             Console.Read();
         }
     }

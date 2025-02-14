@@ -16,12 +16,12 @@ namespace Knightmare.Views
 
         public void PrintBoard(Board _board, MoveStats _stats = null, bool _FEN = true)
         {
-            Console.WriteLine("     H G F E D C B A");
+            Console.WriteLine("     A B C D E F G H");
             Console.WriteLine("    -----------------");
 
             for (int i = 0; i < 8; i++)
             {
-                Console.Write($" {i + 1} |");
+                Console.Write($" {8 - i} |");
 
                 for (int j = 0; j < 8; ++j)
                 {
@@ -38,14 +38,13 @@ namespace Knightmare.Views
                 Console.WriteLine($"Time elapsed: {_stats.ElapsedTime()}");
                 Console.WriteLine($"Calculated moves: {_stats.CalculatedMoves()}");
                 Console.WriteLine($"Eval: {_stats.Evaluation()}");
-                moveTreeView.Print(_stats.MoveTree());
                 moveView.Print(_stats.Move());
             }
 
             if (_FEN == true)
             {
-                Console.Write("FEN: ");
-                Console.Write(_board.FEN());
+                Console.WriteLine("FEN: ");
+                Console.WriteLine(BoardParser.FEN(_board));
             }
         }
 
@@ -56,7 +55,13 @@ namespace Knightmare.Views
 
         private void PrintTile(Tile _tile)
         {
-            Console.Write(_tile.Piece().Shape());
+            if (_tile.TilePiece == null)
+            {
+                Console.Write(" _");
+                return;
+            }
+
+            Console.Write(_tile.TilePiece.Shape);
         }
     }
 }

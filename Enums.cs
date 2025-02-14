@@ -1,6 +1,5 @@
 enum PlayerSide
 {
     Black,
-    White,
-    None
+    White
 }

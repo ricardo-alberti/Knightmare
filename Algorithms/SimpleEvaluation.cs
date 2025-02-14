@@ -6,8 +6,15 @@ namespace Knightmare.Algorithm
     {
         public int Execute(Board _position)
         {
-            return _position.WhitePieces().Sum(pair => pair.Value.Value())
-                   - _position.BlackPieces().Sum(pair => pair.Value.Value());
+            int eval = 0;
+
+            foreach (var piece in _position.WhitePieces.Values)
+                eval += piece.Value;
+
+            foreach (var piece in _position.BlackPieces.Values)
+                eval -= piece.Value;
+
+            return eval;
         }
     }
 }

@@ -18,15 +18,20 @@ namespace Knightmare.Algorithm
         }
 
         public abstract MoveTree BestTree(Board _position, int level);
+        public abstract List<MoveTree> GetInitialMoveTrees(Board _position, int depth);
 
         public List<Move> GenerateMoves(Board _position)
         {
             List<Move> allMoves = new List<Move>();
-            List<ChessPiece> pieces = _position.SidePieces().Values.ToList();
+            List<Piece> pieces = _position.SidePieces().Values.ToList();
 
-            foreach (ChessPiece piece in pieces)
+            foreach (Piece piece in pieces)
             {
-                allMoves.AddRange(piece.MoveRange(_position));
+                List<Move> pieceRange = piece.MoveRange(_position);
+                if (pieceRange.Count > 0)
+                {
+                    allMoves.AddRange(pieceRange);
+                }
             }
 
             return allMoves;
