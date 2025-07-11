@@ -6,24 +6,19 @@ namespace Knightmare.Algorithm
 {
     abstract internal class TreeSearch : ITreeSearch
     {
-        public int TotalMoves { get; set; }
-        public long ElapsedTime { get; set; }
         protected readonly IEvaluation evaluator;
 
         public TreeSearch(IEvaluation _evaluator)
         {
-            TotalMoves = 0;
-            ElapsedTime = 0;
             evaluator = _evaluator;
         }
 
-        public abstract MoveTree BestTree(Board _position, int level);
-        public abstract List<MoveTree> GetInitialMoveTrees(Board _position, int depth);
+        public abstract Node BestTree(Board _position, int level);
 
         public List<Move> GenerateMoves(Board _position)
         {
             List<Move> allMoves = new List<Move>();
-            List<Piece> pieces = _position.SidePieces().Values.ToList();
+            List<Piece> pieces = _position.SidePieces();
 
             foreach (Piece piece in pieces)
             {

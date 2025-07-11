@@ -41,7 +41,7 @@ namespace Knightmare.Pieces
 
                 Tile finalTile = _position.Tile(finaltile_x, finaltile_y);
 
-                if (finalTile.TilePiece != null && finalTile.TilePiece.Side == initialTile.TilePiece.Side) continue;
+                if (finalTile.TilePiece != null && finalTile.TilePiece.Side == initialTile?.TilePiece?.Side) continue;
 
                 moveRange.Add(new Move(initialTile, finalTile));
             }

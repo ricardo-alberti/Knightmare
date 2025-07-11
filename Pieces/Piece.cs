@@ -79,5 +79,11 @@ namespace Knightmare.Pieces
                     throw new ArgumentException($"Invalid piece notation: {notation}");
             }
         }
+
+        public virtual Piece Copy()
+        {
+            return Create(this.Notation, this.Position, this.Side);
+        }
+
     }
 }

@@ -54,7 +54,7 @@ namespace Knightmare.Pieces
                     foreach (char promotion in promotions)
                     {
                         initialTile.TilePiece = Promote(promotion);
-                        moveRange.Add(new Move(initialTile, finalTile, promotion));
+                        moveRange.Add(new Move(initialTile, finalTile));
                     }
 
                     continue;

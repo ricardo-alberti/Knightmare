@@ -1,7 +1,6 @@
 using Knightmare.Boards;
-using Knightmare.DTO;
-using Knightmare.Views;
 using Knightmare.Moves;
+using Knightmare.Views;
 
 internal sealed class UCIHandler
 {
@@ -14,7 +13,7 @@ internal sealed class UCIHandler
     {
         view = new();
         chessBoard = new();
-        chessBot = new Robot(6);
+        chessBot = new Robot(7);
     }
 
     public void ProcessCommand(string input)
@@ -60,18 +59,15 @@ internal sealed class UCIHandler
 
     private void ExecuteGoCommand()
     {
+        Move move = chessBot.Play(chessBoard);
+        view.PrintMove(move);
+
         if (Debug)
         {
             Console.WriteLine("Debug Info: Move Statistics");
 
             view.PrintBoard(chessBoard);
-            List<MoveTree> moveTrees = chessBot.GetInitialMoveTrees(chessBoard, 5);
-            MoveTreeView moveTreeView = new MoveTreeView();
-            moveTreeView.PrintAllMoveTrees(moveTrees);
         }
-
-        MoveStats stats = chessBot.Play(chessBoard);
-        view.PrintMove(stats);
     }
 
     private void HandleDebug(string argument)

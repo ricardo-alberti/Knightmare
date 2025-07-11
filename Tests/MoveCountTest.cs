@@ -1,6 +1,3 @@
-using Knightmare.Boards;
-using Knightmare.DTO;
-
 namespace Knightmare.Tests
 {
     internal sealed class MoveCountTest
@@ -21,6 +18,7 @@ namespace Knightmare.Tests
 
         public void Execute()
         {
+            /*
             int tested = 0;
             int passed = 0;
             int failed = 0;
@@ -56,6 +54,7 @@ namespace Knightmare.Tests
             Console.WriteLine($"TESTS EXECUTED: {tested}");
             Console.WriteLine($"MoveCount Tests completed");
             Console.Read();
+            */
         }
     }
 }

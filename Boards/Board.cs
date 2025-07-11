@@ -1,4 +1,3 @@
-using Knightmare.Moves;
 using Knightmare.Pieces;
 
 namespace Knightmare.Boards
@@ -9,7 +8,7 @@ namespace Knightmare.Boards
         public Dictionary<Point, Piece> BlackPieces;
         public PlayerSide SidePlayable { get; set; } = PlayerSide.White;
         public Tile[,] Tiles { get; set; }
-        public Stack<Move> History { get; set; }
+        public bool GameOver { get; set; }
 
         public Board()
             : this(new Dictionary<Point, Piece>(),
@@ -26,12 +25,6 @@ namespace Knightmare.Boards
             Tiles = _tiles;
             WhitePieces = _whitePieces;
             BlackPieces = _blackPieces;
-            History = new Stack<Move>();
-        }
-
-        public void Undo()
-        {
-            History.Pop().Undo(this);
         }
 
         public Tile Tile(int x, int y)
@@ -44,16 +37,48 @@ namespace Knightmare.Boards
             return Tiles[point.y, point.x];
         }
 
-        public Dictionary<Point, Piece> SidePieces()
+        public List<Piece> SidePieces()
         {
-            Dictionary<Point, Piece> pieces = WhitePieces;
+            List<Piece> pieces = WhitePieces.Values.ToList();
 
             if (SidePlayable == PlayerSide.Black)
             {
-                pieces = BlackPieces;
+                pieces = BlackPieces.Values.ToList();
             }
 
             return pieces;
+        }
+
+        public Board Copy()
+        {
+            Tile[,] copiedTiles = new Tile[8, 8];
+            for (int y = 0; y < 8; y++)
+            {
+                for (int x = 0; x < 8; x++)
+                {
+                    copiedTiles[y, x] = Tiles[y, x].Copy();
+                }
+            }
+
+            var copiedWhitePieces = new Dictionary<Point, Piece>();
+            foreach (var kvp in WhitePieces)
+            {
+                copiedWhitePieces[kvp.Key] = kvp.Value.Copy();
+            }
+
+            var copiedBlackPieces = new Dictionary<Point, Piece>();
+            foreach (var kvp in BlackPieces)
+            {
+                copiedBlackPieces[kvp.Key] = kvp.Value.Copy();
+            }
+
+            Board copiedBoard = new Board(copiedWhitePieces, copiedBlackPieces, copiedTiles)
+            {
+                SidePlayable = this.SidePlayable,
+                GameOver = this.GameOver,
+            };
+
+            return copiedBoard;
         }
     }
 }

@@ -5,75 +5,82 @@ namespace Knightmare.Moves
 {
     internal class Move
     {
-        private Piece? MovingPiece { get; set; }
-        private Piece? CapturedPiece { get; set; }
         private Tile InitialTile { get; set; }
         private Tile FinalTile { get; set; }
-        private char Promotion { get; set; }
+        private Piece? CapturedPiece { get; set; } // needed for undo
 
         public Move() : this(new Tile(new Point(0, 0)), new Tile(new Point(0, 0))) { }
 
-        public Move(Tile _initialTile, Tile _finalTile, char _promotion = '\0')
+        public Move(Tile _initialTile, Tile _finalTile)
         {
-            MovingPiece = _initialTile.TilePiece;
-            CapturedPiece = _finalTile.TilePiece;
             InitialTile = _initialTile;
             FinalTile = _finalTile;
-            Promotion = _promotion;
         }
-
-        public Tile[] Tiles() { return new Tile[2] { InitialTile, FinalTile }; }
 
         public void Execute(Board board)
         {
-            if (MovingPiece == null) return;
+            Piece piece = InitialTile.TilePiece!;
+            CapturedPiece = FinalTile.TilePiece;
+
+            if (piece == null) return;
 
             board.Tiles[InitialTile.Position.y, InitialTile.Position.x].TilePiece = null;
-            board.Tiles[FinalTile.Position.y, FinalTile.Position.x].TilePiece = MovingPiece;
+            board.Tiles[FinalTile.Position.y, FinalTile.Position.x].TilePiece = piece;
 
-            if (MovingPiece.Side == PlayerSide.White)
+            if (piece.Side == PlayerSide.White)
             {
                 board.SidePlayable = PlayerSide.Black;
                 board.WhitePieces.Remove(InitialTile.Position);
-                board.WhitePieces[FinalTile.Position] = MovingPiece;
+                board.WhitePieces[FinalTile.Position] = piece;
                 if (CapturedPiece != null) board.BlackPieces.Remove(FinalTile.Position);
             }
             else
             {
                 board.SidePlayable = PlayerSide.White;
                 board.BlackPieces.Remove(InitialTile.Position);
-                board.BlackPieces[FinalTile.Position] = MovingPiece;
+                board.BlackPieces[FinalTile.Position] = piece;
                 if (CapturedPiece != null) board.WhitePieces.Remove(FinalTile.Position);
             }
 
-            board.History.Push(this);
+            if (CapturedPiece != null && char.ToLower(CapturedPiece.Notation) == 'k')
+            {
+                board.GameOver = true;
+            }
         }
 
         public void Undo(Board board)
         {
-            if (MovingPiece == null) return;
+            Piece piece = FinalTile.TilePiece!;
+            if (piece == null) return;
 
-            if (Promotion != '\0')
-            {
-                MovingPiece = Piece.Create('p', MovingPiece.Position, MovingPiece.Side);
-            }
-
-            board.Tiles[InitialTile.Position.y, InitialTile.Position.x].TilePiece = MovingPiece;
+            // Restore pieces on tiles
+            board.Tiles[InitialTile.Position.y, InitialTile.Position.x].TilePiece = piece;
             board.Tiles[FinalTile.Position.y, FinalTile.Position.x].TilePiece = CapturedPiece;
 
-            if (MovingPiece.Side == PlayerSide.White)
+            // Restore piece dictionaries
+            if (piece.Side == PlayerSide.White)
             {
                 board.SidePlayable = PlayerSide.White;
-                board.WhitePieces[InitialTile.Position] = MovingPiece;
                 board.WhitePieces.Remove(FinalTile.Position);
-                if (CapturedPiece != null) board.BlackPieces[FinalTile.Position] = CapturedPiece;
+                board.WhitePieces[InitialTile.Position] = piece;
+
+                if (CapturedPiece != null)
+                    board.BlackPieces[FinalTile.Position] = CapturedPiece;
             }
             else
             {
                 board.SidePlayable = PlayerSide.Black;
-                board.BlackPieces[InitialTile.Position] = MovingPiece;
                 board.BlackPieces.Remove(FinalTile.Position);
-                if (CapturedPiece != null) board.WhitePieces[FinalTile.Position] = CapturedPiece;
+                board.BlackPieces[InitialTile.Position] = piece;
+
+                if (CapturedPiece != null)
+                    board.WhitePieces[FinalTile.Position] = CapturedPiece;
+            }
+
+            // Restore game state
+            if (CapturedPiece != null && char.ToLower(CapturedPiece.Notation) == 'k')
+            {
+                board.GameOver = false;
             }
         }
 
@@ -91,5 +98,7 @@ namespace Knightmare.Moves
 
             return move;
         }
+
+        public Tile[] Tiles() => new Tile[] { InitialTile, FinalTile };
     }
 }

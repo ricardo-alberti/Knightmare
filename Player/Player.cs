@@ -1,20 +1,16 @@
 using Knightmare.Moves;
 using Knightmare.Boards;
-using Knightmare.DTO;
 
 abstract class Player
 {
     public Player() { }
 
-    public MoveStats Play(Board _board)
+    public Move Play(Board _board)
     {
-        MoveStats stats = FindMove(_board);
-        Move move = stats.Move();
-
+        Move move = FindMove(_board);
         move.Execute(_board);
-
-        return stats;
+        return move;
     }
 
-    abstract protected MoveStats FindMove(Board _board);
+    abstract protected Move FindMove(Board _board);
 }
