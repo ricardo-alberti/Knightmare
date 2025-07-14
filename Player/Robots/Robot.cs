@@ -4,18 +4,18 @@ using Knightmare.Boards;
 
 internal class Robot : Player
 {
-    private readonly TreeSearch search;
+    public TreeSearch Search { get; }
     private readonly int level;
 
     public Robot(int _level) : this(new MinimaxAlphaBeta(), _level) { }
     public Robot(TreeSearch _search, int _level)
     {
-        search = _search;
+        Search = _search;
         level = _level;
     }
 
     override protected Move FindMove(Board _board)
     {
-        return search.BestTree(_board, level).Value!;
+        return Search.BestTree(_board, level).Value!;
     }
 }

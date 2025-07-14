@@ -6,10 +6,7 @@ namespace Knightmare.Algorithm
     internal class MinimaxAlphaBeta : TreeSearch
     {
         public MinimaxAlphaBeta() : this(new SimpleEvaluation()) { }
-        public MinimaxAlphaBeta(IEvaluation _evaluator) : base(_evaluator)
-        {
-
-        }
+        public MinimaxAlphaBeta(IEvaluation _evaluator) : base(_evaluator) { }
 
         public override Node BestTree(Board _position, int depth)
         {
@@ -19,42 +16,65 @@ namespace Knightmare.Algorithm
 
         private Node EvaluateBestContinuation(Board _position, int depth, int alpha, int beta, bool isMaximizing)
         {
-            int currentEval = evaluator.Execute(_position);
-            if (depth == 0)
+            ulong key = _position.Hash();
+
+            if (TranspositionTable.TryGet(key, out var entry) && entry!.Depth >= depth)
             {
-                return new Node() { Eval = currentEval };
+                switch (entry.Bound)
+                {
+                    case BoundType.Exact:
+                        return new Node { Eval = entry.Eval, Value = entry.BestMove };
+                    case BoundType.LowerBound when entry.Eval > alpha:
+                        alpha = entry.Eval;
+                        break;
+                    case BoundType.UpperBound when entry.Eval < beta:
+                        beta = entry.Eval;
+                        break;
+                }
+
+                if (beta <= alpha)
+                {
+                    return new Node { Eval = entry.Eval };
+                }
+            }
+
+            if (depth == 0 || _position.GameOver)
+            {
+                return new Node() { Eval = evaluator.Execute(_position) };
             }
 
             List<Move> possibleMoves = GenerateMoves(_position);
             if (possibleMoves.Count == 0)
             {
-                return new Node() { Eval = currentEval };
+                return new Node() { Eval = evaluator.Execute(_position) };
             }
 
-            Node rootNode = new Node() {
+            int alphaOrig = alpha;
+            int betaOrig = beta;
+            Move? bestMove = null;
+
+            Node rootNode = new Node()
+            {
                 Eval = isMaximizing ? int.MinValue : int.MaxValue,
             };
 
-            Node? bestMoveTree = null;
-            Move? bestMove = null;
-
             foreach (var move in possibleMoves)
             {
-                Board position = _position.Copy();
-                move.Execute(position);
+                move.Execute(_position);
 
-                Node childTree = EvaluateBestContinuation(position, depth - 1, alpha, beta, !isMaximizing);
+                ++TotalMovesEvaluated;
+
+                Node childTree = EvaluateBestContinuation(_position, depth - 1, alpha, beta, !isMaximizing);
                 childTree.Value = move;
-                childTree.Position = position;
-
                 int childEval = childTree.Eval;
+
+                move.Undo(_position);
 
                 if (isMaximizing)
                 {
                     if (childEval > rootNode.Eval)
                     {
                         rootNode.Eval = childEval;
-                        bestMoveTree = childTree;
                         bestMove = move;
                     }
                     alpha = Math.Max(alpha, childEval);
@@ -64,7 +84,6 @@ namespace Knightmare.Algorithm
                     if (childEval < rootNode.Eval)
                     {
                         rootNode.Eval = childEval;
-                        bestMoveTree = childTree;
                         bestMove = move;
                     }
                     beta = Math.Min(beta, childEval);
@@ -76,13 +95,14 @@ namespace Knightmare.Algorithm
                 }
             }
 
-            if (bestMoveTree == null)
-            {
-                bestMoveTree = new Node() { Eval = rootNode.Eval, Position = _position.Copy() };
-            }
+            BoundType bound;
+            if (rootNode.Eval <= alphaOrig) bound = BoundType.UpperBound;
+            else if (rootNode.Eval >= beta) bound = BoundType.LowerBound;
+            else bound = BoundType.Exact;
+
+            TranspositionTable.Store(key, new TranspositionEntry(rootNode.Eval, depth, bound, bestMove));
 
             rootNode.Value = bestMove;
-            rootNode.Subnodes.Add(bestMoveTree);
             return rootNode;
         }
     }

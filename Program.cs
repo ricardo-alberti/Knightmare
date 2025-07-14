@@ -21,9 +21,6 @@ class Program
             Console.WriteLine("Tests completed.\n");
         }
 
-        Console.WriteLine("id name Knightmare");
-        Console.WriteLine("id author Ricardo Alberti");
-        Console.WriteLine("uciok");
         while (true)
         {
             string? input = Console.ReadLine();

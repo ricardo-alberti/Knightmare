@@ -6,36 +6,38 @@ namespace Knightmare.Tests
 {
     internal sealed class PerformanceTest
     {
-        private readonly Robot white;
-        private readonly Robot black;
+        private const int movesToPlay = 30;
+        private const int botLevel = 7;
+        private readonly Robot bot;
         private readonly View view;
         private Board position;
 
         public PerformanceTest()
         {
             position = BoardParser.Create();
-            white = new Robot(2);
-            black = new Robot(2);
+            bot = new Robot(botLevel);
             view = new View();
         }
 
         public void Execute()
         {
             var watch = Stopwatch.StartNew();
-            for (int i = 0; i < 100; ++i)
-            {
-                for (int j = 0; j < 20; ++j)
-                {
-                    white.Play(position);
-                    black.Play(position);
-                }
 
-                position = BoardParser.Create();
+            for (int j = 0; j < movesToPlay; ++j)
+            {
+                bot.Play(position);
+
+                if (position.GameOver)
+                    break;
             }
+
             watch.Stop();
 
             view.PrintBoard(position);
-            Console.WriteLine($"Time Elapsed: {watch.ElapsedMilliseconds}");
+            Console.WriteLine($"Time elapsed per move: {watch.ElapsedMilliseconds/movesToPlay}");
+            Console.WriteLine($"Time elapsed total: {watch.ElapsedMilliseconds}");
+            Console.WriteLine($"Moves played: {movesToPlay}");
+            Console.WriteLine($"Bot level: {botLevel}");
             Console.Read();
         }
     }

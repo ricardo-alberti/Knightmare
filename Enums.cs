@@ -1,4 +1,4 @@
-enum PlayerSide
+internal enum PlayerSide
 {
     Black,
     White

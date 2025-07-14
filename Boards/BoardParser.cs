@@ -8,9 +8,9 @@ internal class BoardParser
 
     public static Board Create(string _fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR/ w - - 0 0")
     {
-        Board board = new();
         Dictionary<Point, Piece> white = new();
         Dictionary<Point, Piece> black = new();
+        Board board = new();
 
         string[] fenParts = _fen.Split(' ');
         string piecePlacement = fenParts[0];
@@ -119,7 +119,7 @@ internal class BoardParser
             int empty = 0;
             for (int j = 0; j < 8; ++j)
             {
-                Piece piece = tiles[i, j].TilePiece;
+                Piece piece = tiles[i, j].TilePiece!;
                 if (piece == null)
                 {
                     empty++;

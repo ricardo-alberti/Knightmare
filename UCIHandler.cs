@@ -12,8 +12,8 @@ internal sealed class UCIHandler
     public UCIHandler()
     {
         view = new();
-        chessBoard = new();
         chessBot = new Robot(7);
+        chessBoard = BoardParser.Create();
     }
 
     public void ProcessCommand(string input)
@@ -67,6 +67,7 @@ internal sealed class UCIHandler
             Console.WriteLine("Debug Info: Move Statistics");
 
             view.PrintBoard(chessBoard);
+            Console.WriteLine($"Evaluated Moves: {chessBot.Search.TotalMovesEvaluated}");
         }
     }
 

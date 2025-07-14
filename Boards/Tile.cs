@@ -24,10 +24,5 @@ namespace Knightmare.Boards
             Position = _point;
             TilePiece = _piece;
         }
-
-        public Tile Copy()
-        {
-            return new Tile(Position, TilePiece?.Copy());
-        }
     }
 }

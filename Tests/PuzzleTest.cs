@@ -12,9 +12,11 @@ namespace Knightmare.Tests
         public PuzzleTest()
         {
             view = new View();
-            depthLevel = new int[] { 4 };
+            depthLevel = new int[] { 6 };
             puzzles = new Dictionary<string, string>()
             {
+                {"rnbqkb1r/1ppppppp/p6B/8/2BPP3/5Q2/PPP2PPP/RN2K1NR b - - 0 0",
+                 "rnbqkb1r/1ppp1ppp/p3p2B/8/2BPP3/5Q2/PPP2PPP/RN2K1NR w - - 0 0"},
                 {"6k1/b4ppp/5nb1/2p1pq2/1pN5/pP3P1N/P1P3PP/B2rK2R w - - 0 0",
                  "6k1/b4ppp/5nb1/2p1pq2/1pN5/pP3P1N/P1P3PP/B2K3R b - - 0 0"},
                 {"rnb1kbnr/pppp1ppp/4p3/8/4P2P/2N5/PPPP1qP1/R1BQKBNR w - - 0 0",
@@ -38,8 +40,7 @@ namespace Knightmare.Tests
                     Console.Clear();
 
                     Robot bot = new(level);
-                    Board board = new();
-                    board = BoardParser.Create(puzzle);
+                    Board board = BoardParser.Create(puzzle);
 
                     view.PrintBoard(board);
 
@@ -64,8 +65,11 @@ namespace Knightmare.Tests
                 }
             }
 
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"TESTS PASSED: {passed}");
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"TESTS FAILED: {failed}");
+            Console.ResetColor();
             Console.WriteLine($"TESTS EXECUTED: {tested}");
             Console.WriteLine($"Puzzle Tests Completed");
             Console.Read();

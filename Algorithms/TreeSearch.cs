@@ -6,6 +6,7 @@ namespace Knightmare.Algorithm
 {
     abstract internal class TreeSearch : ITreeSearch
     {
+        public long TotalMovesEvaluated { get; set; }
         protected readonly IEvaluation evaluator;
 
         public TreeSearch(IEvaluation _evaluator)
@@ -22,12 +23,33 @@ namespace Knightmare.Algorithm
 
             foreach (Piece piece in pieces)
             {
-                List<Move> pieceRange = piece.MoveRange(_position);
-                if (pieceRange.Count > 0)
-                {
-                    allMoves.AddRange(pieceRange);
-                }
+                allMoves.AddRange(piece.MoveRange(_position));
             }
+
+            allMoves.Sort((a, b) =>
+            {
+                bool aCapture = a.IsCapture();
+                bool bCapture = b.IsCapture();
+
+                if (aCapture && bCapture)
+                {
+                    int aVictimValue = a.CapturedPiece?.Value ?? 0;
+                    int aAttackerValue = a.MovingPiece?.Value ?? 0;
+
+                    int bVictimValue = b.CapturedPiece?.Value ?? 0;
+                    int bAttackerValue = b.MovingPiece?.Value ?? 0;
+
+                    int aScore = aVictimValue * 10 - aAttackerValue;
+                    int bScore = bVictimValue * 10 - bAttackerValue;
+
+                    return bScore.CompareTo(aScore);
+                }
+
+                if (aCapture) return -1;
+                if (bCapture) return 1;
+
+                return 0;
+            });
 
             return allMoves;
         }

@@ -7,12 +7,12 @@ namespace Knightmare.Pieces
     {
         public char Notation { get; }
         public int Value { get; }
-        public string Shape { get; }
+        public char Shape { get; }
         public int[,] MoveSet { get; }
         public PlayerSide Side { get; }
         public Point Position { get; set; }
 
-        protected Piece(char _notation, string _shape,
+        protected Piece(char _notation, char _shape,
                 Point _position, int[,] _moveSet,
                 PlayerSide _side, int _value)
         {
@@ -24,41 +24,44 @@ namespace Knightmare.Pieces
             Position = _position;
         }
 
-        public virtual List<Move> MoveRange(Board _position)
+        protected bool InsideBounds(int _x, int _y)
         {
-            List<Move> moveRange = new List<Move>();
-            Tile initialTile = _position.Tile(Position.x, Position.y);
+            return _x >= 0 && _y >= 0 && _x <= 7 && _y <= 7;
+        }
+
+        public virtual List<Move> MoveRange(Board position)
+        {
+            var moveRange = new List<Move>();
+            Tile initialTile = position.Tile(Position.x, Position.y);
 
             for (int i = 0; i < MoveSet.GetLength(0); ++i)
             {
-                int moveset_x = MoveSet[i, 0];
-                int moveset_y = MoveSet[i, 1];
+                int dx = MoveSet[i, 0];
+                int dy = MoveSet[i, 1];
+                int x = Position.x + dx;
+                int y = Position.y + dy;
 
-                int finaltile_x = initialTile.Position.x + moveset_x;
-                int finaltile_y = initialTile.Position.y + moveset_y;
-
-                while (finaltile_x >= 0 && finaltile_y >= 0
-                        && finaltile_x <= 7 && finaltile_y <= 7)
+                while (InsideBounds(x, y))
                 {
-                    Tile finalTile = _position.Tile(finaltile_x, finaltile_y);
-                    Piece? finalPiece = finalTile.TilePiece;
+                    Tile finalTile = position.Tile(x, y);
+                    Piece? targetPiece = finalTile.TilePiece;
 
-                    if (finalPiece != null)
+                    if (targetPiece == null)
                     {
-                        if (finalPiece.Side == Side)
-                            break;
-
-                        if (finalPiece.Side != Side)
+                        moveRange.Add(new Move(initialTile, finalTile));
+                    }
+                    else
+                    {
+                        if (targetPiece.Side != Side)
                         {
                             moveRange.Add(new Move(initialTile, finalTile));
-                            break;
                         }
+
+                        break;
                     }
 
-                    moveRange.Add(new Move(initialTile, finalTile));
-
-                    finaltile_x += moveset_x;
-                    finaltile_y += moveset_y;
+                    x += dx;
+                    y += dy;
                 }
             }
 
@@ -80,10 +83,18 @@ namespace Knightmare.Pieces
             }
         }
 
-        public virtual Piece Copy()
+        public int PieceIndex()
         {
-            return Create(this.Notation, this.Position, this.Side);
+            switch (char.ToLower(Notation))
+            {
+                case 'p': return 0;
+                case 'n': return 1;
+                case 'b': return 2;
+                case 'r': return 3;
+                case 'q': return 4;
+                case 'k': return 5;
+                default: throw new Exception($"Unknown notation: {Notation}");
+            }
         }
-
     }
 }

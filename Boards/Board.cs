@@ -4,19 +4,18 @@ namespace Knightmare.Boards
 {
     internal class Board
     {
+        public PlayerSide SidePlayable { get; set; }
+        public bool GameOver { get; set; }
+        public Tile[,] Tiles { get; }
+
         public Dictionary<Point, Piece> WhitePieces;
         public Dictionary<Point, Piece> BlackPieces;
-        public PlayerSide SidePlayable { get; set; } = PlayerSide.White;
-        public Tile[,] Tiles { get; set; }
-        public bool GameOver { get; set; }
 
         public Board()
             : this(new Dictionary<Point, Piece>(),
                    new Dictionary<Point, Piece>(),
                    new Tile[8, 8])
-        {
-
-        }
+        { }
 
         public Board(Dictionary<Point, Piece> _whitePieces,
                      Dictionary<Point, Piece> _blackPieces,
@@ -25,6 +24,7 @@ namespace Knightmare.Boards
             Tiles = _tiles;
             WhitePieces = _whitePieces;
             BlackPieces = _blackPieces;
+            SidePlayable = PlayerSide.White;
         }
 
         public Tile Tile(int x, int y)
@@ -39,46 +39,37 @@ namespace Knightmare.Boards
 
         public List<Piece> SidePieces()
         {
-            List<Piece> pieces = WhitePieces.Values.ToList();
-
-            if (SidePlayable == PlayerSide.Black)
-            {
-                pieces = BlackPieces.Values.ToList();
-            }
-
-            return pieces;
+            return (SidePlayable == PlayerSide.White)
+                ? WhitePieces.Values.ToList()
+                : BlackPieces.Values.ToList();
         }
 
-        public Board Copy()
+
+        public ulong Hash()
         {
-            Tile[,] copiedTiles = new Tile[8, 8];
+            ulong hash = 0;
+
             for (int y = 0; y < 8; y++)
             {
                 for (int x = 0; x < 8; x++)
                 {
-                    copiedTiles[y, x] = Tiles[y, x].Copy();
+                    Piece? p = Tiles[y, x].TilePiece;
+                    if (p != null)
+                    {
+                        int index = p.PieceIndex();
+                        int side = p.Side == PlayerSide.White ? 0 : 1;
+                        int squareIndex = y * 8 + x;
+                        hash ^= Zobrist.PieceSquare[index, side, squareIndex];
+                    }
                 }
             }
 
-            var copiedWhitePieces = new Dictionary<Point, Piece>();
-            foreach (var kvp in WhitePieces)
+            if (SidePlayable == PlayerSide.White)
             {
-                copiedWhitePieces[kvp.Key] = kvp.Value.Copy();
+                hash ^= Zobrist.SideToMove;
             }
 
-            var copiedBlackPieces = new Dictionary<Point, Piece>();
-            foreach (var kvp in BlackPieces)
-            {
-                copiedBlackPieces[kvp.Key] = kvp.Value.Copy();
-            }
-
-            Board copiedBoard = new Board(copiedWhitePieces, copiedBlackPieces, copiedTiles)
-            {
-                SidePlayable = this.SidePlayable,
-                GameOver = this.GameOver,
-            };
-
-            return copiedBoard;
+            return hash;
         }
     }
 }

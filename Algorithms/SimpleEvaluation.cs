@@ -2,7 +2,7 @@ using Knightmare.Boards;
 
 namespace Knightmare.Algorithm
 {
-    internal class SimpleEvaluation : IEvaluation
+    internal sealed class SimpleEvaluation : IEvaluation
     {
         public int Execute(Board _position)
         {
