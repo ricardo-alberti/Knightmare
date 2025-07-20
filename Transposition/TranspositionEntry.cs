@@ -1,4 +1,3 @@
-using Knightmare.Moves;
 
 internal enum BoundType { Exact, LowerBound, UpperBound }
 
@@ -7,9 +6,9 @@ internal class TranspositionEntry
     public int Eval { get; }
     public int Depth { get; }
     public BoundType Bound { get; }
-    public Move? BestMove { get; }
+    public int? BestMove { get; }
 
-    public TranspositionEntry(int eval, int depth, BoundType bound, Move? bestMove)
+    public TranspositionEntry(int eval, int depth, BoundType bound, int? bestMove)
     {
         Eval = eval;
         Depth = depth;

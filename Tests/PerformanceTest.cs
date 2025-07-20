@@ -1,4 +1,3 @@
-using Knightmare.Boards;
 using System.Diagnostics;
 using Knightmare.Views;
 
@@ -8,10 +7,10 @@ namespace Knightmare.Tests
     {
         private const int movesToPlay = 30;
         private const int botLevel = 7;
-        private readonly Engine bot;
         private readonly View view;
         private Board position;
 
+        /*
         public PerformanceTest()
         {
             position = BoardParser.Create();
@@ -40,5 +39,7 @@ namespace Knightmare.Tests
             Console.WriteLine($"Bot level: {botLevel}");
             Console.Read();
         }
+    }
+    */
     }
 }

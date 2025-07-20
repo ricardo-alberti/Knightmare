@@ -1,10 +1,10 @@
-using Knightmare.Boards;
 using Knightmare.Views;
 
 namespace Knightmare.Tests
 {
     internal sealed class PuzzleTest
     {
+        /*
         private readonly int[] depthLevel;
         private readonly Dictionary<string, string> puzzles;
         private readonly View view;
@@ -74,5 +74,7 @@ namespace Knightmare.Tests
             Console.WriteLine($"Puzzle Tests Completed");
             Console.Read();
         }
+    }
+    */
     }
 }

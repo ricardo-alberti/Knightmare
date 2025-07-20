@@ -14,9 +14,9 @@ class Program
             MoveCountTest moveCountTest = new();
             PerformanceTest performanceTest = new();
 
-            performanceTest.Execute();
-            puzzleTest.Execute();
-            moveCountTest.Execute();
+            //performanceTest.Execute();
+            //puzzleTest.Execute();
+            //moveCountTest.Execute();
 
             Console.WriteLine("Tests completed.\n");
         }

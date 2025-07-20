@@ -1,19 +1,17 @@
-using Knightmare.Boards;
-using Knightmare.Moves;
 using Knightmare.Views;
 
 internal sealed class UCIHandler
 {
     private bool Debug;
-    private readonly View view;
-    private readonly Engine chessBot;
     private Board chessBoard;
+    private readonly View view;
+    private readonly ISearch search;
 
     public UCIHandler()
     {
         view = new();
-        chessBot = new Engine(7);
-        chessBoard = BoardParser.Create();
+        chessBoard = new Board();
+        search = new AlphaBeta();
     }
 
     public void ProcessCommand(string input)
@@ -37,7 +35,7 @@ internal sealed class UCIHandler
                 break;
 
             case "position":
-                chessBoard = BoardParser.CreateUCI(input);
+                //chessBoard = BoardParser.CreateUCI(input);
                 break;
 
             case "go":
@@ -59,16 +57,7 @@ internal sealed class UCIHandler
 
     private void ExecuteGoCommand()
     {
-        Move move = chessBot.Play(chessBoard);
-        view.PrintMove(move);
 
-        if (Debug)
-        {
-            Console.WriteLine("Debug Info: Move Statistics");
-
-            view.PrintBoard(chessBoard);
-            Console.WriteLine($"Evaluated Moves: {chessBot.Search.TotalMovesEvaluated}");
-        }
     }
 
     private void HandleDebug(string argument)

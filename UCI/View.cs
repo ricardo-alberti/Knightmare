@@ -1,6 +1,3 @@
-using Knightmare.Boards;
-using Knightmare.Moves;
-
 namespace Knightmare.Views
 {
     internal class View
@@ -23,7 +20,7 @@ namespace Knightmare.Views
 
                 for (int j = 0; j < 8; ++j)
                 {
-                    PrintTile(_board.Tile(j, i));
+                    Console.WriteLine(" #");
                 }
 
                 Console.WriteLine(" |");
@@ -31,23 +28,7 @@ namespace Knightmare.Views
 
             Console.WriteLine("   -----------------");
             Console.WriteLine("FEN: ");
-            Console.WriteLine(BoardParser.FEN(_board));
-        }
-
-        public void PrintMove(Move _move)
-        {
-            moveView.Print(_move);
-        }
-
-        private void PrintTile(Tile _tile)
-        {
-            if (_tile.TilePiece == null)
-            {
-                Console.Write(" _");
-                return;
-            }
-
-            Console.Write($" {_tile.TilePiece.Shape}");
+            //Console.WriteLine(BoardParser.FEN(_board));
         }
     }
 }
