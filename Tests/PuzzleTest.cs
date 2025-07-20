@@ -39,7 +39,7 @@ namespace Knightmare.Tests
                 {
                     Console.Clear();
 
-                    Robot bot = new(level);
+                    Engine bot = new(level);
                     Board board = BoardParser.Create(puzzle);
 
                     view.PrintBoard(board);

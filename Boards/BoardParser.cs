@@ -51,7 +51,7 @@ internal class BoardParser
             }
         }
 
-        board.SidePlayable = (sideToMove == 'w' ? PlayerSide.White : PlayerSide.Black);
+        board.SideToMove = (sideToMove == 'w' ? PlayerSide.White : PlayerSide.Black);
         board.WhitePieces = white;
         board.BlackPieces = black;
 
@@ -104,7 +104,7 @@ internal class BoardParser
             parsedMove.Execute(board);
         }
 
-        board.SidePlayable = (moves.Length % 2 == 0) ? PlayerSide.White : PlayerSide.Black;
+        board.SideToMove = (moves.Length % 2 == 0) ? PlayerSide.White : PlayerSide.Black;
 
         return board;
     }
@@ -144,7 +144,7 @@ internal class BoardParser
         }
 
         fen += " ";
-        fen += (board.SidePlayable == PlayerSide.White) ? "w" : "b";
+        fen += (board.SideToMove == PlayerSide.White) ? "w" : "b";
 
         //string castling = GetCastlingRights();
         //fen += " " + (castling == "" ? "-" : castling);

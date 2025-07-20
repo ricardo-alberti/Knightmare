@@ -32,8 +32,7 @@ namespace Knightmare.Pieces
         public virtual List<Move> MoveRange(Board position)
         {
             var moveRange = new List<Move>();
-            Tile initialTile = position.Tile(Position.x, Position.y);
-
+            Tile initialTile = position.Tile(Position);
             for (int i = 0; i < MoveSet.GetLength(0); ++i)
             {
                 int dx = MoveSet[i, 0];

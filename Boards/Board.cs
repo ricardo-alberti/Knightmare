@@ -4,8 +4,8 @@ namespace Knightmare.Boards
 {
     internal class Board
     {
-        public PlayerSide SidePlayable { get; set; }
-        public bool GameOver { get; set; }
+        public PlayerSide SideToMove { get; set; }
+        public bool Terminal { get; set; }
         public Tile[,] Tiles { get; }
 
         public Dictionary<Point, Piece> WhitePieces;
@@ -24,7 +24,7 @@ namespace Knightmare.Boards
             Tiles = _tiles;
             WhitePieces = _whitePieces;
             BlackPieces = _blackPieces;
-            SidePlayable = PlayerSide.White;
+            SideToMove = PlayerSide.White;
         }
 
         public Tile Tile(int x, int y)
@@ -39,7 +39,7 @@ namespace Knightmare.Boards
 
         public List<Piece> SidePieces()
         {
-            return (SidePlayable == PlayerSide.White)
+            return (SideToMove == PlayerSide.White)
                 ? WhitePieces.Values.ToList()
                 : BlackPieces.Values.ToList();
         }
@@ -64,7 +64,7 @@ namespace Knightmare.Boards
                 }
             }
 
-            if (SidePlayable == PlayerSide.White)
+            if (SideToMove == PlayerSide.White)
             {
                 hash ^= Zobrist.SideToMove;
             }

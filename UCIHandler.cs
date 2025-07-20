@@ -6,13 +6,13 @@ internal sealed class UCIHandler
 {
     private bool Debug;
     private readonly View view;
-    private readonly Robot chessBot;
+    private readonly Engine chessBot;
     private Board chessBoard;
 
     public UCIHandler()
     {
         view = new();
-        chessBot = new Robot(7);
+        chessBot = new Engine(7);
         chessBoard = BoardParser.Create();
     }
 

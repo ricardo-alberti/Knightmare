@@ -6,12 +6,10 @@ namespace Knightmare.Views
     internal class View
     {
         private readonly MoveView moveView;
-        private readonly MoveTreeView moveTreeView;
 
         public View()
         {
             moveView = new MoveView();
-            moveTreeView = new MoveTreeView();
         }
 
         public void PrintBoard(Board _board)

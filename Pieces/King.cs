@@ -38,11 +38,15 @@ namespace Knightmare.Pieces
                 int y = Position.y + dy;
 
                 if (!InsideBounds(x, y))
+                {
                     continue;
+                }
 
                 Tile finalTile = _position.Tile(x, y);
                 if (finalTile.TilePiece != null && finalTile.TilePiece.Side == Side)
+                {
                     continue;
+                }
 
                 moveRange.Add(new Move(initialTile, finalTile));
             }

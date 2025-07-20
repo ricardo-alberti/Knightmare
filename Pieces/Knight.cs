@@ -6,9 +6,9 @@ namespace Knightmare.Pieces
     internal class Knight : Piece
     {
         private const int pieceValue = 3;
-        private static readonly int[,] moveSet = new int[,] 
+        private static readonly int[,] moveSet = new int[,]
         {
-            { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, 
+            { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 },
             { 1, 2 }, { -1, 2 }, { 1, -2 }, { -1, -2 }
         };
 
@@ -29,22 +29,25 @@ namespace Knightmare.Pieces
         {
             List<Move> moveRange = new List<Move>();
             Tile initialTile = _position.Tile(Position);
-            int[,] moveSet = MoveSet;
-            int moveset_x, moveset_y, finaltile_x, finaltile_y;
 
-            for (int i = 0; i < moveSet.GetLength(0); ++i)
+            for (int i = 0; i < MoveSet.GetLength(0); ++i)
             {
-                moveset_x = moveSet[i, 1];
-                moveset_y = moveSet[i, 0];
+                int dx = moveSet[i, 0];
+                int dy = moveSet[i, 1];
+                int x = Position.x + dx;
+                int y = Position.y + dy;
 
-                finaltile_x = initialTile.Position.x + moveset_x;
-                finaltile_y = initialTile.Position.y + moveset_y;
+                if (!InsideBounds(x, y))
+                {
+                    continue;
+                }
 
-                if (finaltile_x < 0 || finaltile_y < 0 || finaltile_y > 7 || finaltile_x > 7) continue;
-
-                Tile finalTile = _position.Tile(finaltile_x, finaltile_y);
-
-                if (finalTile.TilePiece != null && finalTile.TilePiece.Side == initialTile.TilePiece?.Side) continue;
+                Tile finalTile = _position.Tile(x, y);
+                if (finalTile.TilePiece != null 
+                    && finalTile.TilePiece.Side == initialTile.TilePiece?.Side)
+                {
+                    continue;
+                }
 
                 moveRange.Add(new Move(initialTile, finalTile));
             }

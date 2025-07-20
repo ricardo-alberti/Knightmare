@@ -4,6 +4,5 @@ namespace Knightmare.Moves
     {
         public Move? Value { get; set; }
         public int Eval { get; set; }
-        public List<Node> Subnodes { get; set; } = new List<Node>();
     }
 }

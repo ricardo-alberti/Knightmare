@@ -3,18 +3,20 @@ using Knightmare.Boards;
 
 namespace Knightmare.Algorithm
 {
-    internal class MinimaxAlphaBeta : TreeSearch
+    internal class AlphaBeta : TreeSearch
     {
-        public MinimaxAlphaBeta() : this(new SimpleEvaluation()) { }
-        public MinimaxAlphaBeta(IEvaluation _evaluator) : base(_evaluator) { }
+        public AlphaBeta() : this(new SimpleEvaluation()) { }
+        public AlphaBeta(IEvaluation _evaluator) : base(_evaluator) { }
 
         public override Node BestTree(Board _position, int depth)
         {
-            bool isMaximizing = _position.SidePlayable == PlayerSide.White;
-            return EvaluateBestContinuation(_position, depth, int.MinValue, int.MaxValue, isMaximizing);
+            bool isMaximizing = _position.SideToMove == PlayerSide.White;
+            return EvaluateBestContinuation(_position, depth, int.MinValue,
+                    int.MaxValue, isMaximizing);
         }
 
-        private Node EvaluateBestContinuation(Board _position, int depth, int alpha, int beta, bool isMaximizing)
+        private Node EvaluateBestContinuation(Board _position, int depth,
+                int alpha, int beta, bool isMaximizing)
         {
             ulong key = _position.Hash();
 
@@ -38,7 +40,7 @@ namespace Knightmare.Algorithm
                 }
             }
 
-            if (depth == 0 || _position.GameOver)
+            if (depth == 0 || _position.Terminal)
             {
                 return new Node() { Eval = evaluator.Execute(_position) };
             }
@@ -64,8 +66,8 @@ namespace Knightmare.Algorithm
 
                 ++TotalMovesEvaluated;
 
-                Node childTree = EvaluateBestContinuation(_position, depth - 1, alpha, beta, !isMaximizing);
-                childTree.Value = move;
+                Node childTree = EvaluateBestContinuation(_position, 
+                        depth - 1, alpha, beta, !isMaximizing);
                 int childEval = childTree.Eval;
 
                 move.Undo(_position);
@@ -100,7 +102,8 @@ namespace Knightmare.Algorithm
             else if (rootNode.Eval >= beta) bound = BoundType.LowerBound;
             else bound = BoundType.Exact;
 
-            TranspositionTable.Store(key, new TranspositionEntry(rootNode.Eval, depth, bound, bestMove));
+            TranspositionTable.Store(key, new TranspositionEntry(
+                        rootNode.Eval, depth, bound, bestMove));
 
             rootNode.Value = bestMove;
             return rootNode;

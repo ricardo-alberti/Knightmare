@@ -8,14 +8,14 @@ namespace Knightmare.Tests
     {
         private const int movesToPlay = 30;
         private const int botLevel = 7;
-        private readonly Robot bot;
+        private readonly Engine bot;
         private readonly View view;
         private Board position;
 
         public PerformanceTest()
         {
             position = BoardParser.Create();
-            bot = new Robot(botLevel);
+            bot = new Engine(botLevel);
             view = new View();
         }
 
@@ -27,7 +27,7 @@ namespace Knightmare.Tests
             {
                 bot.Play(position);
 
-                if (position.GameOver)
+                if (position.Terminal)
                     break;
             }
 

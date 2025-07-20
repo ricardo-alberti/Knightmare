@@ -22,7 +22,7 @@ namespace Knightmare.Moves
 
         public void Undo(Board board)
         {
-            board.GameOver = false;
+            board.Terminal = false;
             board.Tiles[Initial.Position.y, Initial.Position.x].TilePiece = MovingPiece;
             board.Tiles[Final.Position.y, Final.Position.x].TilePiece = CapturedPiece;
 
@@ -34,7 +34,7 @@ namespace Knightmare.Moves
                 {
                     board.BlackPieces[Final.Position] = CapturedPiece;
                 }
-                board.SidePlayable = PlayerSide.White;
+                board.SideToMove = PlayerSide.White;
                 return;
             }
 
@@ -44,14 +44,14 @@ namespace Knightmare.Moves
             {
                 board.WhitePieces[Final.Position] = CapturedPiece;
             }
-            board.SidePlayable = PlayerSide.Black;
+            board.SideToMove = PlayerSide.Black;
         }
 
         public void Execute(Board board)
         {
             if (CapturedPiece is King)
             {
-                board.GameOver = true;
+                board.Terminal = true;
             }
 
             board.Tiles[Initial.Position.y, Initial.Position.x].TilePiece = null;
@@ -59,14 +59,14 @@ namespace Knightmare.Moves
 
             if (MovingPiece.Side == PlayerSide.White)
             {
-                board.SidePlayable = PlayerSide.Black;
+                board.SideToMove = PlayerSide.Black;
                 board.WhitePieces.Remove(Initial.Position);
                 board.WhitePieces[Final.Position] = MovingPiece;
                 if (CapturedPiece != null) board.BlackPieces.Remove(Final.Position);
                 return;
             }
 
-            board.SidePlayable = PlayerSide.White;
+            board.SideToMove = PlayerSide.White;
             board.BlackPieces.Remove(Initial.Position);
             board.BlackPieces[Final.Position] = MovingPiece;
             if (CapturedPiece != null) board.WhitePieces.Remove(Final.Position);
