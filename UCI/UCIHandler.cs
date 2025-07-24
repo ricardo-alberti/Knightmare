@@ -1,17 +1,20 @@
-using Knightmare.Views;
-
 internal sealed class UCIHandler
 {
+    private readonly BoardView boardView;
+    private readonly MoveView moveView;
+    private readonly AlphaBeta alphaBeta;
+    private readonly BoardParser boardParser;
+
     private bool Debug;
-    private Board chessBoard;
-    private readonly View view;
-    private readonly ISearch search;
+    private Board board;
 
     public UCIHandler()
     {
-        view = new();
-        chessBoard = new Board();
-        search = new AlphaBeta();
+        boardView = new();
+        moveView = new();
+        board = new();
+        boardParser = new();
+        alphaBeta = new();
     }
 
     public void ProcessCommand(string input)
@@ -35,7 +38,7 @@ internal sealed class UCIHandler
                 break;
 
             case "position":
-                //chessBoard = BoardParser.CreateUCI(input);
+                board = boardParser.CreateBoardFromUCI(input);
                 break;
 
             case "go":
@@ -49,32 +52,42 @@ internal sealed class UCIHandler
             default:
                 if (Debug)
                 {
-                    Console.WriteLine($"Unknown command: {input}");
+                    Console.WriteLine($"unknown command: {input}");
                 }
+
                 break;
         }
     }
 
     private void ExecuteGoCommand()
     {
+        List<Node> tree = new();
+        int rootIndex = alphaBeta.BestTree(board, 7, int.MinValue, int.MaxValue, board.WhiteToMove, tree);
+        Node root = tree[rootIndex];
+        board.MakeMove(root.Move);
+        moveView.Print(root.Move);
 
+        if (Debug)
+        {
+            boardView.Print(board);
+        }
     }
 
     private void HandleDebug(string argument)
     {
         if (argument == "on")
         {
-            Console.WriteLine("Debug mode enabled");
+            Console.WriteLine("debug mode enabled");
             Debug = true;
         }
         else if (argument == "off")
         {
-            Console.WriteLine("Debug mode disabled");
+            Console.WriteLine("debug mode disabled");
             Debug = false;
         }
         else
         {
-            Console.WriteLine("Unknown debug command. Use 'debug on' or 'debug off'.");
+            Console.WriteLine("use 'debug on' or 'debug off'");
         }
     }
 }

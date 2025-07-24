@@ -1,4 +1,3 @@
-
 internal enum BoundType { Exact, LowerBound, UpperBound }
 
 internal class TranspositionEntry

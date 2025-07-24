@@ -14,45 +14,220 @@ public class Board
     public ulong BlackQueens { get; set; }
     public ulong BlackKing { get; set; }
 
-    public ulong ZobristHash;
+    public bool WhiteToMove { get; set; }
 
-    public Board()
+    public ulong WhitePieces() 
     {
-        WhitePawns = 0x000000000000FF00;
-        BlackPawns = 0x00FF000000000000;
+        return WhitePawns | WhiteRooks | WhiteKnights 
+            | WhiteBishops | WhiteQueens | WhiteKing;
     }
 
-    public void MakeMove(int ply)
+    public ulong BlackPieces() 
     {
-
+        return BlackPawns | BlackRooks | BlackKnights 
+            | BlackBishops | BlackQueens | BlackKing;
     }
 
-    /*
-    public ulong Hash()
+    public int GetPieceAtSquare(int square)
     {
-        ulong hash = 0;
+        ulong mask = 1UL << square;
 
-        for (int y = 0; y < 8; y++)
+        if (((WhitePawns | BlackPawns) & mask) != 0) return PieceIndex.Pawn;
+        if (((WhiteKnights | BlackKnights) & mask) != 0) return PieceIndex.Knight;
+        if (((WhiteBishops | BlackBishops) & mask) != 0) return PieceIndex.Bishop;
+        if (((WhiteRooks | BlackRooks) & mask) != 0) return PieceIndex.Rook;
+        if (((WhiteQueens | BlackQueens) & mask) != 0) return PieceIndex.Queen;
+        if (((WhiteKing | BlackKing) & mask) != 0) return PieceIndex.King;
+
+        return PieceIndex.Null;
+    }
+
+    public void CapturePieceAt(int square, bool white)
+    {
+        ulong mask = 1UL << square;
+
+        if (white)
         {
-            for (int x = 0; x < 8; x++)
+            if ((WhitePawns & mask) != 0) WhitePawns &= ~mask;
+            else if ((WhiteKnights & mask) != 0) WhiteKnights &= ~mask;
+            else if ((WhiteBishops & mask) != 0) WhiteBishops &= ~mask;
+            else if ((WhiteRooks & mask) != 0) WhiteRooks &= ~mask;
+            else if ((WhiteQueens & mask) != 0) WhiteQueens &= ~mask;
+            else if ((WhiteKing & mask) != 0) WhiteKing &= ~mask;
+        }
+        else
+        {
+            if ((BlackPawns & mask) != 0) BlackPawns &= ~mask;
+            else if ((BlackKnights & mask) != 0) BlackKnights &= ~mask;
+            else if ((BlackBishops & mask) != 0) BlackBishops &= ~mask;
+            else if ((BlackRooks & mask) != 0) BlackRooks &= ~mask;
+            else if ((BlackQueens & mask) != 0) BlackQueens &= ~mask;
+            else if ((BlackKing & mask) != 0) BlackKing &= ~mask;
+        }
+    }
+
+    public void MakeMove(int move)
+    {
+        int from = move & 0x3F;
+        int to = (move >> 6) & 0x3F;
+        int prom = (move >> 12) & 0xF;
+        int flags = (move >> 16) & 0xF;
+
+        ulong fromMask = 1UL << from;
+        ulong toMask = 1UL << to;
+
+        bool white = WhiteToMove;
+
+        int piece = GetPieceAtSquare(from);
+
+        if (piece == PieceIndex.Null)
+        {
+            throw new Exception("Invalid move");
+        }
+
+        RemovePiece(piece, from, white);
+
+        if ((flags & 0x1) != 0)
+            CapturePieceAt(to, !white);
+
+        if ((flags & 0x2) != 0)
+        {
+            int capSq = white ? to - 8 : to + 8;
+            RemovePiece(PieceIndex.Pawn, capSq, !white);
+        }
+
+        if ((flags & 0x4) != 0)
+        {
+            if (white)
             {
-                Piece? p = Tiles[y, x].TilePiece;
-                if (p != null)
-                {
-                    int index = p.PieceIndex();
-                    int side = p.Side == PlayerSide.White ? 0 : 1;
-                    int squareIndex = y * 8 + x;
-                    hash ^= Zobrist.PieceSquare[index, side, squareIndex];
-                }
+                if (to == 62) { RemovePiece(PieceIndex.Rook, 63, white); AddPiece(PieceIndex.Rook, 61, white); }
+                else if (to == 58) { RemovePiece(PieceIndex.Rook, 56, white); AddPiece(PieceIndex.Rook, 59, white); }
+            }
+            else
+            {
+                if (to == 6) { RemovePiece(PieceIndex.Rook, 7, white); AddPiece(PieceIndex.Rook, 5, white); }
+                else if (to == 2) { RemovePiece(PieceIndex.Rook, 0, white); AddPiece(PieceIndex.Rook, 3, white); }
             }
         }
 
-        if (SideToMove == PlayerSide.White)
+        if (prom != 0)
         {
-            hash ^= Zobrist.SideToMove;
+            AddPiece(prom, to, white);
         }
+        else
+        {
+            AddPiece(piece, to, white);
+        }
+
+        WhiteToMove = white ? false : true;
+    }
+
+    void RemovePiece(int piece, int square, bool white)
+    {
+        ulong mask = ~(1UL << square);
+        if (white)
+        {
+            switch (piece)
+            {
+                case PieceIndex.Pawn: WhitePawns &= mask; break;
+                case PieceIndex.Knight: WhiteKnights &= mask; break;
+                case PieceIndex.Bishop: WhiteBishops &= mask; break;
+                case PieceIndex.Rook: WhiteRooks &= mask; break;
+                case PieceIndex.Queen: WhiteQueens &= mask; break;
+                case PieceIndex.King: WhiteKing &= mask; break;
+            }
+        }
+        else
+        {
+            switch (piece)
+            {
+                case PieceIndex.Pawn: BlackPawns &= mask; break;
+                case PieceIndex.Knight: BlackKnights &= mask; break;
+                case PieceIndex.Bishop: BlackBishops &= mask; break;
+                case PieceIndex.Rook: BlackRooks &= mask; break;
+                case PieceIndex.Queen: BlackQueens &= mask; break;
+                case PieceIndex.King: BlackKing &= mask; break;
+            }
+        }
+    }
+
+    void AddPiece(int piece, int square, bool white)
+    {
+        ulong mask = 1UL << square;
+        if (white)
+        {
+            switch (piece)
+            {
+                case PieceIndex.Pawn: WhitePawns |= mask; break;
+                case PieceIndex.Knight: WhiteKnights |= mask; break;
+                case PieceIndex.Bishop: WhiteBishops |= mask; break;
+                case PieceIndex.Rook: WhiteRooks |= mask; break;
+                case PieceIndex.Queen: WhiteQueens |= mask; break;
+                case PieceIndex.King: WhiteKing |= mask; break;
+            }
+        }
+        else
+        {
+            switch (piece)
+            {
+                case PieceIndex.Pawn: BlackPawns |= mask; break;
+                case PieceIndex.Knight: BlackKnights |= mask; break;
+                case PieceIndex.Bishop: BlackBishops |= mask; break;
+                case PieceIndex.Rook: BlackRooks |= mask; break;
+                case PieceIndex.Queen: BlackQueens |= mask; break;
+                case PieceIndex.King: BlackKing |= mask; break;
+            }
+        }
+    }
+
+    public ulong ComputeZobristHash()
+    {
+        ulong hash = 0;
+
+        for (int square = 0; square < 64; square++)
+        {
+            ulong mask = 1UL << square;
+
+            if ((WhitePawns & mask) != 0) hash ^= Zobrist.PieceSquare[PieceIndex.Pawn, 0, square];
+            if ((WhiteKnights & mask) != 0) hash ^= Zobrist.PieceSquare[PieceIndex.Knight, 0, square];
+            if ((WhiteBishops & mask) != 0) hash ^= Zobrist.PieceSquare[PieceIndex.Bishop, 0, square];
+            if ((WhiteRooks & mask) != 0) hash ^= Zobrist.PieceSquare[PieceIndex.Rook, 0, square];
+            if ((WhiteQueens & mask) != 0) hash ^= Zobrist.PieceSquare[PieceIndex.Queen, 0, square];
+            if ((WhiteKing & mask) != 0) hash ^= Zobrist.PieceSquare[PieceIndex.King, 0, square];
+
+            if ((BlackPawns & mask) != 0) hash ^= Zobrist.PieceSquare[PieceIndex.Pawn, 1, square];
+            if ((BlackKnights & mask) != 0) hash ^= Zobrist.PieceSquare[PieceIndex.Knight, 1, square];
+            if ((BlackBishops & mask) != 0) hash ^= Zobrist.PieceSquare[PieceIndex.Bishop, 1, square];
+            if ((BlackRooks & mask) != 0) hash ^= Zobrist.PieceSquare[PieceIndex.Rook, 1, square];
+            if ((BlackQueens & mask) != 0) hash ^= Zobrist.PieceSquare[PieceIndex.Queen, 1, square];
+            if ((BlackKing & mask) != 0) hash ^= Zobrist.PieceSquare[PieceIndex.King, 1, square];
+        }
+
+        if (WhiteToMove)
+            hash ^= Zobrist.WhiteToMove;
 
         return hash;
     }
-    */
+
+    public Board Copy()
+    {
+        return new Board
+        {
+            WhitePawns = this.WhitePawns,
+            WhiteRooks = this.WhiteRooks,
+            WhiteKnights = this.WhiteKnights,
+            WhiteBishops = this.WhiteBishops,
+            WhiteQueens = this.WhiteQueens,
+            WhiteKing = this.WhiteKing,
+
+            BlackPawns = this.BlackPawns,
+            BlackRooks = this.BlackRooks,
+            BlackKnights = this.BlackKnights,
+            BlackBishops = this.BlackBishops,
+            BlackQueens = this.BlackQueens,
+            BlackKing = this.BlackKing,
+
+            WhiteToMove = this.WhiteToMove
+        };
+    }
 }

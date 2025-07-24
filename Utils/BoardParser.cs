@@ -1,7 +1,181 @@
 internal class BoardParser
 {
-    public static Board CreateBoardFromUCI(string _inputUCI)
+    private const string StartPosFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+    public char GetPieceCharAtSquare(Board board, int square)
     {
-        return new();
+        ulong mask = 1UL << square;
+
+        if ((board.WhitePawns & mask) != 0) return 'P';
+        if ((board.WhiteKnights & mask) != 0) return 'N';
+        if ((board.WhiteBishops & mask) != 0) return 'B';
+        if ((board.WhiteRooks & mask) != 0) return 'R';
+        if ((board.WhiteQueens & mask) != 0) return 'Q';
+        if ((board.WhiteKing & mask) != 0) return 'K';
+
+        if ((board.BlackPawns & mask) != 0) return 'p';
+        if ((board.BlackKnights & mask) != 0) return 'n';
+        if ((board.BlackBishops & mask) != 0) return 'b';
+        if ((board.BlackRooks & mask) != 0) return 'r';
+        if ((board.BlackQueens & mask) != 0) return 'q';
+        if ((board.BlackKing & mask) != 0) return 'k';
+
+        return '_';
+    }
+
+    public string CreateFENFromBoard(Board board) 
+    {
+        string ret = "";
+
+        for (int r = 7; r >= 0; --r)
+        {
+            int emptyCount = 0;
+
+            for (int f = 0; f < 8; ++f)
+            {
+                char piece = GetPieceCharAtSquare(board, f + (8 * r));
+
+                if (piece == '_')
+                {
+                    emptyCount++;
+                }
+                else
+                {
+                    if (emptyCount > 0)
+                    {
+                        ret += emptyCount.ToString();
+                        emptyCount = 0;
+                    }
+
+                    ret += piece;
+                }
+            }
+
+            if (emptyCount > 0)
+            {
+                ret += emptyCount.ToString();
+            }
+
+            if (r > 0)
+            {
+                ret += '/';
+            }
+        }
+
+        ret += ' ';
+        ret += board.WhiteToMove ? 'w' : 'b';
+        ret += " - - 0 0";
+
+        return ret;
+    }
+
+    public Board CreateBoardFromUCI(string uciInput)
+    {
+        string[] parts = uciInput.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        Board board;
+
+        int movesIndex = Array.IndexOf(parts, "moves");
+
+        if (parts.Length > 1 && parts[1] == "startpos")
+        {
+            board = CreateBoardFromFEN(StartPosFEN);
+        }
+        else if (parts.Length > 1 && parts[1] == "fen")
+        {
+            int fenStart = 2;
+            int fenEnd = movesIndex > 0 ? movesIndex : parts.Length;
+            string fen = string.Join(' ', parts[fenStart..fenEnd]);
+            board = CreateBoardFromFEN(fen);
+        }
+        else
+        {
+            throw new ArgumentException("UCI input must specify 'startpos' or 'fen'");
+        }
+
+        if (movesIndex >= 0)
+        {
+            for (int i = movesIndex + 1; i < parts.Length; i++)
+            {
+                string moveStr = parts[i];
+                int move = MoveEncoding.Encode(moveStr, board);
+                board.MakeMove(move);
+            }
+        }
+
+        return board;
+    }
+
+    public Board CreateBoardFromFEN(string fen = StartPosFEN)
+    {
+        var board = new Board();
+
+        board.WhitePawns = 0UL;
+        board.WhiteRooks = 0UL;
+        board.WhiteKnights = 0UL;
+        board.WhiteBishops = 0UL;
+        board.WhiteQueens = 0UL;
+        board.WhiteKing = 0UL;
+
+        board.BlackPawns = 0UL;
+        board.BlackRooks = 0UL;
+        board.BlackKnights = 0UL;
+        board.BlackBishops = 0UL;
+        board.BlackQueens = 0UL;
+        board.BlackKing = 0UL;
+
+        string[] parts = fen.Split(' ');
+        if (parts.Length < 1)
+            throw new ArgumentException("Invalid FEN string");
+
+        string[] ranks = parts[0].Split('/');
+
+        if (ranks.Length != 8)
+            throw new ArgumentException("Invalid FEN string ranks");
+
+        for (int rank = 0; rank < 8; rank++)
+        {
+            string rankStr = ranks[rank];
+            int file = 0;
+
+            foreach (char c in rankStr)
+            {
+                if (char.IsDigit(c))
+                {
+                    file += c - '0';
+                }
+                else
+                {
+                    int squareIndex = (7 - rank) * 8 + file;
+
+                    switch (c)
+                    {
+                        case 'P': board.WhitePawns |= 1UL << squareIndex; break;
+                        case 'R': board.WhiteRooks |= 1UL << squareIndex; break;
+                        case 'N': board.WhiteKnights |= 1UL << squareIndex; break;
+                        case 'B': board.WhiteBishops |= 1UL << squareIndex; break;
+                        case 'Q': board.WhiteQueens |= 1UL << squareIndex; break;
+                        case 'K': board.WhiteKing |= 1UL << squareIndex; break;
+
+                        case 'p': board.BlackPawns |= 1UL << squareIndex; break;
+                        case 'r': board.BlackRooks |= 1UL << squareIndex; break;
+                        case 'n': board.BlackKnights |= 1UL << squareIndex; break;
+                        case 'b': board.BlackBishops |= 1UL << squareIndex; break;
+                        case 'q': board.BlackQueens |= 1UL << squareIndex; break;
+                        case 'k': board.BlackKing |= 1UL << squareIndex; break;
+
+                        default:
+                            throw new ArgumentException($"Invalid piece character '{c}' in FEN");
+                    }
+
+                    file++;
+                }
+            }
+        }
+
+        board.WhiteToMove = parts[1] == "w" ? true : false;
+
+        return board;
     }
 }
+

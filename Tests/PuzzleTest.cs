@@ -1,18 +1,19 @@
-using Knightmare.Views;
-
 namespace Knightmare.Tests
 {
     internal sealed class PuzzleTest
     {
-        /*
-        private readonly int[] depthLevel;
+        private readonly int depthLevel;
         private readonly Dictionary<string, string> puzzles;
-        private readonly View view;
+        private readonly BoardView view;
+        private readonly BoardParser boardParser;
+        private readonly AlphaBeta alphaBeta;
 
         public PuzzleTest()
         {
-            view = new View();
-            depthLevel = new int[] { 6 };
+            view = new BoardView();
+            alphaBeta = new AlphaBeta();
+            depthLevel = 6;
+            boardParser = new BoardParser();
             puzzles = new Dictionary<string, string>()
             {
                 {"rnbqkb1r/1ppppppp/p6B/8/2BPP3/5Q2/PPP2PPP/RN2K1NR b - - 0 0",
@@ -35,46 +36,41 @@ namespace Knightmare.Tests
                 string puzzle = pair.Key;
                 string solution = pair.Value;
 
-                foreach (int level in depthLevel)
+                Console.Clear();
+
+                Board board = boardParser.CreateBoardFromFEN(puzzle);
+
+                view.Print(board);
+
+                List<Node> tree = new();
+                int rootIndex = alphaBeta.BestTree(board, depthLevel, int.MinValue, int.MaxValue, board.WhiteToMove, tree);
+                Node root = tree[rootIndex];
+                board.MakeMove(root.Move);
+
+                string result = boardParser.CreateFENFromBoard(board);
+
+                tested++;
+
+                if (result == solution)
                 {
-                    Console.Clear();
-
-                    Engine bot = new(level);
-                    Board board = BoardParser.Create(puzzle);
-
-                    view.PrintBoard(board);
-
-                    bot.Play(board);
-                    string result = BoardParser.FEN(board);
-
-                    tested++;
-
-                    if (result == solution)
-                    {
-                        passed++;
-                        continue;
-                    }
-
-                    Console.WriteLine($"TEST FAIL: {level}");
-                    Console.WriteLine($"Received: {puzzle} -> {result}");
-                    Console.WriteLine($"Expected: {puzzle} -> {solution}");
-                    failed++;
-
-                    view.PrintBoard(board);
-                    Console.Read();
+                    passed++;
+                    continue;
                 }
+
+                Console.WriteLine($"TEST FAIL: {depthLevel}");
+                Console.WriteLine($"Received: {result}");
+                Console.WriteLine($"Expected: {solution}");
+                failed++;
+
+                view.Print(board);
+                Console.Read();
             }
 
-            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"TESTS PASSED: {passed}");
-            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"TESTS FAILED: {failed}");
-            Console.ResetColor();
             Console.WriteLine($"TESTS EXECUTED: {tested}");
             Console.WriteLine($"Puzzle Tests Completed");
             Console.Read();
         }
-    }
-    */
     }
 }
