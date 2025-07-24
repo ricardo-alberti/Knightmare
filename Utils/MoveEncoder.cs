@@ -21,10 +21,10 @@ public static class MoveEncoder
 
             promotion = moveStr[4] switch
             {
-                'n' => (int)PieceIndex.Knight,
-                'b' => (int)PieceIndex.Bishop,
-                'r' => (int)PieceIndex.Rook,
-                'q' => (int)PieceIndex.Queen,
+                'n' => PieceIndex.Knight,
+                'b' => PieceIndex.Bishop,
+                'r' => PieceIndex.Rook,
+                'q' => PieceIndex.Queen,
                 _ => throw new ArgumentException("Invalid promotion piece")
             };
         }
@@ -40,8 +40,8 @@ public static class MoveEncoder
             | ((flags & 0xF) << 16);
     }
 
-    public static int ToSquare(int move) => (move >> 6) & 0x3F;
     public static int FromSquare(int move) => move & 0x3F;
+    public static int ToSquare(int move) => (move >> 6) & 0x3F;
     public static int Promotion(int move) => (move >> 12) & 0xF;
     public static int Flags(int move) => (move >> 16) & 0xF;
 }
