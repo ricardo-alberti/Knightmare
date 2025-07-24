@@ -1,23 +1,4 @@
-public enum PromotionPiece
-{
-    None = 0,
-    Knight = 1,
-    Bishop = 2,
-    Rook = 3,
-    Queen = 4
-}
-
-public static class MoveFlag
-{
-    public const int None = 0;
-    public const int Capture = 1;
-    public const int EnPassant = 2;
-    public const int Castling = 3;
-    public const int DoublePush = 4;
-    public const int Promotion = 5;
-}
-
-public static class MoveEncoding
+public static class MoveEncoder
 {
     public static int SquareToIndex(string square)
     {
@@ -40,10 +21,10 @@ public static class MoveEncoding
 
             promotion = moveStr[4] switch
             {
-                'n' => (int)PromotionPiece.Knight,
-                'b' => (int)PromotionPiece.Bishop,
-                'r' => (int)PromotionPiece.Rook,
-                'q' => (int)PromotionPiece.Queen,
+                'n' => (int)PieceIndex.Knight,
+                'b' => (int)PieceIndex.Bishop,
+                'r' => (int)PieceIndex.Rook,
+                'q' => (int)PieceIndex.Queen,
                 _ => throw new ArgumentException("Invalid promotion piece")
             };
         }
@@ -51,7 +32,7 @@ public static class MoveEncoding
         return Encode(from, to, promotion, flag);
     }
 
-    public static int Encode(int from, int to, int promotion = 0, int flags = 0)
+    public static int Encode(int from, int to, int promotion = PieceIndex.Null, int flags = 0)
     {
         return (from & 0x3F)
             | ((to & 0x3F) << 6)

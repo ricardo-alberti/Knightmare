@@ -36,7 +36,7 @@ public static class MoveGenerator
             foreach (int to in Bitboard.GetSetBits(attacks))
             {
                 int flags = ((1UL << to) & enemyPieces) != 0 ? 0x1 : 0; 
-                moves.Add(MoveEncoding.Encode(from, to, 0, flags));
+                moves.Add(MoveEncoder.Encode(from, to, 0, flags));
             }
         }
 
@@ -56,7 +56,7 @@ public static class MoveGenerator
                     if (to == 6 || to == 2) flags |= 0x4;
                 }
 
-                moves.Add(MoveEncoding.Encode(from, to, 0, flags));
+                moves.Add(MoveEncoder.Encode(from, to, 0, flags));
             }
         }
 
@@ -69,14 +69,14 @@ public static class MoveGenerator
             {
                 if ((isWhite && to >= 56) || (!isWhite && to < 8))
                 {
-                    moves.Add(MoveEncoding.Encode(from, to, PieceIndex.Queen));
-                    moves.Add(MoveEncoding.Encode(from, to, PieceIndex.Rook));
-                    moves.Add(MoveEncoding.Encode(from, to, PieceIndex.Bishop));
-                    moves.Add(MoveEncoding.Encode(from, to, PieceIndex.Knight));
+                    moves.Add(MoveEncoder.Encode(from, to, PieceIndex.Queen));
+                    moves.Add(MoveEncoder.Encode(from, to, PieceIndex.Rook));
+                    moves.Add(MoveEncoder.Encode(from, to, PieceIndex.Bishop));
+                    moves.Add(MoveEncoder.Encode(from, to, PieceIndex.Knight));
                 }
                 else
                 {
-                    moves.Add(MoveEncoding.Encode(from, to));
+                    moves.Add(MoveEncoder.Encode(from, to));
                 }
             }
 
@@ -91,14 +91,14 @@ public static class MoveGenerator
 
                 if ((isWhite && toCap >= 56) || (!isWhite && toCap < 8))
                 {
-                    moves.Add(MoveEncoding.Encode(from, toCap, PieceIndex.Queen, flags));
-                    moves.Add(MoveEncoding.Encode(from, toCap, PieceIndex.Rook, flags));
-                    moves.Add(MoveEncoding.Encode(from, toCap, PieceIndex.Bishop, flags));
-                    moves.Add(MoveEncoding.Encode(from, toCap, PieceIndex.Knight, flags));
+                    moves.Add(MoveEncoder.Encode(from, toCap, PieceIndex.Queen, flags));
+                    moves.Add(MoveEncoder.Encode(from, toCap, PieceIndex.Rook, flags));
+                    moves.Add(MoveEncoder.Encode(from, toCap, PieceIndex.Bishop, flags));
+                    moves.Add(MoveEncoder.Encode(from, toCap, PieceIndex.Knight, flags));
                 }
                 else
                 {
-                    moves.Add(MoveEncoding.Encode(from, toCap, 0, flags));
+                    moves.Add(MoveEncoder.Encode(from, toCap, 0, flags));
                 }
             }
 
@@ -110,7 +110,7 @@ public static class MoveGenerator
                 .Select(move =>
                     {
                         int flags = ((1UL << move.to) & enemyPieces) != 0 ? 0x1 : 0;
-                        return MoveEncoding.Encode(move.from, move.to, 0, flags);
+                        return MoveEncoder.Encode(move.from, move.to, 0, flags);
                     }
                 )
         );
@@ -121,7 +121,7 @@ public static class MoveGenerator
                 .Select(move =>
                     {
                         int flags = ((1UL << move.to) & enemyPieces) != 0 ? 0x1 : 0;
-                        return MoveEncoding.Encode(move.from, move.to, 0, flags);
+                        return MoveEncoder.Encode(move.from, move.to, 0, flags);
                     }
                 )
         );
@@ -132,7 +132,7 @@ public static class MoveGenerator
                 .Select(move =>
                     {
                         int flags = ((1UL << move.to) & enemyPieces) != 0 ? 0x1 : 0;
-                        return MoveEncoding.Encode(move.from, move.to, 0, flags);
+                        return MoveEncoder.Encode(move.from, move.to, 0, flags);
                     }
                 )
         );
@@ -143,7 +143,7 @@ public static class MoveGenerator
                 .Select(move =>
                     {
                         int flags = ((1UL << move.to) & enemyPieces) != 0 ? 0x1 : 0;
-                        return MoveEncoding.Encode(move.from, move.to, 0, flags);
+                        return MoveEncoder.Encode(move.from, move.to, 0, flags);
                     }
                 )
         );

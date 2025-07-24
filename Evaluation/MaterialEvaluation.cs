@@ -6,13 +6,13 @@ internal class MaterialEvaluator : IEvaluator
     {
         return (BitOperations.PopCount(position.WhitePawns)
                 - BitOperations.PopCount(position.BlackPawns))
-                + (BitOperations.PopCount(position.WhiteBishops) * 3
-                - BitOperations.PopCount(position.BlackBishops) * 3)
-                + (BitOperations.PopCount(position.WhiteRooks) * 5
-                - BitOperations.PopCount(position.BlackRooks) * 5)
-                + (BitOperations.PopCount(position.WhiteQueens) * 9
-                - BitOperations.PopCount(position.BlackQueens) * 9)
-                + (BitOperations.PopCount(position.WhiteKnights) * 3
-                - BitOperations.PopCount(position.BlackKnights) * 3);
+                + (BitOperations.PopCount(position.WhiteBishops) * PieceValue.Bishop
+                - BitOperations.PopCount(position.BlackBishops) * PieceValue.Bishop)
+                + (BitOperations.PopCount(position.WhiteRooks) * PieceValue.Rook
+                - BitOperations.PopCount(position.BlackRooks) * PieceValue.Rook)
+                + (BitOperations.PopCount(position.WhiteQueens) * PieceValue.Queen
+                - BitOperations.PopCount(position.BlackQueens) * PieceValue.Queen)
+                + (BitOperations.PopCount(position.WhiteKnights) * PieceValue.Knight
+                - BitOperations.PopCount(position.BlackKnights) * PieceValue.Knight);
     }
 }

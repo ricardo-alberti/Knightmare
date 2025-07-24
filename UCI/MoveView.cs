@@ -21,9 +21,9 @@ internal class MoveView
 
     public string ToString(int move)
     {
-        int from = MoveEncoding.FromSquare(move);
-        int to = MoveEncoding.ToSquare(move);
-        int promotion = MoveEncoding.Promotion(move);
+        int from = MoveEncoder.FromSquare(move);
+        int to = MoveEncoder.ToSquare(move);
+        int promotion = MoveEncoder.Promotion(move);
 
         string moveStr = SquareNames[from] + SquareNames[to];
 

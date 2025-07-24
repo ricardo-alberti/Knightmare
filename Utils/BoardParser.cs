@@ -98,7 +98,7 @@ internal class BoardParser
             for (int i = movesIndex + 1; i < parts.Length; i++)
             {
                 string moveStr = parts[i];
-                int move = MoveEncoding.Encode(moveStr, board);
+                int move = MoveEncoder.Encode(moveStr, board);
                 board.MakeMove(move);
             }
         }
