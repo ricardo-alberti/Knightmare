@@ -153,13 +153,10 @@ public class Board
 
     public void MakeMove(int move)
     {
-        int from = move & 0x3F;
-        int to = (move >> 6) & 0x3F;
-        int prom = (move >> 12) & 0xF;
-        int flags = (move >> 16) & 0xF;
-
-        ulong fromMask = 1UL << from;
-        ulong toMask = 1UL << to;
+        int from = MoveEncoder.FromSquare(move);
+        int to = MoveEncoder.ToSquare(move);
+        int prom = MoveEncoder.Promotion(move);
+        MoveFlags flags = MoveEncoder.Flags(move);
 
         bool white = WhiteToMove;
 
@@ -172,26 +169,36 @@ public class Board
 
         RemovePiece(piece, from, white);
 
-        if ((flags & 0x1) != 0)
+        if ((flags & MoveFlags.Capture) != 0)
             CapturePieceAt(to, !white);
 
-        if ((flags & 0x2) != 0)
+        if ((flags & MoveFlags.Promotion) != 0)
         {
             int capSq = white ? to - 8 : to + 8;
             RemovePiece(PieceIndex.Pawn, capSq, !white);
         }
 
-        if ((flags & 0x4) != 0)
+        if ((flags & MoveFlags.KingCastle) != 0 || (flags & MoveFlags.QueenCastle) != 0)
         {
             if (white)
             {
-                if (to == 62) { RemovePiece(PieceIndex.Rook, 63, white); AddPiece(PieceIndex.Rook, 61, white); }
-                else if (to == 58) { RemovePiece(PieceIndex.Rook, 56, white); AddPiece(PieceIndex.Rook, 59, white); }
+                if (to == 62) { 
+                    RemovePiece(PieceIndex.Rook, 63, white); AddPiece(PieceIndex.Rook, 61, white); 
+                }
+                else if (to == 58) { 
+                    RemovePiece(PieceIndex.Rook, 56, white); 
+                    AddPiece(PieceIndex.Rook, 59, white); 
+                }
             }
             else
             {
-                if (to == 6) { RemovePiece(PieceIndex.Rook, 7, white); AddPiece(PieceIndex.Rook, 5, white); }
-                else if (to == 2) { RemovePiece(PieceIndex.Rook, 0, white); AddPiece(PieceIndex.Rook, 3, white); }
+                if (to == 6) { 
+                    RemovePiece(PieceIndex.Rook, 7, white); 
+                    AddPiece(PieceIndex.Rook, 5, white); }
+                else if (to == 2) { 
+                    RemovePiece(PieceIndex.Rook, 0, white); 
+                    AddPiece(PieceIndex.Rook, 3, white); 
+                }
             }
         }
 

@@ -35,7 +35,7 @@ public static class MoveGenerator
             ulong attacks = MoveGenerator.KnightAttacks[from] & ~ownPieces;
             foreach (int to in Bitboard.GetSetBits(attacks))
             {
-                int flags = ((1UL << to) & enemyPieces) != 0 ? 0x1 : 0; 
+                MoveFlags flags = ((1UL << to) & enemyPieces) != 0 ? MoveFlags.Capture : 0; 
                 moves.Add(MoveEncoder.Encode(from, to, 0, flags));
             }
         }
@@ -45,15 +45,17 @@ public static class MoveGenerator
             ulong attacks = MoveGenerator.KingAttacks[from] & ~ownPieces;
             foreach (int to in Bitboard.GetSetBits(attacks))
             {
-                int flags = ((1UL << to) & enemyPieces) != 0 ? 0x1 : 0;
+                MoveFlags flags = ((1UL << to) & enemyPieces) != 0 ? MoveFlags.Capture : 0; 
 
-                if (isWhite && from == 60) 
+                if (isWhite && from == 60)
                 {
-                    if (to == 62 || to == 58) flags |= 0x4;
+                    if (to == 62) flags |= MoveFlags.KingCastle;
+                    else if (to == 58) flags |= MoveFlags.QueenCastle;
                 }
-                else if (!isWhite && from == 4) 
+                else if (!isWhite && from == 4)
                 {
-                    if (to == 6 || to == 2) flags |= 0x4;
+                    if (to == 6) flags |= MoveFlags.KingCastle;
+                    else if (to == 2) flags |= MoveFlags.QueenCastle;
                 }
 
                 moves.Add(MoveEncoder.Encode(from, to, 0, flags));
@@ -87,7 +89,7 @@ public static class MoveGenerator
 
             foreach (int toCap in Bitboard.GetSetBits(attacks))
             {
-                int flags = 0x1; 
+                MoveFlags flags = MoveFlags.Capture; 
 
                 if ((isWhite && toCap >= 56) || (!isWhite && toCap < 8))
                 {
@@ -101,7 +103,6 @@ public static class MoveGenerator
                     moves.Add(MoveEncoder.Encode(from, toCap, 0, flags));
                 }
             }
-
         }
 
         moves.AddRange(
@@ -109,7 +110,7 @@ public static class MoveGenerator
                 .GenerateBishopMoves(board, ownBishops, occupancy, isWhite)
                 .Select(move =>
                     {
-                        int flags = ((1UL << move.to) & enemyPieces) != 0 ? 0x1 : 0;
+                        MoveFlags flags = ((1UL << move.to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
                         return MoveEncoder.Encode(move.from, move.to, 0, flags);
                     }
                 )
@@ -120,7 +121,7 @@ public static class MoveGenerator
                 .GenerateRookMoves(board, ownRooks, occupancy, isWhite)
                 .Select(move =>
                     {
-                        int flags = ((1UL << move.to) & enemyPieces) != 0 ? 0x1 : 0;
+                        MoveFlags flags = ((1UL << move.to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
                         return MoveEncoder.Encode(move.from, move.to, 0, flags);
                     }
                 )
@@ -131,7 +132,7 @@ public static class MoveGenerator
                 .GenerateBishopMoves(board, ownQueens, occupancy, isWhite)
                 .Select(move =>
                     {
-                        int flags = ((1UL << move.to) & enemyPieces) != 0 ? 0x1 : 0;
+                        MoveFlags flags = ((1UL << move.to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
                         return MoveEncoder.Encode(move.from, move.to, 0, flags);
                     }
                 )
@@ -142,7 +143,7 @@ public static class MoveGenerator
                 .GenerateRookMoves(board, ownQueens, occupancy, isWhite)
                 .Select(move =>
                     {
-                        int flags = ((1UL << move.to) & enemyPieces) != 0 ? 0x1 : 0;
+                        MoveFlags flags = ((1UL << move.to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
                         return MoveEncoder.Encode(move.from, move.to, 0, flags);
                     }
                 )

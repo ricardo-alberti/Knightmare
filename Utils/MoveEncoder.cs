@@ -13,11 +13,11 @@ public static class MoveEncoder
         int to = SquareToIndex(moveStr.Substring(2, 2));
 
         int promotion = 0;
-        int flag = MoveFlag.None;
+        MoveFlags flag = MoveFlags.Quiet;
 
         if (moveStr.Length == 5)
         {
-            flag = MoveFlag.Promotion;
+            flag |= MoveFlags.Promotion;
 
             promotion = moveStr[4] switch
             {
@@ -32,16 +32,17 @@ public static class MoveEncoder
         return Encode(from, to, promotion, flag);
     }
 
-    public static int Encode(int from, int to, int promotion = PieceIndex.Null, int flags = 0)
+    public static int Encode(int from, int to, int promotion = PieceIndex.Null, MoveFlags flags = MoveFlags.Quiet)
     {
         return (from & 0x3F)
             | ((to & 0x3F) << 6)
             | ((promotion & 0xF) << 12)
-            | ((flags & 0xF) << 16);
+            | (((int)flags & 0xF) << 16);
     }
 
     public static int FromSquare(int move) => move & 0x3F;
     public static int ToSquare(int move) => (move >> 6) & 0x3F;
     public static int Promotion(int move) => (move >> 12) & 0xF;
-    public static int Flags(int move) => (move >> 16) & 0xF;
+    public static MoveFlags Flags(int move) => (MoveFlags)((move >> 16) & 0xFF);
 }
+
