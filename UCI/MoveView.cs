@@ -27,11 +27,6 @@ internal class MoveView
 
         string moveStr = SquareNames[from] + SquareNames[to];
 
-        if (promotion != 0)
-        {
-            moveStr += char.ToUpper(PromotionPieces[promotion]);
-        }
-
         return moveStr;
     }
 }

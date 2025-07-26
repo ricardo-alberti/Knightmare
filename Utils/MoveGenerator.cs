@@ -1,11 +1,11 @@
-public static class MoveGenerator
+internal class MoveGenerator
 {
     public static readonly ulong[] KnightAttacks = new ulong[64];
     public static readonly ulong[] KingAttacks = new ulong[64];
     public static readonly ulong[] WhitePawnAttacks = new ulong[64];
     public static readonly ulong[] BlackPawnAttacks = new ulong[64];
 
-    static MoveGenerator()
+    public MoveGenerator()
     {
         for (int sq = 0; sq < 64; sq++)
         {
@@ -16,7 +16,7 @@ public static class MoveGenerator
         }
     }
 
-    public static List<int> GenerateMoves(Board board)
+    public List<int> GenerateMoves(Board board)
     {
         var moves = new List<int>();
         bool isWhite = board.WhiteToMove;
@@ -26,8 +26,8 @@ public static class MoveGenerator
         ulong ownRooks = isWhite ? board.WhiteRooks : board.BlackRooks;
         ulong ownQueens = isWhite ? board.WhiteQueens : board.BlackQueens;
         ulong ownKing = isWhite ? board.WhiteKing : board.BlackKing;
-        ulong ownPieces = isWhite ? board.WhitePieces() : board.BlackPieces();
-        ulong enemyPieces = isWhite ? board.BlackPieces() : board.WhitePieces();
+        ulong ownPieces = isWhite ? board.WhitePieces : board.BlackPieces;
+        ulong enemyPieces = isWhite ? board.BlackPieces : board.WhitePieces;
         ulong occupancy = ownPieces | enemyPieces;
 
         foreach (int from in Bitboard.GetSetBits(ownKnights))
@@ -80,16 +80,21 @@ public static class MoveGenerator
                 {
                     moves.Add(MoveEncoder.Encode(from, to));
                 }
+
+                int startRank = isWhite ? 1 : 6;
+                int doublePushTo = from + (isWhite ? 16 : -16);
+                if ((from / 8) == startRank && ((1UL << doublePushTo) & occupancy) == 0)
+                {
+                    moves.Add(MoveEncoder.Encode(from, doublePushTo, 0, MoveFlags.PawnDoublePush));
+                }
             }
 
-            ulong attacks = isWhite
-                ? MoveGenerator.WhitePawnAttacks[from]
-                : MoveGenerator.BlackPawnAttacks[from];
-            attacks &= enemyPieces;
+            ulong attacks = isWhite ? WhitePawnAttacks[from] : BlackPawnAttacks[from];
+            ulong captures = attacks & enemyPieces;
 
-            foreach (int toCap in Bitboard.GetSetBits(attacks))
+            foreach (int toCap in Bitboard.GetSetBits(captures))
             {
-                MoveFlags flags = MoveFlags.Capture; 
+                MoveFlags flags = MoveFlags.Capture;
 
                 if ((isWhite && toCap >= 56) || (!isWhite && toCap < 8))
                 {
@@ -107,7 +112,7 @@ public static class MoveGenerator
 
         moves.AddRange(
             SlidingMoves
-                .GenerateBishopMoves(board, ownBishops, occupancy, isWhite)
+                .GenerateMoves(board, ownBishops, occupancy, isWhite, SlidingMoves.BishopDirections)
                 .Select(move =>
                     {
                         MoveFlags flags = ((1UL << move.to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
@@ -118,7 +123,7 @@ public static class MoveGenerator
 
         moves.AddRange(
             SlidingMoves
-                .GenerateRookMoves(board, ownRooks, occupancy, isWhite)
+                .GenerateMoves(board, ownRooks, occupancy, isWhite, SlidingMoves.RookDirections)
                 .Select(move =>
                     {
                         MoveFlags flags = ((1UL << move.to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
@@ -129,18 +134,7 @@ public static class MoveGenerator
 
         moves.AddRange(
             SlidingMoves
-                .GenerateBishopMoves(board, ownQueens, occupancy, isWhite)
-                .Select(move =>
-                    {
-                        MoveFlags flags = ((1UL << move.to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
-                        return MoveEncoder.Encode(move.from, move.to, 0, flags);
-                    }
-                )
-        );
-
-        moves.AddRange(
-            SlidingMoves
-                .GenerateRookMoves(board, ownQueens, occupancy, isWhite)
+                .GenerateMoves(board, ownQueens, occupancy, isWhite, SlidingMoves.QueenDirections)
                 .Select(move =>
                     {
                         MoveFlags flags = ((1UL << move.to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
@@ -152,7 +146,7 @@ public static class MoveGenerator
         return moves;
     }
 
-    private static ulong GenerateKnightAttacks(int sq)
+    private ulong GenerateKnightAttacks(int sq)
     {
         ulong attacks = 0;
         int rank = sq / 8;
@@ -174,7 +168,7 @@ public static class MoveGenerator
         return attacks;
     }
 
-    private static ulong GenerateKingAttacks(int sq)
+    private ulong GenerateKingAttacks(int sq)
     {
         ulong attacks = 0;
         int rank = sq / 8;
@@ -195,7 +189,7 @@ public static class MoveGenerator
         return attacks;
     }
 
-    private static ulong GenerateWhitePawnAttacks(int sq)
+    private ulong GenerateWhitePawnAttacks(int sq)
     {
         ulong attacks = 0;
         int rank = sq / 8;
@@ -210,7 +204,7 @@ public static class MoveGenerator
         return attacks;
     }
 
-    private static ulong GenerateBlackPawnAttacks(int sq)
+    private ulong GenerateBlackPawnAttacks(int sq)
     {
         ulong attacks = 0;
         int rank = sq / 8;

@@ -13,6 +13,8 @@ internal class MaterialEvaluator : IEvaluator
                 + (BitOperations.PopCount(position.WhiteQueens) * PieceValue.Queen
                 - BitOperations.PopCount(position.BlackQueens) * PieceValue.Queen)
                 + (BitOperations.PopCount(position.WhiteKnights) * PieceValue.Knight
-                - BitOperations.PopCount(position.BlackKnights) * PieceValue.Knight);
+                - BitOperations.PopCount(position.BlackKnights) * PieceValue.Knight)
+                + (BitOperations.PopCount(position.WhiteKing) * PieceValue.King
+                - BitOperations.PopCount(position.BlackKing) * PieceValue.King);
     }
 }
