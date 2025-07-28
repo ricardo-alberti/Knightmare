@@ -62,7 +62,7 @@ internal sealed class UCIHandler
     private void ExecuteGoCommand()
     {
         List<Node> tree = new();
-        int rootIndex = alphaBeta.BestTree(board, 7, int.MinValue, int.MaxValue, board.WhiteToMove, tree);
+        int rootIndex = alphaBeta.BestTree(board, 5, int.MinValue, int.MaxValue, board.WhiteToMove, tree);
         Node root = tree[rootIndex];
         board.MakeMove(root.Move);
         moveView.Print(root.Move);

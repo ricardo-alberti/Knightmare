@@ -14,14 +14,14 @@ internal class AlphaBeta
         if (depth == 0)
         {
             var eval = evaluator.Execute(position);
-            var node1 = new Node
+            Node leaf = new Node
             {
                 Move = 0,
                 Eval = eval,
                 ChildStart = -1,
                 ChildCount = 0
             };
-            tree.Add(node1);
+            tree.Add(leaf);
             return tree.Count - 1;
         }
 
@@ -34,13 +34,13 @@ internal class AlphaBeta
 
         foreach (int move in moves)
         {
-            position.MakeMove(move);
+            MoveState moveState = position.MakeMove(move);
 
             int childIndex = BestTree(position, depth - 1, alpha, beta, !isMaximizing, tree);
             Node child = tree[childIndex];
             localChildCount++;
 
-            position.UndoMove(move);
+            position.UndoMove(moveState, move);
 
             if ((isMaximizing && child.Eval > bestEval) || (!isMaximizing && child.Eval < bestEval))
             {

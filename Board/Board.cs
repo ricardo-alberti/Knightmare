@@ -1,4 +1,4 @@
-internal class Board
+internal partial class Board
 {
     public ulong WhitePawns { get; set; }
     public ulong WhiteRooks { get; set; }
@@ -21,7 +21,7 @@ internal class Board
     public ulong WhitePieces => WhitePawns | WhiteRooks | WhiteKnights | WhiteBishops | WhiteQueens | WhiteKing;
     public ulong BlackPieces => BlackPawns | BlackRooks | BlackKnights | BlackBishops | BlackQueens | BlackKing;
 
-    public void MakeMove(int move)
+    public MoveState MakeMove(int move)
     {
         int from = MoveEncoder.FromSquare(move);
         int to = MoveEncoder.ToSquare(move);
@@ -30,50 +30,65 @@ internal class Board
 
         int piece = GetPieceAtSquare(from, WhiteToMove);
 
-        if (piece == PieceIndex.Null)
-        {
-            throw new Exception("Invalid move");
-        }
+        if (piece == PieceIndex.Null) throw new Exception("Invalid move");
 
-        RemovePiece(piece, from, WhiteToMove);
+        MoveState state = new MoveState
+        {
+            Metadata = this.Metadata,
+            CapturedPiece = PieceIndex.Null,
+            CapturedSquare = to,
+            PieceMoved = piece,
+        };
 
         if ((flags & MoveFlags.Capture) != 0)
-            CapturePieceAt(to, !WhiteToMove);
-
-        if ((flags & MoveFlags.Promotion) != 0)
         {
-            int capSq = WhiteToMove ? to - 8 : to + 8;
-            RemovePiece(PieceIndex.Pawn, capSq, !WhiteToMove);
+            if ((flags & MoveFlags.Promotion) != 0)
+            {
+                int epCapSq = WhiteToMove ? to - 8 : to + 8;
+                state.CapturedPiece = GetPieceAtSquare(epCapSq, !WhiteToMove);
+                state.CapturedSquare = epCapSq;
+                RemovePiece(PieceIndex.Pawn, epCapSq, !WhiteToMove);
+            }
+            else
+            {
+                state.CapturedPiece = GetPieceAtSquare(to, !WhiteToMove);
+                CapturePieceAt(to, !WhiteToMove);
+            }
         }
 
         if ((flags & MoveFlags.KingCastle) != 0 || (flags & MoveFlags.QueenCastle) != 0)
         {
             if (WhiteToMove)
             {
-                if (to == 62) 
-                { 
-                    RemovePiece(PieceIndex.Rook, 63, WhiteToMove); 
-                    AddPiece(PieceIndex.Rook, 61, WhiteToMove); 
+                if (to == 62)
+                {
+                    RemovePiece(PieceIndex.Rook, 63, WhiteToMove);
+                    AddPiece(PieceIndex.Rook, 61, WhiteToMove);
                 }
-                else if (to == 58) 
-                { 
-                    RemovePiece(PieceIndex.Rook, 56, WhiteToMove); 
-                    AddPiece(PieceIndex.Rook, 59, WhiteToMove); 
+                else if (to == 58)
+                {
+                    RemovePiece(PieceIndex.Rook, 56, WhiteToMove);
+                    AddPiece(PieceIndex.Rook, 59, WhiteToMove);
                 }
             }
             else
             {
-                if (to == 6) { 
-                    RemovePiece(PieceIndex.Rook, 7, WhiteToMove); 
-                    AddPiece(PieceIndex.Rook, 5, WhiteToMove); }
-                else if (to == 2) { 
-                    RemovePiece(PieceIndex.Rook, 0, WhiteToMove); 
-                    AddPiece(PieceIndex.Rook, 3, WhiteToMove); 
+                if (to == 6)
+                {
+                    RemovePiece(PieceIndex.Rook, 7, WhiteToMove);
+                    AddPiece(PieceIndex.Rook, 5, WhiteToMove);
+                }
+                else if (to == 2)
+                {
+                    RemovePiece(PieceIndex.Rook, 0, WhiteToMove);
+                    AddPiece(PieceIndex.Rook, 3, WhiteToMove);
                 }
             }
         }
 
-        if (prom != 0)
+        RemovePiece(piece, from, WhiteToMove);
+
+        if (prom != PieceIndex.Null) 
         {
             AddPiece(prom, to, WhiteToMove);
         }
@@ -83,6 +98,66 @@ internal class Board
         }
 
         WhiteToMove = !WhiteToMove;
+
+        return state;
+    }
+
+    public void UndoMove(MoveState state, int move)
+    {
+        int from = MoveEncoder.FromSquare(move);
+        int to = MoveEncoder.ToSquare(move);
+        int prom = MoveEncoder.Promotion(move);
+        MoveFlags flags = MoveEncoder.Flags(move);
+
+        WhiteToMove = !WhiteToMove;
+
+        if (prom != PieceIndex.Null)
+        {
+            RemovePiece(prom, to, WhiteToMove);
+            AddPiece(PieceIndex.Pawn, from, WhiteToMove);
+        }
+        else
+        {
+            RemovePiece(state.PieceMoved, to, WhiteToMove);
+            AddPiece(state.PieceMoved, from, WhiteToMove);
+        }
+
+        if ((flags & MoveFlags.KingCastle) != 0 || (flags & MoveFlags.QueenCastle) != 0)
+        {
+            if (WhiteToMove)
+            {
+                if (to == 62)
+                {
+                    RemovePiece(PieceIndex.Rook, 61, WhiteToMove);
+                    AddPiece(PieceIndex.Rook, 63, WhiteToMove);
+                }
+                else if (to == 58)
+                {
+                    RemovePiece(PieceIndex.Rook, 59, WhiteToMove);
+                    AddPiece(PieceIndex.Rook, 56, WhiteToMove);
+                }
+            }
+            else
+            {
+                if (to == 6)
+                {
+                    RemovePiece(PieceIndex.Rook, 5, WhiteToMove);
+                    AddPiece(PieceIndex.Rook, 7, WhiteToMove);
+                }
+                else if (to == 2)
+                {
+                    RemovePiece(PieceIndex.Rook, 3, WhiteToMove);
+                    AddPiece(PieceIndex.Rook, 0, WhiteToMove);
+                }
+            }
+        }
+
+        if (state.CapturedPiece != PieceIndex.Null)
+        {
+            AddPiece(state.CapturedPiece, state.CapturedSquare, !WhiteToMove);
+        }
+
+        Metadata = state.Metadata;
     }
 
     public int GetPieceAtSquare(int square, bool white)
@@ -111,7 +186,7 @@ internal class Board
         return PieceIndex.Null;
     }
 
-    public void CapturePieceAt(int square, bool white)
+    private void CapturePieceAt(int square, bool white)
     {
         ulong mask = 1UL << square;
 
@@ -135,7 +210,7 @@ internal class Board
         }
     }
 
-    void RemovePiece(int piece, int square, bool white)
+    private void RemovePiece(int piece, int square, bool white)
     {
         ulong mask = ~(1UL << square);
         if (white)
@@ -164,7 +239,7 @@ internal class Board
         }
     }
 
-    void AddPiece(int piece, int square, bool white)
+    private void AddPiece(int piece, int square, bool white)
     {
         ulong mask = 1UL << square;
         if (white)
@@ -190,90 +265,6 @@ internal class Board
                 case PieceIndex.Queen: BlackQueens |= mask; break;
                 case PieceIndex.King: BlackKing |= mask; break;
             }
-        }
-    }
-
-    public ulong? EnPassantSquare
-    {
-        get
-        {
-            ulong val = Metadata & 0b111111;
-            return val == 63 ? null : val;
-        }
-        set
-        {
-            Metadata &= ~0b111111UL;
-            Metadata |= value ?? 63;
-        }
-    }
-
-    public bool WhiteCanCastleKingSide
-    {
-        get => (Metadata & (1UL << 6)) != 0;
-        set
-        {
-            if (value) Metadata |= (1UL << 6);
-            else Metadata &= ~(1UL << 6);
-        }
-    }
-
-    public bool WhiteCanCastleQueenSide
-    {
-        get => (Metadata & (1UL << 7)) != 0;
-        set
-        {
-            if (value) Metadata |= (1UL << 7);
-            else Metadata &= ~(1UL << 7);
-        }
-    }
-
-    public bool BlackCanCastleKingSide
-    {
-        get => (Metadata & (1UL << 8)) != 0;
-        set
-        {
-            if (value) Metadata |= (1UL << 8);
-            else Metadata &= ~(1UL << 8);
-        }
-    }
-
-    public bool BlackCanCastleQueenSide
-    {
-        get => (Metadata & (1UL << 9)) != 0;
-        set
-        {
-            if (value) Metadata |= (1UL << 9);
-            else Metadata &= ~(1UL << 9);
-        }
-    }
-
-    public int HalfmoveClock
-    {
-        get => (int)((Metadata >> 10) & 0xFF);
-        set
-        {
-            Metadata &= ~(0xFFUL << 10);
-            Metadata |= ((ulong)value & 0xFFUL) << 10;
-        }
-    }
-
-    public int FullmoveNumber
-    {
-        get => (int)((Metadata >> 18) & 0x3FF);
-        set
-        {
-            Metadata &= ~(0x3FFUL << 18);
-            Metadata |= ((ulong)value & 0x3FFUL) << 18;
-        }
-    }
-
-    public bool WhiteToMove
-    {
-        get => (Metadata & (1UL << 28)) != 0;
-        set
-        {
-            if (value) Metadata |= (1UL << 28);
-            else Metadata &= ~(1UL << 28);
         }
     }
 }

@@ -30,4 +30,3 @@ internal class MoveView
         return moveStr;
     }
 }
-
