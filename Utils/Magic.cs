@@ -97,7 +97,7 @@ public static class Magic
         59, 59, 59, 59, 59, 59, 59, 59, 58, 59, 59, 59, 59, 59, 59, 58
     };
 
-    public static int[] RookRelevantBits = new int[64]
+    public static readonly int[] RookRelevantBits = new int[64]
     {
         12, 11, 11, 11, 11, 11, 11, 12, 11, 10, 10, 10, 10, 10, 10, 11, 
         11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11, 
@@ -105,7 +105,7 @@ public static class Magic
         11, 10, 10, 10, 10, 10, 10, 11, 12, 11, 11, 11, 11, 11, 11, 12
     };
 
-    public static int[] BishopRelevantBits = new int[64]
+    public static readonly int[] BishopRelevantBits = new int[64]
     {
         6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 
         5, 5, 7, 7, 7, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 
@@ -113,21 +113,13 @@ public static class Magic
         5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 6
     };
 
-    public static readonly ulong[][] RookAttackTable = new ulong[64][];
-    public static readonly ulong[][] BishopAttackTable = new ulong[64][];
-    public static ulong[][] RookAttacks = new ulong[64][];
-    public static ulong[][] BishopAttacks = new ulong[64][];
+    public static readonly ulong[][] RookAttacks = new ulong[64][];
+    public static readonly ulong[][] BishopAttacks = new ulong[64][];
 
     static Magic()
     {
         InitializeRookAttacks();
         InitializeBishopAttacks();
-
-        for (int sq = 0; sq < 64; sq++)
-        {
-            RookAttackTable[sq] = RookAttacks[sq];
-            BishopAttackTable[sq] = BishopAttacks[sq];
-        }
     }
 
     public static void InitializeRookAttacks()

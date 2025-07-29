@@ -17,7 +17,7 @@ internal static class SlidingMoves
         int shift = 64 - relevantBits;
         ulong blockers = occupancy & Magic.BishopMasks[square];
         ulong index = (blockers * Magic.BishopMagics[square]) >> shift;
-        return Magic.BishopAttackTable[square][index];
+        return Magic.BishopAttacks[square][index];
     }
 
     public static ulong GetRookAttacks(int square, ulong occupancy)
@@ -27,6 +27,6 @@ internal static class SlidingMoves
         ulong blockers = occupancy & Magic.RookMasks[square];
         ulong index = (blockers * Magic.RookMagics[square]) >> shift;
 
-        return Magic.RookAttackTable[square][index];
+        return Magic.RookAttacks[square][index];
     }
 }
