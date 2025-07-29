@@ -11,7 +11,6 @@ public static class Bitboard
         return BitOperations.TrailingZeroCount(bb);
     }
 
-
     public static IEnumerable<int> GetSetBits(ulong bb)
     {
         while (bb != 0)

@@ -26,13 +26,19 @@ internal class AlphaBeta
         var moves = MoveGenerator.GenerateMoves(position);
         int startIndex = tree.Count;
         int bestEval = isMaximizing ? int.MinValue : int.MaxValue;
-        int bestMove = 0;
+        int bestMove = -1;
         int bestIndex = -1;
         int localChildCount = 0;
 
         foreach (int move in moves)
         {
             MoveState moveState = position.MakeMove(move);
+
+            if (position.IsInCheck(!position.WhiteToMove)) 
+            {
+                position.UndoMove(moveState, move);
+                continue;
+            }
 
             int childIndex = BestTree(position, depth - 1, alpha, beta, !isMaximizing, tree);
             Node child = tree[childIndex];
