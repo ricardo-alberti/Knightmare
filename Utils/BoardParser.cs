@@ -1,8 +1,8 @@
 internal class BoardParser
 {
-    //private const string StartPosFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    private const string StartPosFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     //private const string StartPosFEN = "rnbqkb1r/1ppppppp/p6B/8/2BPP3/5Q2/PPP2PPP/RN2K1NR b - - 0 0";
-    private const string StartPosFEN = "r1bqkb1r/pppppppp/6n1/3P4/4PP2/2N5/PPPQ1nPP/R3KBNR w KQkq - 0 9";
+    //private const string StartPosFEN = "r1bqkb1r/pppppppp/6n1/3P4/4PP2/2N5/PPPQ1nPP/R3KBNR w KQkq - 0 9";
 
     public char GetPieceCharAtSquare(Board board, int square)
     {

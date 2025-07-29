@@ -5,7 +5,7 @@ internal class MoveGenerator
     public static readonly ulong[] WhitePawnAttacks = new ulong[64];
     public static readonly ulong[] BlackPawnAttacks = new ulong[64];
 
-    public MoveGenerator()
+    static MoveGenerator()
     {
         for (int sq = 0; sq < 64; sq++)
         {
@@ -16,7 +16,7 @@ internal class MoveGenerator
         }
     }
 
-    public List<int> GenerateMoves(Board board)
+    public static List<int> GenerateMoves(Board board)
     {
         var moves = new List<int>();
         bool isWhite = board.WhiteToMove;
@@ -110,43 +110,40 @@ internal class MoveGenerator
             }
         }
 
-        moves.AddRange(
-            SlidingMoves
-                .GenerateMoves(board, ownBishops, occupancy, isWhite, SlidingMoves.BishopDirections)
-                .Select(move =>
-                    {
-                        MoveFlags flags = ((1UL << move.to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
-                        return MoveEncoder.Encode(move.from, move.to, 0, flags);
-                    }
-                )
-        );
+        foreach (int from in Bitboard.GetSetBits(ownBishops))
+        {
+            ulong attacks = SlidingMoves.GetBishopAttacks(from, occupancy) & ~ownPieces;
+            foreach (int to in Bitboard.GetSetBits(attacks))
+            {
+                MoveFlags flags = ((1UL << to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
+                moves.Add(MoveEncoder.Encode(from, to, 0, flags));
+            }
+        }
 
-        moves.AddRange(
-            SlidingMoves
-                .GenerateMoves(board, ownRooks, occupancy, isWhite, SlidingMoves.RookDirections)
-                .Select(move =>
-                    {
-                        MoveFlags flags = ((1UL << move.to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
-                        return MoveEncoder.Encode(move.from, move.to, 0, flags);
-                    }
-                )
-        );
+        foreach (int from in Bitboard.GetSetBits(ownRooks))
+        {
+            ulong attacks = SlidingMoves.GetRookAttacks(from, occupancy) & ~ownPieces;
+            foreach (int to in Bitboard.GetSetBits(attacks))
+            {
+                MoveFlags flags = ((1UL << to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
+                moves.Add(MoveEncoder.Encode(from, to, 0, flags));
+            }
+        }
 
-        moves.AddRange(
-            SlidingMoves
-                .GenerateMoves(board, ownQueens, occupancy, isWhite, SlidingMoves.QueenDirections)
-                .Select(move =>
-                    {
-                        MoveFlags flags = ((1UL << move.to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
-                        return MoveEncoder.Encode(move.from, move.to, 0, flags);
-                    }
-                )
-        );
+        foreach (int from in Bitboard.GetSetBits(ownQueens))
+        {
+            ulong attacks = SlidingMoves.GetQueenAttacks(from, occupancy) & ~ownPieces;
+            foreach (int to in Bitboard.GetSetBits(attacks))
+            {
+                MoveFlags flags = ((1UL << to) & enemyPieces) != 0 ? MoveFlags.Capture : 0;
+                moves.Add(MoveEncoder.Encode(from, to, 0, flags));
+            }
+        }
 
         return moves;
     }
 
-    private ulong GenerateKnightAttacks(int sq)
+    private static ulong GenerateKnightAttacks(int sq)
     {
         ulong attacks = 0;
         int rank = sq / 8;
@@ -168,7 +165,7 @@ internal class MoveGenerator
         return attacks;
     }
 
-    private ulong GenerateKingAttacks(int sq)
+    private static ulong GenerateKingAttacks(int sq)
     {
         ulong attacks = 0;
         int rank = sq / 8;
@@ -189,7 +186,7 @@ internal class MoveGenerator
         return attacks;
     }
 
-    private ulong GenerateWhitePawnAttacks(int sq)
+    private static ulong GenerateWhitePawnAttacks(int sq)
     {
         ulong attacks = 0;
         int rank = sq / 8;
@@ -204,7 +201,7 @@ internal class MoveGenerator
         return attacks;
     }
 
-    private ulong GenerateBlackPawnAttacks(int sq)
+    private static ulong GenerateBlackPawnAttacks(int sq)
     {
         ulong attacks = 0;
         int rank = sq / 8;

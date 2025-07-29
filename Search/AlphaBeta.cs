@@ -1,12 +1,10 @@
 internal class AlphaBeta 
 {
     private readonly IEvaluator evaluator;
-    private readonly MoveGenerator moveGenerator;
 
     public AlphaBeta()
     {
         evaluator = new MaterialEvaluator();
-        moveGenerator = new MoveGenerator();
     }
 
     public int BestTree(Board position, int depth, int alpha, int beta, bool isMaximizing, List<Node> tree)
@@ -25,7 +23,7 @@ internal class AlphaBeta
             return tree.Count - 1;
         }
 
-        var moves = moveGenerator.GenerateMoves(position);
+        var moves = MoveGenerator.GenerateMoves(position);
         int startIndex = tree.Count;
         int bestEval = isMaximizing ? int.MinValue : int.MaxValue;
         int bestMove = 0;

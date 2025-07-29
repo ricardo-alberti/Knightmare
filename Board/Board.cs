@@ -21,6 +21,45 @@ internal partial class Board
     public ulong WhitePieces => WhitePawns | WhiteRooks | WhiteKnights | WhiteBishops | WhiteQueens | WhiteKing;
     public ulong BlackPieces => BlackPawns | BlackRooks | BlackKnights | BlackBishops | BlackQueens | BlackKing;
 
+    public bool IsInCheck(bool isWhite)
+    {
+        ulong kingBB = isWhite ? WhiteKing : BlackKing;
+        if (kingBB == 0)
+            return false; 
+
+        int kingSq = Bitboard.GetFirstSetBit(kingBB);
+
+        ulong enemyPawns = isWhite ? BlackPawns : WhitePawns;
+        ulong enemyKnights = isWhite ? BlackKnights : WhiteKnights;
+        ulong enemyBishops = isWhite ? BlackBishops : WhiteBishops;
+        ulong enemyRooks = isWhite ? BlackRooks : WhiteRooks;
+        ulong enemyQueens = isWhite ? BlackQueens : WhiteQueens;
+        ulong enemyKing = isWhite ? BlackKing : WhiteKing;
+
+        ulong allPieces = WhitePieces | BlackPieces;
+
+        ulong pawnAttacks = isWhite
+            ? MoveGenerator.BlackPawnAttacks[kingSq]
+            : MoveGenerator.WhitePawnAttacks[kingSq];
+
+        if ((pawnAttacks & enemyPawns) != 0)
+            return true;
+
+        if ((MoveGenerator.KnightAttacks[kingSq] & enemyKnights) != 0)
+            return true;
+
+        if ((SlidingMoves.GetBishopAttacks(kingSq, allPieces) & (enemyBishops | enemyQueens)) != 0)
+            return true;
+
+        if ((SlidingMoves.GetRookAttacks(kingSq, allPieces) & (enemyRooks | enemyQueens)) != 0)
+            return true;
+
+        if ((MoveGenerator.KingAttacks[kingSq] & enemyKing) != 0)
+            return true;
+
+        return false;
+    }
+
     public MoveState MakeMove(int move)
     {
         int from = MoveEncoder.FromSquare(move);

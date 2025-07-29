@@ -1,59 +1,32 @@
+using System.Numerics;
+
 internal static class SlidingMoves
 {
     public static readonly int[] RookDirections = { 8, -8, 1, -1 };
     public static readonly int[] BishopDirections = { 7, 9, -7, -9 };
     public static readonly int[] QueenDirections = { 7, 9, -7, -9, 8, -8, 1, -1 };
 
-    public static IEnumerable<(int from, int to)> GenerateMoves(Board position, ulong pieces, ulong occupancy, bool isWhite, int[] directions)
+    public static ulong GetQueenAttacks(int square, ulong occupancy)
     {
-        foreach (int from in Bitboard.GetSetBits(pieces))
-        {
-            foreach (int dir in directions)
-            {
-                int to = from;
-                while (true)
-                {
-                    to += dir;
-                    if (!IsOnBoard(from, to, dir)) break;
-
-                    ulong toBB = 1UL << to;
-                    if ((occupancy & toBB) != 0)
-                    {
-                        if ((toBB & GetEnemyPieces(position, isWhite)) != 0)
-                            yield return (from, to);
-                        break;
-                    }
-
-                    yield return (from, to);
-                }
-            }
-        }
+        return GetRookAttacks(square, occupancy) | GetBishopAttacks(square, occupancy);
     }
 
-    private static bool IsOnBoard(int from, int to, int dir)
+    public static ulong GetBishopAttacks(int square, ulong occupancy)
     {
-        if (to < 0 || to >= 64) return false;
-
-        int fromRank = from / 8;
-        int fromFile = from % 8;
-        int toRank = to / 8;
-        int toFile = to % 8;
-
-        int rankDiff = toRank - fromRank;
-        int fileDiff = toFile - fromFile;
-
-        return dir switch
-        {
-            1 or -1 => fromRank == toRank,
-            8 or -8 => true,
-            9 or -9 => Math.Abs(rankDiff) == Math.Abs(fileDiff) && (rankDiff == fileDiff),
-            7 or -7 => Math.Abs(rankDiff) == Math.Abs(fileDiff) && (rankDiff == -fileDiff),
-            _ => false
-        };
+        int relevantBits = Magic.BishopRelevantBits[square];
+        int shift = 64 - relevantBits;
+        ulong blockers = occupancy & Magic.BishopMasks[square];
+        ulong index = (blockers * Magic.BishopMagics[square]) >> shift;
+        return Magic.BishopAttackTable[square][index];
     }
 
-    private static ulong GetEnemyPieces(Board position, bool isWhite)
+    public static ulong GetRookAttacks(int square, ulong occupancy)
     {
-        return isWhite ? position.BlackPieces : position.WhitePieces;
+        int relevantBits = Magic.RookRelevantBits[square];
+        int shift = 64 - relevantBits;
+        ulong blockers = occupancy & Magic.RookMasks[square];
+        ulong index = (blockers * Magic.RookMagics[square]) >> shift;
+
+        return Magic.RookAttackTable[square][index];
     }
 }

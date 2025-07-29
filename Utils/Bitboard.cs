@@ -5,6 +5,13 @@ public static class Bitboard
     public static int BitScanForward(ulong bb) => BitOperations.TrailingZeroCount(bb);
     public static int BitScanReverse(ulong bb) => 63 - BitOperations.LeadingZeroCount(bb);
 
+    public static int GetFirstSetBit(ulong bb)
+    {
+        if (bb == 0) return -1;
+        return BitOperations.TrailingZeroCount(bb);
+    }
+
+
     public static IEnumerable<int> GetSetBits(ulong bb)
     {
         while (bb != 0)

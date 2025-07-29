@@ -4,6 +4,9 @@ class Program
 {
     static void Main(string[] args)
     {
+        Magic.InitializeRookAttacks();
+        Magic.InitializeBishopAttacks();
+
         UCIHandler uciHandler = new UCIHandler();
         bool runTests = args.Length > 0 && args[0] == "test";
 
