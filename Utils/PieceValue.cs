@@ -1,9 +1,10 @@
 public static class PieceValue 
 {
-    public const int Pawn = 1;
-    public const int Knight = 3;
-    public const int Bishop = 3;
-    public const int Queen = 9;
-    public const int Rook = 5;
-    public const int King = 1000;
+    public const int Empty = 0;
+    public const int Pawn = 100;
+    public const int Knight = 320;
+    public const int Bishop = 330;
+    public const int Rook = 500;
+    public const int Queen = 900;
+    public const int King = 20000;
 }

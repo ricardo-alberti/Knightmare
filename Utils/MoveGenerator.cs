@@ -4,6 +4,16 @@ internal class MoveGenerator
     public static readonly ulong[] KingAttacks = new ulong[64];
     public static readonly ulong[] WhitePawnAttacks = new ulong[64];
     public static readonly ulong[] BlackPawnAttacks = new ulong[64];
+    private static readonly int[] PieceValues = new int[7]
+    {
+        0,    
+        100, 
+        320,
+        330,
+        500,  
+        900, 
+        20000 
+    };
 
     static MoveGenerator()
     {
@@ -15,6 +25,23 @@ internal class MoveGenerator
             BlackPawnAttacks[sq] = GenerateBlackPawnAttacks(sq);
         }
     }
+
+
+    private static int ScoreMove(int move, Board board)
+    {
+        MoveFlags flags = MoveEncoder.Flags(move);
+        if ((flags & MoveFlags.Capture) != 0)
+        {
+            int to = MoveEncoder.ToSquare(move);
+            int capturedPiece = board.GetPieceAtSquare(to, !board.WhiteToMove); 
+            int from = MoveEncoder.FromSquare(move);
+            int attackerPiece = board.GetPieceAtSquare(from, board.WhiteToMove);
+            return 10_000 + (PieceValues[capturedPiece] * 10 - PieceValues[attackerPiece]);
+        }
+
+        return 0; 
+    }
+
 
     public static List<int> GenerateMoves(Board board)
     {
@@ -139,6 +166,8 @@ internal class MoveGenerator
                 moves.Add(MoveEncoder.Encode(from, to, 0, flags));
             }
         }
+
+        moves.Sort((a, b) => ScoreMove(b, board).CompareTo(ScoreMove(a, board)));
 
         return moves;
     }

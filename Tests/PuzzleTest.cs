@@ -12,7 +12,7 @@ namespace Knightmare.Tests
         {
             view = new BoardView();
             alphaBeta = new AlphaBeta();
-            depthLevel = 5;
+            depthLevel = 6;
             boardParser = new BoardParser();
             puzzles = new Dictionary<string, string>()
             {

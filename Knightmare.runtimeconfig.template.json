@@ -1,0 +1,8 @@
+{
+  "configProperties": {
+    "System.Runtime.TieredCompilation": true,
+    "System.Runtime.TieredPGO": true,
+    "System.Runtime.TieredPGO.QuickJit": true,
+    "System.Runtime.TieredPGO.QuickJitForLoops": true
+  }
+}

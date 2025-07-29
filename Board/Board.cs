@@ -206,20 +206,19 @@ internal partial class Board
         if (white)
         {
             if ((WhitePawns & mask) != 0) return PieceIndex.Pawn;
-            else if ((WhiteKnights & mask) != 0) return PieceIndex.Knight;
-            else if ((WhiteBishops & mask) != 0) return PieceIndex.Bishop;
-            else if ((WhiteRooks & mask) != 0) return PieceIndex.Rook;
-            else if ((WhiteQueens & mask) != 0) return PieceIndex.Queen;
-            else if ((WhiteKing & mask) != 0) return PieceIndex.King;
+            if ((WhiteKnights & mask) != 0) return PieceIndex.Knight;
+            if ((WhiteBishops & mask) != 0) return PieceIndex.Bishop;
+            if ((WhiteRooks & mask) != 0) return PieceIndex.Rook;
+            if ((WhiteQueens & mask) != 0) return PieceIndex.Queen;
+            if ((WhiteKing & mask) != 0) return PieceIndex.King;
         }
-        else
-        {
+        else {
             if ((BlackPawns & mask) != 0) return PieceIndex.Pawn;
-            else if ((BlackKnights & mask) != 0) return PieceIndex.Knight;
-            else if ((BlackBishops & mask) != 0) return PieceIndex.Bishop;
-            else if ((BlackRooks & mask) != 0) return PieceIndex.Rook;
-            else if ((BlackQueens & mask) != 0) return PieceIndex.Queen;
-            else if ((BlackKing & mask) != 0) return PieceIndex.King;
+            if ((BlackKnights & mask) != 0) return PieceIndex.Knight;
+            if ((BlackBishops & mask) != 0) return PieceIndex.Bishop;
+            if ((BlackRooks & mask) != 0) return PieceIndex.Rook;
+            if ((BlackQueens & mask) != 0) return PieceIndex.Queen;
+            if ((BlackKing & mask) != 0) return PieceIndex.King;
         }
 
         return PieceIndex.Null;
