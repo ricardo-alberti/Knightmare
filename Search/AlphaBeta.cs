@@ -9,19 +9,34 @@ internal class AlphaBeta
 
     public int BestTree(Board position, int depth, int alpha, int beta, bool isMaximizing, List<Node> tree)
     {
+        int alphaOrig = alpha;
+
+        ulong key = position.ZobristKey; 
+        if (TranspositionTable.TryGet(key, out var entry) && entry.Depth >= depth)
+        {
+            switch (entry.Bound)
+            {
+                case BoundType.Exact:
+                    return AddLeafNode(tree, entry.Eval);
+                case BoundType.LowerBound:
+                    if (entry.Eval >= beta)
+                        return AddLeafNode(tree, entry.Eval);
+                    alpha = Math.Max(alpha, entry.Eval);
+                    break;
+                case BoundType.UpperBound:
+                    if (entry.Eval <= alpha)
+                        return AddLeafNode(tree, entry.Eval);
+                    beta = Math.Min(beta, entry.Eval);
+                    break;
+            }
+        }
+
         if (depth == 0)
         {
             var eval = evaluator.Execute(position);
-            Node leaf = new Node
-            {
-                Move = 0,
-                Eval = eval,
-                ChildStart = -1,
-                ChildCount = 0
-            };
-            tree.Add(leaf);
-            return tree.Count - 1;
+            return AddLeafNode(tree, eval);
         }
+
 
         var moves = MoveGenerator.GenerateMoves(position);
         int startIndex = tree.Count;
@@ -34,7 +49,7 @@ internal class AlphaBeta
         {
             MoveState moveState = position.MakeMove(move);
 
-            if (position.IsInCheck(!position.WhiteToMove)) 
+            if (position.IsInCheck(!position.WhiteToMove))
             {
                 position.UndoMove(moveState, move);
                 continue;
@@ -65,6 +80,13 @@ internal class AlphaBeta
             }
         }
 
+        BoundType bound;
+        if (bestEval <= alphaOrig) bound = BoundType.UpperBound;
+        else if (bestEval >= beta) bound = BoundType.LowerBound;
+        else bound = BoundType.Exact;
+
+        TranspositionTable.Store(key, new TranspositionEntry(bestEval, depth, bound, bestMove));
+
         var node = new Node
         {
             Move = bestMove,
@@ -74,5 +96,18 @@ internal class AlphaBeta
         };
         tree.Add(node);
         return tree.Count - 1;
+
+        int AddLeafNode(List<Node> tree, int eval)
+        {
+            Node leaf = new Node
+            {
+                Move = 0,
+                Eval = eval,
+                ChildStart = -1,
+                ChildCount = 0
+            };
+            tree.Add(leaf);
+            return tree.Count - 1;
+        }
     }
 }

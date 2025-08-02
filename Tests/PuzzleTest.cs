@@ -12,10 +12,14 @@ namespace Knightmare.Tests
         {
             view = new BoardView();
             alphaBeta = new AlphaBeta();
-            depthLevel = 6;
+            depthLevel = 7;
             boardParser = new BoardParser();
             puzzles = new Dictionary<string, string>()
             {
+                {
+                    "r1bqkbnr/pppppppp/8/8/1n6/3PPN2/PPP2PPP/RNBQKB1R b KQkq - 2 3",
+                    "r1bqkbnr/pppppppp/8/8/1n6/3PPN2/PPP2PPP/RNBQKB1R b KQkq - 2 3"
+                },
                 {
                     "r1bqkb1r/pppppppp/6n1/3P4/4PP2/2N5/PPPQ1nPP/R3KBNR w KQkq - 0 9",
                     "r1bqkb1r/pppppppp/6n1/3P4/4PP2/2N5/PPPQ1nPP/R3KBNR w KQkq - 0 9"

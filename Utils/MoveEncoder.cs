@@ -12,7 +12,7 @@ internal static class MoveEncoder
         int from = SquareToIndex(moveStr.Substring(0, 2));
         int to = SquareToIndex(moveStr.Substring(2, 2));
 
-        int promotion = 0;
+        int promotion = PieceIndex.Null;
         MoveFlags flag = MoveFlags.Quiet;
 
         if (moveStr.Length == 5)
@@ -27,6 +27,11 @@ internal static class MoveEncoder
                 'q' => PieceIndex.Queen,
                 _ => throw new ArgumentException("Invalid promotion piece")
             };
+        }
+
+        if (position.GetPieceAtSquare(to, !position.WhiteToMove) != PieceIndex.Null) 
+        {
+            flag |= MoveFlags.Capture;        
         }
 
         return Encode(from, to, promotion, flag);

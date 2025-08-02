@@ -8,15 +8,15 @@ internal class BoardParser
     {
         ulong mask = 1UL << square;
 
-        if ((board.WhitePawns & mask) != 0) return 'P';
         if ((board.WhiteKnights & mask) != 0) return 'N';
+        if ((board.WhitePawns & mask) != 0) return 'P';
         if ((board.WhiteBishops & mask) != 0) return 'B';
         if ((board.WhiteRooks & mask) != 0) return 'R';
         if ((board.WhiteQueens & mask) != 0) return 'Q';
         if ((board.WhiteKing & mask) != 0) return 'K';
 
-        if ((board.BlackPawns & mask) != 0) return 'p';
         if ((board.BlackKnights & mask) != 0) return 'n';
+        if ((board.BlackPawns & mask) != 0) return 'p';
         if ((board.BlackBishops & mask) != 0) return 'b';
         if ((board.BlackRooks & mask) != 0) return 'r';
         if ((board.BlackQueens & mask) != 0) return 'q';
@@ -127,11 +127,11 @@ internal class BoardParser
         board.BlackKing = 0UL;
 
         string[] parts = fen.Split(' ');
-        if (parts.Length < 1)
-            throw new ArgumentException("Invalid FEN string");
+        if (parts.Length < 4)
+            throw new ArgumentException("Invalid FEN string: missing fields");
 
+        // Parse piece placement
         string[] ranks = parts[0].Split('/');
-
         if (ranks.Length != 8)
             throw new ArgumentException("Invalid FEN string ranks");
 
@@ -149,22 +149,23 @@ internal class BoardParser
                 else
                 {
                     int squareIndex = (7 - rank) * 8 + file;
+                    ulong bit = 1UL << squareIndex;
 
                     switch (c)
                     {
-                        case 'P': board.WhitePawns |= 1UL << squareIndex; break;
-                        case 'R': board.WhiteRooks |= 1UL << squareIndex; break;
-                        case 'N': board.WhiteKnights |= 1UL << squareIndex; break;
-                        case 'B': board.WhiteBishops |= 1UL << squareIndex; break;
-                        case 'Q': board.WhiteQueens |= 1UL << squareIndex; break;
-                        case 'K': board.WhiteKing |= 1UL << squareIndex; break;
+                        case 'P': board.WhitePawns |= bit; break;
+                        case 'R': board.WhiteRooks |= bit; break;
+                        case 'N': board.WhiteKnights |= bit; break;
+                        case 'B': board.WhiteBishops |= bit; break;
+                        case 'Q': board.WhiteQueens |= bit; break;
+                        case 'K': board.WhiteKing |= bit; break;
 
-                        case 'p': board.BlackPawns |= 1UL << squareIndex; break;
-                        case 'r': board.BlackRooks |= 1UL << squareIndex; break;
-                        case 'n': board.BlackKnights |= 1UL << squareIndex; break;
-                        case 'b': board.BlackBishops |= 1UL << squareIndex; break;
-                        case 'q': board.BlackQueens |= 1UL << squareIndex; break;
-                        case 'k': board.BlackKing |= 1UL << squareIndex; break;
+                        case 'p': board.BlackPawns |= bit; break;
+                        case 'r': board.BlackRooks |= bit; break;
+                        case 'n': board.BlackKnights |= bit; break;
+                        case 'b': board.BlackBishops |= bit; break;
+                        case 'q': board.BlackQueens |= bit; break;
+                        case 'k': board.BlackKing |= bit; break;
 
                         default:
                             throw new ArgumentException($"Invalid piece character '{c}' in FEN");
@@ -175,7 +176,24 @@ internal class BoardParser
             }
         }
 
-        board.WhiteToMove = parts[1] == "w" ? true : false;
+        // Side to move
+        board.WhiteToMove = parts[1] == "w";
+
+        // Castling rights
+        string castling = parts[2];
+        board.WhiteCanCastleKingSide = castling.Contains('K');
+        board.WhiteCanCastleQueenSide = castling.Contains('Q');
+        board.BlackCanCastleKingSide = castling.Contains('k');
+        board.BlackCanCastleQueenSide = castling.Contains('q');
+
+        // En passant target square (ignored in this example, implement if needed)
+        // parts[3]
+
+        // Halfmove clock
+        board.HalfmoveClock = parts.Length > 4 ? int.Parse(parts[4]) : 0;
+
+        // Fullmove number
+        board.FullmoveNumber = parts.Length > 5 ? int.Parse(parts[5]) : 1;
 
         return board;
     }

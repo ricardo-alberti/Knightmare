@@ -5,6 +5,13 @@ public static class Bitboard
     public static int BitScanForward(ulong bb) => BitOperations.TrailingZeroCount(bb);
     public static int BitScanReverse(ulong bb) => 63 - BitOperations.LeadingZeroCount(bb);
 
+    public static int PopFirstSetBit(ref ulong bitboard)
+    {
+        int index = System.Numerics.BitOperations.TrailingZeroCount(bitboard);
+        bitboard &= bitboard - 1;
+        return index;
+    }
+
     public static int GetFirstSetBit(ulong bb)
     {
         if (bb == 0) return -1;
