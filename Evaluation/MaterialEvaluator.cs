@@ -1,8 +1,8 @@
 using System.Numerics;
 
-internal class MaterialEvaluator : IEvaluator
+internal class MaterialEvaluator
 {
-    public int Execute(Board position)
+    public static int Execute(Board position)
     {
         return (BitOperations.PopCount(position.WhitePawns)
                 - BitOperations.PopCount(position.BlackPawns))

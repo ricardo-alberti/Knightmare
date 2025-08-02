@@ -1,17 +1,10 @@
 internal class AlphaBeta 
 {
-    private readonly IEvaluator evaluator;
-
-    public AlphaBeta()
-    {
-        evaluator = new MaterialEvaluator();
-    }
-
     public int BestTree(Board position, int depth, int alpha, int beta, bool isMaximizing, List<Node> tree)
     {
         if (depth == 0)
         {
-            var eval = evaluator.Execute(position);
+            var eval = MaterialEvaluator.Execute(position);
             return AddLeafNode(tree, eval);
         }
 
@@ -67,17 +60,18 @@ internal class AlphaBeta
         tree.Add(node);
         return tree.Count - 1;
 
-        int AddLeafNode(List<Node> tree, int eval)
+    }
+
+    private int AddLeafNode(List<Node> tree, int eval)
+    {
+        Node leaf = new Node
         {
-            Node leaf = new Node
-            {
-                Move = 0,
-                Eval = eval,
-                ChildStart = -1,
-                ChildCount = 0
-            };
-            tree.Add(leaf);
-            return tree.Count - 1;
-        }
+            Move = 0,
+            Eval = eval,
+            ChildStart = -1,
+            ChildCount = 0
+        };
+        tree.Add(leaf);
+        return tree.Count - 1;
     }
 }
