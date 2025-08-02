@@ -21,61 +21,6 @@ internal partial class Board
     public ulong WhitePieces => WhitePawns | WhiteRooks | WhiteKnights | WhiteBishops | WhiteQueens | WhiteKing;
     public ulong BlackPieces => BlackPawns | BlackRooks | BlackKnights | BlackBishops | BlackQueens | BlackKing;
 
-    public ulong ZobristKey
-    {
-        get
-        {
-            ulong key = 0;
-
-            void AddPieces(ulong bitboard, int pieceIndex, int color)
-            {
-                while (bitboard != 0)
-                {
-                    int square = Bitboard.PopFirstSetBit(ref bitboard);
-                    key ^= Zobrist.PieceSquare[color, pieceIndex, square];
-                }
-            }
-
-            // White pieces
-            AddPieces(WhitePawns, PieceIndex.Pawn, 0);
-            AddPieces(WhiteKnights, PieceIndex.Knight, 0);
-            AddPieces(WhiteBishops, PieceIndex.Bishop, 0);
-            AddPieces(WhiteRooks, PieceIndex.Rook, 0);
-            AddPieces(WhiteQueens, PieceIndex.Queen, 0);
-            AddPieces(WhiteKing, PieceIndex.King, 0);
-
-            // Black pieces
-            AddPieces(BlackPawns, PieceIndex.Pawn, 1);
-            AddPieces(BlackKnights, PieceIndex.Knight, 1);
-            AddPieces(BlackBishops, PieceIndex.Bishop, 1);
-            AddPieces(BlackRooks, PieceIndex.Rook, 1);
-            AddPieces(BlackQueens, PieceIndex.Queen, 1);
-            AddPieces(BlackKing, PieceIndex.King, 1);
-
-            // Side to move
-            if (WhiteToMove)
-                key ^= Zobrist.SideToMove;
-
-            // Castling rights (bits 6–9)
-            int rights = 0;
-            if (WhiteCanCastleKingSide) rights |= 1 << 0;
-            if (WhiteCanCastleQueenSide) rights |= 1 << 1;
-            if (BlackCanCastleKingSide) rights |= 1 << 2;
-            if (BlackCanCastleQueenSide) rights |= 1 << 3;
-            key ^= Zobrist.CastlingRights[rights];
-
-            // En passant square (encoded in lowest 6 bits of Metadata if applicable)
-            ulong ep = Metadata & 0b111111UL;
-            if (ep != 63)
-            {
-                int file = (int)(ep % 8);
-                key ^= Zobrist.EnPassantFile[file];
-            }
-
-            return key;
-        }
-    }
-
     public bool IsInCheck(bool isWhite)
     {
         ulong kingBB = isWhite ? WhiteKing : BlackKing;

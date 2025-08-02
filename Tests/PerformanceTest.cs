@@ -5,7 +5,7 @@ namespace Knightmare.Tests
     internal sealed class PerformanceTest
     {
         private const int movesToPlay = 30;
-        private const int botLevel = 7;
+        private const int botLevel = 8;
         private readonly BoardView view;
         private Board position;
 

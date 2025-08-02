@@ -9,34 +9,11 @@ internal class AlphaBeta
 
     public int BestTree(Board position, int depth, int alpha, int beta, bool isMaximizing, List<Node> tree)
     {
-        int alphaOrig = alpha;
-
-        ulong key = position.ZobristKey; 
-        if (TranspositionTable.TryGet(key, out var entry) && entry.Depth >= depth)
-        {
-            switch (entry.Bound)
-            {
-                case BoundType.Exact:
-                    return AddLeafNode(tree, entry.Eval);
-                case BoundType.LowerBound:
-                    if (entry.Eval >= beta)
-                        return AddLeafNode(tree, entry.Eval);
-                    alpha = Math.Max(alpha, entry.Eval);
-                    break;
-                case BoundType.UpperBound:
-                    if (entry.Eval <= alpha)
-                        return AddLeafNode(tree, entry.Eval);
-                    beta = Math.Min(beta, entry.Eval);
-                    break;
-            }
-        }
-
         if (depth == 0)
         {
             var eval = evaluator.Execute(position);
             return AddLeafNode(tree, eval);
         }
-
 
         var moves = MoveGenerator.GenerateMoves(position);
         int startIndex = tree.Count;
@@ -79,13 +56,6 @@ internal class AlphaBeta
                 if (beta <= alpha) break;
             }
         }
-
-        BoundType bound;
-        if (bestEval <= alphaOrig) bound = BoundType.UpperBound;
-        else if (bestEval >= beta) bound = BoundType.LowerBound;
-        else bound = BoundType.Exact;
-
-        TranspositionTable.Store(key, new TranspositionEntry(bestEval, depth, bound, bestMove));
 
         var node = new Node
         {
