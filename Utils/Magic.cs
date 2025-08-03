@@ -164,28 +164,24 @@ public static class Magic
         int rank = square / 8;
         int file = square % 8;
 
-        // Up-right
         for (int r = rank + 1, f = file + 1; r < 8 && f < 8; r++, f++)
         {
             int sq = r * 8 + f;
             attacks |= 1UL << sq;
             if (((blockers >> sq) & 1) != 0) break;
         }
-        // Up-left
         for (int r = rank + 1, f = file - 1; r < 8 && f >= 0; r++, f--)
         {
             int sq = r * 8 + f;
             attacks |= 1UL << sq;
             if (((blockers >> sq) & 1) != 0) break;
         }
-        // Down-right
         for (int r = rank - 1, f = file + 1; r >= 0 && f < 8; r--, f++)
         {
             int sq = r * 8 + f;
             attacks |= 1UL << sq;
             if (((blockers >> sq) & 1) != 0) break;
         }
-        // Down-left
         for (int r = rank - 1, f = file - 1; r >= 0 && f >= 0; r--, f--)
         {
             int sq = r * 8 + f;
@@ -203,28 +199,24 @@ public static class Magic
         int rank = square / 8;
         int file = square % 8;
 
-        // Up
         for (int r = rank + 1; r < 8; r++)
         {
             int sq = r * 8 + file;
             attacks |= 1UL << sq;
             if (((blockers >> sq) & 1) != 0) break;
         }
-        // Down
         for (int r = rank - 1; r >= 0; r--)
         {
             int sq = r * 8 + file;
             attacks |= 1UL << sq;
             if (((blockers >> sq) & 1) != 0) break;
         }
-        // Right
         for (int f = file + 1; f < 8; f++)
         {
             int sq = rank * 8 + f;
             attacks |= 1UL << sq;
             if (((blockers >> sq) & 1) != 0) break;
         }
-        // Left
         for (int f = file - 1; f >= 0; f--)
         {
             int sq = rank * 8 + f;
