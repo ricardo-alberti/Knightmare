@@ -40,3 +40,4 @@ debug on
 - https://www.chessprogramming.org/Alpha-Beta
 - https://www.chessprogramming.org/Bitboards
 - https://www.chessprogramming.org/Magic_Bitboards
+- https://www.chessprogramming.org/Transposition_Table
