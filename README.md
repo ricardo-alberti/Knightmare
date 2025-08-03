@@ -15,7 +15,7 @@ The engine currently implements:
 
 ---
 
-## UCI Commands
+## UCI commands
 
 Knightmare supports standard UCI commands:
 
