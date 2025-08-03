@@ -17,9 +17,12 @@ internal sealed class UCIHandler
         alphaBeta = new();
     }
 
-    public void ProcessCommand(string input)
+    public bool ProcessCommand(string input)
     {
-        if (string.IsNullOrWhiteSpace(input)) return;
+        if (string.IsNullOrWhiteSpace(input)) 
+        {
+            return false;
+        }
 
         string[] parts = input.Split(' ', 2);
         string command = parts[0];
@@ -49,6 +52,9 @@ internal sealed class UCIHandler
                 HandleDebug(arguments);
                 break;
 
+            case "quit":
+                return true;
+
             default:
                 if (Debug)
                 {
@@ -57,6 +63,8 @@ internal sealed class UCIHandler
 
                 break;
         }
+
+        return false;
     }
 
     private void ExecuteGoCommand()

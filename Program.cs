@@ -2,6 +2,28 @@
 
 class Program
 {
+    private static void RunTests()
+    {
+        Console.WriteLine("Running tests...");
+
+        var puzzleTest = new PuzzleTest();
+        var moveCountTest = new MoveCountTest();
+        var performanceTest = new PerformanceTest();
+
+        try
+        {
+            performanceTest.Execute();
+            puzzleTest.Execute();
+            //moveCountTest.Execute();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Test failed: {ex.Message}");
+        }
+
+        Console.WriteLine("Tests completed.\n");
+    }
+
     static void Main(string[] args)
     {
         UCIHandler uciHandler = new UCIHandler();
@@ -9,24 +31,22 @@ class Program
 
         if (runTests)
         {
-            Console.WriteLine("Running tests...");
-            PuzzleTest puzzleTest = new();
-            MoveCountTest moveCountTest = new();
-            PerformanceTest performanceTest = new();
-
-            performanceTest.Execute();
-            puzzleTest.Execute();
-            //moveCountTest.Execute();
-
-            Console.WriteLine("Tests completed.\n");
+            RunTests();
         }
 
         while (true)
         {
             string? input = Console.ReadLine();
-            if (input == null) continue;
 
-            uciHandler.ProcessCommand(input);
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                continue;
+            }
+
+            if (uciHandler.ProcessCommand(input))
+            {
+                return;
+            }
         }
     }
 }
