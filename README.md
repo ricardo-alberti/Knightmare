@@ -19,6 +19,7 @@ debug on
 ```
 ---
 ## useful resources:
+- Russell, Stuart & Norvig, Peter. *Artificial Intelligence: A Modern Approach*, 4th Edition, Chapter 6: Adversarial Search. Pearson, 2020.
 - https://en.wikipedia.org/wiki/Universal_Chess_Interface
 - https://www.chessprogramming.org
 - https://www.chessprogramming.org/Alpha-Beta
