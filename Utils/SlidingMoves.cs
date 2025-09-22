@@ -13,20 +13,20 @@ internal static class SlidingMoves
 
     public static ulong GetBishopAttacks(int square, ulong occupancy)
     {
-        int relevantBits = Magic.BishopRelevantBits[square];
+        int relevantBits = MagicBitboard.BishopRelevantBits[square];
         int shift = 64 - relevantBits;
-        ulong blockers = occupancy & Magic.BishopMasks[square];
-        ulong index = (blockers * Magic.BishopMagics[square]) >> shift;
-        return Magic.BishopAttacks[square][index];
+        ulong blockers = occupancy & MagicBitboard.BishopMasks[square];
+        ulong index = (blockers * MagicBitboard.BishopMagics[square]) >> shift;
+        return MagicBitboard.BishopAttacks[square][index];
     }
 
     public static ulong GetRookAttacks(int square, ulong occupancy)
     {
-        int relevantBits = Magic.RookRelevantBits[square];
+        int relevantBits = MagicBitboard.RookRelevantBits[square];
         int shift = 64 - relevantBits;
-        ulong blockers = occupancy & Magic.RookMasks[square];
-        ulong index = (blockers * Magic.RookMagics[square]) >> shift;
+        ulong blockers = occupancy & MagicBitboard.RookMasks[square];
+        ulong index = (blockers * MagicBitboard.RookMagics[square]) >> shift;
 
-        return Magic.RookAttacks[square][index];
+        return MagicBitboard.RookAttacks[square][index];
     }
 }

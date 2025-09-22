@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-public static class Magic
+public static class MagicBitboard
 {
     public static readonly ulong[] RookMagics = {
         0x0080001020400080UL, 0x0040001000200040UL, 0x0080081000200080UL, 0x0080040800100080UL,
@@ -116,7 +116,7 @@ public static class Magic
     public static readonly ulong[][] RookAttacks = new ulong[64][];
     public static readonly ulong[][] BishopAttacks = new ulong[64][];
 
-    static Magic()
+    static MagicBitboard()
     {
         InitializeRookAttacks();
         InitializeBishopAttacks();
