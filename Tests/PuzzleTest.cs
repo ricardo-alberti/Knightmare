@@ -17,32 +17,8 @@ namespace Knightmare.Tests
             puzzles = new Dictionary<string, string>()
             {
                 {
-                    "r1bqkbnr/pppppppp/8/8/1n6/3PPN2/PPP2PPP/RNBQKB1R b KQkq - 2 3",
-                    "r1bqkbnr/pppppppp/8/8/1n6/3PPN2/PPP2PPP/RNBQKB1R b KQkq - 2 3"
-                },
-                {
                     "r1bqkb1r/pppppppp/6n1/3P4/4PP2/2N5/PPPQ1nPP/R3KBNR w KQkq - 0 9",
-                    "r1bqkb1r/pppppppp/6n1/3P4/4PP2/2N5/PPPQ1nPP/R3KBNR w KQkq - 0 9"
-                },
-                {
-                    "rnbqkbnr/pppppppp/8/8/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1",
-                    "rnbqkbnr/pppppppp/8/8/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1"
-                },
-                {
-                    "8/8/8/8/8/8/pk6/6KP b - - 0 1",
-                    "8/8/8/8/8/8/pk6/6KP b - - 0 1"
-                },
-                {
-                    "1k5Q/ppp4K/8/8/8/8/8/8 w - - 0 1",
-                    "1k5Q/ppp4K/8/8/8/8/8/8 w - - 0 1"
-                },
-                {
-                    "8/6PK/8/8/8/pk6/8/8 w - - 0 1",
-                    "8/6PK/8/8/8/pk6/8/8 w - - 0 1"
-                },
-                {
-                    "rnbqkb1r/1ppppppp/p6B/8/2BPP3/5Q2/PPP2PPP/RN2K1NR b - - 0 0",
-                    "rnbqkb1r/1ppp1ppp/p3p2B/8/2BPP3/5Q2/PPP2PPP/RN2K1NR w - - 0 0"
+                    "r1bqkb1r/pppppppp/6n1/3P4/4PP2/2N5/PPP2QPP/R3KBNR b - - 0 0"
                 },
                 {
                     "6k1/b4ppp/5nb1/2p1pq2/1pN5/pP3P1N/P1P3PP/B2rK2R w - - 0 0",

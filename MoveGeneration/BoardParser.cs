@@ -130,7 +130,6 @@ internal class BoardParser
         if (parts.Length < 4)
             throw new ArgumentException("Invalid FEN string: missing fields");
 
-        // Parse piece placement
         string[] ranks = parts[0].Split('/');
         if (ranks.Length != 8)
             throw new ArgumentException("Invalid FEN string ranks");
@@ -176,23 +175,15 @@ internal class BoardParser
             }
         }
 
-        // Side to move
         board.WhiteToMove = parts[1] == "w";
 
-        // Castling rights
         string castling = parts[2];
         board.WhiteCanCastleKingSide = castling.Contains('K');
         board.WhiteCanCastleQueenSide = castling.Contains('Q');
         board.BlackCanCastleKingSide = castling.Contains('k');
         board.BlackCanCastleQueenSide = castling.Contains('q');
 
-        // En passant target square (ignored in this example, implement if needed)
-        // parts[3]
-
-        // Halfmove clock
         board.HalfmoveClock = parts.Length > 4 ? int.Parse(parts[4]) : 0;
-
-        // Fullmove number
         board.FullmoveNumber = parts.Length > 5 ? int.Parse(parts[5]) : 1;
 
         return board;
