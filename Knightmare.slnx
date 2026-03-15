@@ -4,6 +4,6 @@
     <Project Path="src/Knightmare.Engine/Knightmare.Engine.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/Knightmare.Tests/Knightmare.Tests.csproj" />
+    <Project Path="tests/Knightmare.Engine.Tests/Knightmare.Engine.Tests.csproj" />
   </Folder>
 </Solution>

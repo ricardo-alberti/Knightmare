@@ -32,23 +32,10 @@ public sealed class PuzzleTests
     {
         // Arrange
         Board board = BoardParser.CreateBoardFromFEN(puzzleFen);
-        AlphaBeta alphaBeta = new();
-
-        List<Node> tree = new();
+        ISearch alphaBeta = new AlphaBeta();
 
         // Act
-        int rootIndex = alphaBeta.BestTree(
-            board,
-            DepthLevel,
-            int.MinValue,
-            int.MaxValue,
-            board.WhiteToMove,
-            tree
-        );
-
-        Node root = tree[rootIndex];
-
-        board.MakeMove(root.Move);
+        board.MakeMove(alphaBeta.FindBestMove(board, DepthLevel));
 
         string result = BoardParser.CreateFENFromBoard(board);
 
