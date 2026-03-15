@@ -1,4 +1,4 @@
-internal static class MoveEncoder
+public static class MoveEncoder
 {
     public static int SquareToIndex(string square)
     {

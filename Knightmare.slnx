@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Knightmare.CLI/Knightmare.CLI.csproj" />
+    <Project Path="src/Knightmare.Engine/Knightmare.Engine.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Knightmare.Tests/Knightmare.Tests.csproj" />
+  </Folder>
+</Solution>

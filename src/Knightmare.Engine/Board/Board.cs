@@ -1,4 +1,4 @@
-internal partial class Board
+public partial class Board
 {
     public ulong WhitePawns { get; set; }
     public ulong WhiteRooks { get; set; }

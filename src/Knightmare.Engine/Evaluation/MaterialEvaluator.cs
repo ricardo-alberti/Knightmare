@@ -1,6 +1,6 @@
 using System.Numerics;
 
-internal class MaterialEvaluator
+internal static class MaterialEvaluator
 {
     public static int Execute(Board position)
     {

@@ -1,4 +1,4 @@
-internal class MoveGenerator
+public class MoveGenerator
 {
     public static readonly ulong[] KnightAttacks = new ulong[64];
     public static readonly ulong[] KingAttacks = new ulong[64];

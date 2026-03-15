@@ -1,12 +1,5 @@
 internal class BoardView
 {
-    private readonly BoardParser boardParser;
-
-    public BoardView() 
-    {
-        boardParser = new BoardParser();
-    }
-
     public void Print(Board board)
     {
         Console.WriteLine("    A B C D E F G H");
@@ -19,7 +12,7 @@ internal class BoardView
             for (int file = 0; file < 8; file++)
             {
                 int square = rank * 8 + file;
-                char pieceChar = boardParser.GetPieceCharAtSquare(board, square);
+                char pieceChar = BoardParser.GetPieceCharAtSquare(board, square);
                 Console.Write($" {pieceChar}");
             }
 

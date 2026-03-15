@@ -3,7 +3,6 @@ internal sealed class UCIHandler
     private readonly BoardView boardView;
     private readonly MoveView moveView;
     private readonly AlphaBeta alphaBeta;
-    private readonly BoardParser boardParser;
 
     private bool Debug;
     private Board board;
@@ -13,7 +12,6 @@ internal sealed class UCIHandler
         boardView = new();
         moveView = new();
         board = new();
-        boardParser = new();
         alphaBeta = new();
     }
 
@@ -41,7 +39,7 @@ internal sealed class UCIHandler
                 break;
 
             case "position":
-                board = boardParser.CreateBoardFromUCI(input);
+                board = BoardParser.CreateBoardFromUCI(input);
                 break;
 
             case "go":

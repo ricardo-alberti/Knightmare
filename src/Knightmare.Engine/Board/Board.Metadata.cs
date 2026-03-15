@@ -1,4 +1,4 @@
-internal partial class Board
+public partial class Board
 {
     public bool WhiteCanCastleKingSide
     {

@@ -1,10 +1,8 @@
-internal class BoardParser
+public static class BoardParser
 {
     private const string StartPosFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    //private const string StartPosFEN = "rnbqkb1r/1ppppppp/p6B/8/2BPP3/5Q2/PPP2PPP/RN2K1NR b - - 0 0";
-    //private const string StartPosFEN = "r1bqkb1r/pppppppp/6n1/3P4/4PP2/2N5/PPPQ1nPP/R3KBNR w KQkq - 0 9";
 
-    public char GetPieceCharAtSquare(Board board, int square)
+    public static char GetPieceCharAtSquare(Board board, int square)
     {
         ulong mask = 1UL << square;
 
@@ -25,7 +23,7 @@ internal class BoardParser
         return '_';
     }
 
-    public string CreateFENFromBoard(Board board) 
+    public static string CreateFENFromBoard(Board board) 
     {
         string ret = "";
 
@@ -71,7 +69,7 @@ internal class BoardParser
         return ret;
     }
 
-    public Board CreateBoardFromUCI(string uciInput)
+    public static Board CreateBoardFromUCI(string uciInput)
     {
         string[] parts = uciInput.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
@@ -108,7 +106,7 @@ internal class BoardParser
         return board;
     }
 
-    public Board CreateBoardFromFEN(string fen = StartPosFEN)
+    public static Board CreateBoardFromFEN(string fen = StartPosFEN)
     {
         var board = new Board();
 
@@ -189,4 +187,3 @@ internal class BoardParser
         return board;
     }
 }
-

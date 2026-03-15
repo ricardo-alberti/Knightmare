@@ -1,4 +1,4 @@
-internal class AlphaBeta 
+public class AlphaBeta 
 {
     public int BestTree(Board position, int depth, int alpha, int beta, bool isMaximizing, List<Node> tree)
     {
