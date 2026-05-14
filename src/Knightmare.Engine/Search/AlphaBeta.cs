@@ -1,6 +1,13 @@
-public class AlphaBeta 
+public class AlphaBeta : ISearch
 {
-    public int BestTree(Board position, int depth, int alpha, int beta, bool isMaximizing, List<Node> tree)
+    public int FindBestMove(Board board, int depth)
+    {
+        List<Node> tree = new();
+        int rootIndex = FindBestTree(board, 7, int.MinValue, int.MaxValue, board.WhiteToMove, tree);
+        return tree[rootIndex].Move;
+    }
+
+    public int FindBestTree(Board position, int depth, int alpha, int beta, bool isMaximizing, List<Node> tree)
     {
         if (depth == 0)
         {
@@ -25,7 +32,7 @@ public class AlphaBeta
                 continue;
             }
 
-            int childIndex = BestTree(position, depth - 1, alpha, beta, !isMaximizing, tree);
+            int childIndex = FindBestTree(position, depth - 1, alpha, beta, !isMaximizing, tree);
             Node child = tree[childIndex];
             localChildCount++;
 
